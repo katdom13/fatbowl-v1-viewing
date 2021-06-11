@@ -1,9 +1,9 @@
-from rest_framework import viewsets
+from rest_framework import generics, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Product
-from .serializers import ProductSerializer
+from .models import Category, Product
+from .serializers import CategorySerializer, ProductSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -11,6 +11,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     This viewset provides 'list' and 'retrieve' actions
     """
     serializer_class = ProductSerializer
+    lookup_field = 'slug'
 
     # Custom filter of objects
     def get_queryset(self):
@@ -23,3 +24,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
 
         return Response(serializer.data)
+
+
+class CategoryListView(generics.ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
