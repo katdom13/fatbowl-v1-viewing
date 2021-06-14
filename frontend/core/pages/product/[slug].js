@@ -26,8 +26,8 @@ import {
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 import axios from "axios"
-import DefaultLayout from "../../components/layout"
 import { useState } from "react"
+import Head from 'next/head'
 
 const Product = ({product}) => {
   const classes = useStyles()
@@ -35,7 +35,10 @@ const Product = ({product}) => {
   const [qty, setQty] = useState(1)
 
   return (
-    <DefaultLayout>
+    <>
+      <Head>
+        <title>{product.title}</title>
+      </Head>
       <Container maxWidth='md'>
         <Box component='main' pt={5}>
           <Grid container spacing={2}>
@@ -122,7 +125,7 @@ const Product = ({product}) => {
           </Grid>
         </Box>
       </Container>
-    </DefaultLayout>
+    </>
   )
 }
 

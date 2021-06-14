@@ -7,7 +7,7 @@ app_name = 'store'
 
 # Create a default router to register the viewsets
 router = DefaultRouter()
-router.register(r'products', views.ProductViewSet, basename='product')
+router.register(r'products', views.ProductViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -10,12 +10,9 @@ class ProductViewSet(viewsets.ModelViewSet):
     """
     This viewset provides 'list' and 'retrieve' actions
     """
+    queryset = Product.products.all()
     serializer_class = ProductSerializer
     lookup_field = 'slug'
-
-    # Custom filter of objects
-    def get_queryset(self):
-        return Product.objects.filter(is_active=True)
 
     # Custom methods
     @action(detail=False, methods=['get'], url_path=r'category/(?P<slug>\w+)')
@@ -23,7 +20,10 @@ class ProductViewSet(viewsets.ModelViewSet):
         queryset = self.get_queryset().filter(category__slug=slug)
         serializer = self.get_serializer(queryset, many=True)
 
-        return Response(serializer.data)
+        return Response({
+            'category': Category.objects.filter(slug=slug).first().name,
+            'products': serializer.data,
+        })
 
 
 class CategoryListView(generics.ListAPIView):

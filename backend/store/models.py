@@ -30,6 +30,14 @@ class Category(models.Model):
         return self.name
 
 
+class ProductManager(models.Manager):
+    """
+    A customized queryset for a product
+    """
+    def get_queryset(self):
+        return super(ProductManager, self).get_queryset().filter(is_active=True)
+
+
 class Product(models.Model):
     """
     Product table containing all items
@@ -84,8 +92,11 @@ class Product(models.Model):
     )
     updated_at = models.DateTimeField(
         verbose_name=_('Updated at'),
-        auto_now=True
+        auto_now=True,
+        null=True
     )
+    objects = models.Manager()
+    products = ProductManager()
 
     class Meta:
         ordering = ('-created_at',)

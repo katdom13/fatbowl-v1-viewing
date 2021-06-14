@@ -32,21 +32,25 @@ const Header = props => {
         <Toolbar>
           <BrandWrapper component='div'>
             <Brand variant='h6' noWrap>
-              Fatbowl
+              <Link href='/'>
+                <a className={classes.link}>
+                  Fatbowl
+                </a>
+              </Link>
             </Brand>
 
             <Hidden smDown>
               <List className={classes.menuList}>
-                <MenuListItem link href='/'>
+                {/* <MenuListItem link href='/'>
                   Home
                 </MenuListItem>
 
                 <MenuListItem link href='/'>
                   Link
-                </MenuListItem>
+                </MenuListItem> */}
 
                 <MenuListItem onClick={ event => setCategoryAnchor(event.currentTarget)}>
-                  Dropdown
+                  Categories
                 </MenuListItem>
 
                 <StyledMenu
@@ -357,17 +361,5 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
   }
 }))
-
-// export async function getStaticProps(context) {
-//   const categories = await axios.get('http://127.0.0.1:8001/api/categories/')
-
-//   console.log('AAAAAAAAAAAAAAAAAAAAAAAAAA')
-
-//   return {
-//     props: {
-//       categories: categories.data,
-//     },
-//   }
-// }
 
 export default Header

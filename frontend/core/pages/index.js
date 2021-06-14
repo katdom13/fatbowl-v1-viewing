@@ -1,13 +1,12 @@
 import { Container, Typography, Box, Button, makeStyles, Grid, Card, CardMedia, CardContent } from '@material-ui/core'
 import axios from 'axios'
-import DefaultLayout from '../components/layout'
 import Link from 'next/link'
 
 export default function Home({products}) {
   const classes = useStyles()
 
   return (
-    <DefaultLayout>
+    <>
       <Container component='section' className={classes.container} maxWidth='sm'>
         <Grid container>
           <Grid item xs={12}>
@@ -26,6 +25,9 @@ export default function Home({products}) {
       </Container>
       <Box component='main'>
         <Container maxWidth="lg" className={classes.cardGrid}>
+          <Box component='h5' fontSize={22}>
+            {`All (${products.length})`}
+          </Box>
           <Grid container spacing={2}>
             {
               products && products.map(product => (
@@ -53,7 +55,7 @@ export default function Home({products}) {
           </Grid>
         </Container>
       </Box>
-    </DefaultLayout>
+    </>
   )
 }
 
@@ -66,8 +68,8 @@ const useStyles = makeStyles((theme) => ({
   },
   container: {
     textAlign: 'center',
-    paddingTop: theme.spacing(10),
-    paddingBottom: theme.spacing(10)
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(3)
   },
   header: {
     fontSize: 38,
