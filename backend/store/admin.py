@@ -47,5 +47,5 @@ class ProductSpecificationValueInline(admin.TabularInline):
 class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductImageInline, ProductSpecificationValueInline]
     prepopulated_fields = {
-        'slug': ('title', )
+        'slug': ('title', ),
     }

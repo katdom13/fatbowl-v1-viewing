@@ -1,9 +1,34 @@
-import { AppBar, Toolbar, Box, Collapse, Divider, fade, Hidden, IconButton, InputBase, ListItem, makeStyles, MenuItem, MenuList, Paper, styled, Typography, withStyles, List, Menu, lighten } from "@material-ui/core"
+import {
+  AppBar,
+  Toolbar,
+  Box,
+  Collapse,
+  Divider,
+  fade,
+  Hidden,
+  IconButton,
+  InputBase,
+  ListItem,
+  makeStyles,
+  MenuItem,
+  MenuList,
+  Paper,
+  styled,
+  Typography,
+  withStyles,
+  List,
+  Menu,
+  lighten,
+  Button,
+  Badge,
+} from "@material-ui/core"
 import { useEffect, useRef, useState } from "react"
 import SearchIcon from '@material-ui/icons/Search'
 import MenuIcon from '@material-ui/icons/Menu'
+import ShoppingCartOutlinedIcon from '@material-ui/icons/ShoppingCartOutlined'
 import Link from 'next/link'
 import axios from "axios"
+import { axiosInstance } from "../config/axios"
 
 const Header = props => {
   const classes = useStyles()
@@ -21,9 +46,11 @@ const Header = props => {
   }
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8001/api/categories/')
+    async function getCategories() {
+      await axiosInstance.get('api/categories/')
       .then(data => setCategories(data.data))
       .catch(err => console.error(err))
+    }
   }, [])
 
   return (
@@ -72,6 +99,18 @@ const Header = props => {
           </BrandWrapper>
 
           <Hidden smDown>
+            {/* Add to cart button */}
+            <Link href='/' passHref>
+              <Button variant="outlined" color='inherit' className={classes.cartButton}>
+                  <a className={classes.link}>
+                    <Badge badgeContent={4} color="secondary" className={classes.cartBadge}>
+                      <ShoppingCartOutlinedIcon />
+                    </Badge>
+                    Cart
+                  </a>
+              </Button>
+            </Link>
+
             <Searchbar />
           </Hidden>
 
@@ -128,6 +167,13 @@ const Header = props => {
                   </MenuList>
                 </CategoryMenuPaper>
               </Collapse>
+
+              <MenuListItem link href='/'>
+                <Badge badgeContent={4} color="secondary" className={classes.cartBadge}>
+                  <ShoppingCartOutlinedIcon />
+                </Badge>
+                Cart
+              </MenuListItem>
 
               <MenuListItem>
                 <Searchbar />
@@ -283,6 +329,14 @@ const CategoryMenuPaper = styled(Paper)((props) => ({
 }))
 
 const useStyles = makeStyles((theme) => ({
+  cartBadge: {
+    marginRight: theme.spacing(2),
+  },
+  cartButton: {
+    padding: theme.spacing(1.5, 2, 1.5, 2),
+    marginRight: theme.spacing(1.5),
+    fontWeight: 900,
+  },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
 
@@ -309,6 +363,16 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     alignItems: 'center',
     cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: 'none',
+      '-webkit-tap-highlight-color': 'rgba(0,0,0,0)',
+      '-webkit-tap-highlight-color': 'transparent',
+    },
+    '&:focus': {
+      backgroundColor: 'none',
+      '-webkit-tap-highlight-color': 'rgba(0,0,0,0)',
+      '-webkit-tap-highlight-color': 'transparent',
+    }
   },
   menuList: {
     padding: 0,
@@ -319,6 +383,10 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   menuListItem: {
+    padding: theme.spacing(2, 3, 2, 3),
+    [theme.breakpoints.down('xs')]: {
+      padding: theme.spacing(2, 2, 2, 2)
+    },
     [theme.breakpoints.up('md')]: {
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(3),

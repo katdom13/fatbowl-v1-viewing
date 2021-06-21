@@ -14,25 +14,51 @@ import {
   Table,
   fade,
   InputLabel,
-  MenuItem,
   FormControl,
-  Select,
   Button,
-  TextField,
   OutlinedInput,
   InputAdornment,
   IconButton
 } from "@material-ui/core"
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
-import axios from "axios"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Head from 'next/head'
+import { axiosInstance, whoami } from "../../config/axios"
+import { useCookies } from 'react-cookie'
 
 const Product = ({product}) => {
   const classes = useStyles()
 
   const [qty, setQty] = useState(1)
+  const [cookies, setCookie] = useCookies(['csrftoken'])
+
+  useEffect(() => {
+    whoami()
+  }, [])
+
+  const handleAdd = () => {
+    let csrfCookie = cookies.csrftoken
+
+    async function addToCart(csrf) {
+      await axiosInstance.post('api/cart/',
+        {
+          product_id: product.id,
+          product_qty: qty
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrf
+          }
+        }
+      )
+        .then(response => console.log('[ADD TO CART]', response.data))
+        .catch(err => console.error('[ADD TO CART ERROR]', err.response.data))
+    }
+
+    addToCart(csrfCookie)
+  }
 
   return (
     <>
@@ -113,7 +139,7 @@ const Product = ({product}) => {
                         </FormControl>
                       </TableCell>
                       <TableCell className={classes.tableCell} align='right'>
-                        <Button variant="contained" color="primary" href="#contained-buttons">
+                        <Button variant="contained" color="primary" onClick={handleAdd}>
                           Add to Cart
                         </Button>
                       </TableCell>
@@ -166,7 +192,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export async function getStaticProps(context) {
-  const product = await axios.get(`http://127.0.0.1:8001/api/products/${context.params.slug}/`)
+  const product = await axiosInstance.get(`http://localhost:8001/api/products/${context.params.slug}/`)
 
   return {
     props: {
@@ -176,7 +202,7 @@ export async function getStaticProps(context) {
 }
 
 export async function getStaticPaths() {
-  const products = await axios.get('http://127.0.0.1:8001/api/products/')
+  const products = await axiosInstance.get('http://localhost:8001/api/products/')
 
   const paths = products.data.map(product => ({
     params: {

@@ -1,9 +1,14 @@
 import { Container, Typography, Box, Button, makeStyles, Grid, Card, CardMedia, CardContent } from '@material-ui/core'
-import axios from 'axios'
 import Link from 'next/link'
+import { useEffect } from 'react'
+import { axiosInstance, whoami } from '../config/axios'
 
 export default function Home({products}) {
   const classes = useStyles()
+
+  useEffect(() => {
+    whoami()
+  }, [])
 
   return (
     <>
@@ -84,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export async function getStaticProps(context) {
-  const products = await axios.get('http://127.0.0.1:8001/api/products/')
+  const products = await axiosInstance.get('http://localhost:8001/api/products/')
 
   return {
     props: {
