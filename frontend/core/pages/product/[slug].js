@@ -22,16 +22,18 @@ import {
 } from "@material-ui/core"
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import Head from 'next/head'
 import { axiosInstance, whoami } from "../../config/axios"
 import { useCookies } from 'react-cookie'
+import AppContext from "../../contexts/AppContext"
 
 const Product = ({product}) => {
   const classes = useStyles()
 
   const [qty, setQty] = useState(1)
   const [cookies, setCookie] = useCookies(['csrftoken'])
+  const {totalItemQty, setTotalItemQty} = useContext(AppContext)
 
   useEffect(() => {
     whoami()
@@ -53,7 +55,10 @@ const Product = ({product}) => {
           }
         }
       )
-        .then(response => console.log('[ADD TO CART]', response.data))
+        .then(response => {
+          console.log('[ADD TO CART]', response.data)
+          setTotalItemQty(response.data.total_item_qty)
+        })
         .catch(err => console.error('[ADD TO CART ERROR]', err.response.data))
     }
 

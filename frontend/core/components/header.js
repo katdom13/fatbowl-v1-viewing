@@ -22,13 +22,11 @@ import {
   Button,
   Badge,
 } from "@material-ui/core"
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import SearchIcon from '@material-ui/icons/Search'
 import MenuIcon from '@material-ui/icons/Menu'
 import ShoppingCartOutlinedIcon from '@material-ui/icons/ShoppingCartOutlined'
 import Link from 'next/link'
-import axios from "axios"
-import { axiosInstance } from "../config/axios"
 
 const Header = props => {
   const classes = useStyles()
@@ -39,19 +37,9 @@ const Header = props => {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
   const categoryRef = useRef(null)
 
-  const [categories, setCategories] = useState(null)
-
   const handleCloseCategory = () => {
     setCategoryAnchor(null)
   }
-
-  useEffect(() => {
-    async function getCategories() {
-      await axiosInstance.get('api/categories/')
-      .then(data => setCategories(data.data))
-      .catch(err => console.error(err))
-    }
-  }, [])
 
   return (
     <HeaderContainer>
@@ -68,14 +56,6 @@ const Header = props => {
 
             <Hidden smDown>
               <List className={classes.menuList}>
-                {/* <MenuListItem link href='/'>
-                  Home
-                </MenuListItem>
-
-                <MenuListItem link href='/'>
-                  Link
-                </MenuListItem> */}
-
                 <MenuListItem onClick={ event => setCategoryAnchor(event.currentTarget)}>
                   Categories
                 </MenuListItem>
@@ -87,8 +67,8 @@ const Header = props => {
                   onClose={handleCloseCategory}
                 >
                   {
-                    categories && categories.map(category => (
-                      <StyledMenuItem link href={`/category/${encodeURIComponent(category.slug)}`} key={category.slug}>
+                    props.categories && props.categories.map(category => (
+                      <StyledMenuItem link key={category.slug} href={`/category/${encodeURIComponent(category.slug)}`} onClick={handleCloseCategory}>
                         {category.name}
                       </StyledMenuItem>
                     ))
@@ -103,7 +83,7 @@ const Header = props => {
             <Link href='/' passHref>
               <Button variant="outlined" color='inherit' className={classes.cartButton}>
                   <a className={classes.link}>
-                    <Badge badgeContent={4} color="secondary" className={classes.cartBadge}>
+                    <Badge badgeContent={props.totalItemQty} color="secondary" className={classes.cartBadge}>
                       <ShoppingCartOutlinedIcon />
                     </Badge>
                     Cart
@@ -158,8 +138,16 @@ const Header = props => {
                     className={classes.menuList}
                   >
                     {
-                      categories && categories.map(category => (
-                        <StyledMenuItem link href={`/category/${encodeURIComponent(category.slug)}`} key={category.slug}>
+                      props.categories && props.categories.map(category => (
+                        <StyledMenuItem
+                          link
+                          href={`/category/${encodeURIComponent(category.slug)}`} key={category.slug}
+                          onClick={() => {
+                              setIsCategoryOpen(!isCategoryOpen)
+                              setIsOpenMenu(!isOpenMenu)
+                            }
+                          }
+                        >
                           {category.name}
                         </StyledMenuItem>
                       ))
@@ -169,7 +157,7 @@ const Header = props => {
               </Collapse>
 
               <MenuListItem link href='/'>
-                <Badge badgeContent={4} color="secondary" className={classes.cartBadge}>
+                <Badge badgeContent={props.totalItemQty} color="secondary" className={classes.cartBadge}>
                   <ShoppingCartOutlinedIcon />
                 </Badge>
                 Cart

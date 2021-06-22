@@ -1,14 +1,22 @@
 import { Container, Typography, Box, Button, makeStyles, Grid, Card, CardMedia, CardContent } from '@material-ui/core'
 import Link from 'next/link'
-import { useEffect } from 'react'
+import { useContext, useEffect } from 'react'
 import { axiosInstance, whoami } from '../config/axios'
+import AppContext from '../contexts/AppContext'
+import { useCookies } from 'react-cookie'
 
-export default function Home({products}) {
+export default function Home({products, totalItemQty}) {
   const classes = useStyles()
+  const {setTotalItemQty} = useContext(AppContext)
+  const [cookies, setCookie] = useCookies(['csrftoken'])
 
   useEffect(() => {
     whoami()
   }, [])
+
+  useEffect(() => {
+    setTotalItemQty(totalItemQty)
+  }, [totalItemQty])
 
   return (
     <>
@@ -89,11 +97,13 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export async function getStaticProps(context) {
-  const products = await axiosInstance.get('http://localhost:8001/api/products/')
+  const products = await axiosInstance.get('api/products/')
+  const totalItemQty = await axiosInstance.get('api/cart')
 
   return {
     props: {
       products: products.data,
+      totalItemQty: totalItemQty.data.total_item_qty,
     }
   }
 }
