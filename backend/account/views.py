@@ -20,7 +20,7 @@ def get_csrf(request):
 
 @require_POST
 def login_view(request):
-    # print(request.headers['X-CsrfToken'])
+    print(request.headers['X-CsrfToken'])
     data = json.loads(request.body)
     username = data.get('username')
     password = data.get('password')

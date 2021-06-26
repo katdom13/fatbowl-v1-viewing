@@ -5,8 +5,6 @@ import {
   Paper,
   makeStyles,
   Typography,
-  Card,
-  CardMedia,
   TableContainer,
   TableBody,
   TableRow,
@@ -27,6 +25,7 @@ import Head from 'next/head'
 import { axiosInstance, whoami } from "../../config/axios"
 import { useCookies } from 'react-cookie'
 import AppContext from "../../contexts/AppContext"
+import Image from 'next/image'
 
 const Product = ({product}) => {
   const classes = useStyles()
@@ -74,13 +73,14 @@ const Product = ({product}) => {
         <Box component='main' pt={5}>
           <Grid container spacing={2}>
             <Grid item xs={12} md={5}>
-              <Card>
-                <CardMedia
-                  className={classes.cardMedia}
-                  image={product.product_image[0].image}
+              <Box display='flex' justifyContent='center'>
+                <Image
+                  src={product.product_image[0].image}
                   alt={product.product_image[0].alt_text}
+                  width={400}
+                  height={400}
                 />
-              </Card>
+              </Box>
             </Grid>
             <Grid item xs={12} md={7}>
               <Box my={1}>
@@ -113,7 +113,10 @@ const Product = ({product}) => {
                             root: classes.label
                           }}>Qty</InputLabel>
                           <OutlinedInput
-                            className={classes.qty}
+                            classes={{
+                              root: classes.qty,
+                              input: classes.qtyInput,
+                            }}
                             id='qty'
                             type='number'
                             value={qty}
@@ -169,15 +172,15 @@ const useStyles = makeStyles((theme) => ({
   },
   formControl: {
     maxWidth: 200,
-    [theme.breakpoints.up('md')]: {
-      margin: theme.spacing(1),
-    }
   },
   label: {
-    margin: theme.spacing(1, 0, 0, 2)
+    margin: theme.spacing(0.5, 0, 0, 1)
   },
   qty: {
-    paddingTop: theme.spacing(2),
+    padding: theme.spacing(1, 0.5, 0, 0.5),
+  },
+  qtyInput: {
+    padding: theme.spacing(2, 0, 2, 0),
   },
   select: {
     padding: theme.spacing(1),

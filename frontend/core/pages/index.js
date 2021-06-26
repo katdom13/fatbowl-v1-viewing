@@ -4,19 +4,15 @@ import { useContext, useEffect } from 'react'
 import { axiosInstance, whoami } from '../config/axios'
 import AppContext from '../contexts/AppContext'
 import { useCookies } from 'react-cookie'
+import ProductGrid from '../components/productGrid'
 
 export default function Home({products, totalItemQty}) {
   const classes = useStyles()
-  const {setTotalItemQty} = useContext(AppContext)
   const [cookies, setCookie] = useCookies(['csrftoken'])
 
   useEffect(() => {
     whoami()
   }, [])
-
-  useEffect(() => {
-    setTotalItemQty(totalItemQty)
-  }, [totalItemQty])
 
   return (
     <>
@@ -37,48 +33,13 @@ export default function Home({products, totalItemQty}) {
         </Grid>
       </Container>
       <Box component='main'>
-        <Container maxWidth="lg" className={classes.cardGrid}>
-          <Box component='h5' fontSize={22}>
-            {`All (${products.length})`}
-          </Box>
-          <Grid container spacing={2}>
-            {
-              products && products.map(product => (
-                <Link key={product.id} href={`/product/${encodeURIComponent(product.slug)}`}>
-                    <Grid item xs={6} sm={4} md={3}>
-                      <Card elevation={1}>
-                        <CardMedia
-                          className={classes.cardMedia}
-                          image={product.product_image[0].image}
-                          alt={product.product_image[0].alt_text}
-                        />
-                        <CardContent>
-                          <Typography gutterBottom component="p">
-                            { product.title }
-                          </Typography>
-                          <Box component="p" fontSize={16} fontWeight={900}>
-                            ₱{ product.regular_price }
-                          </Box>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                </Link>
-              ))
-            }
-          </Grid>
-        </Container>
+        <ProductGrid category={`All`} products={products} />
       </Box>
     </>
   )
 }
 
 const useStyles = makeStyles((theme) => ({
-  cardGrid: {
-    paddingBottom: theme.spacing(8),
-  },
-  cardMedia: {
-    height: theme.spacing(40),
-  },
   container: {
     textAlign: 'center',
     paddingTop: theme.spacing(4),
@@ -93,17 +54,14 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: '100',
     color: theme.palette.grey[700],
     marginBottom: theme.spacing(2)
-  }
+  },
 }))
 
 export async function getStaticProps(context) {
   const products = await axiosInstance.get('api/products/')
-  const totalItemQty = await axiosInstance.get('api/cart')
-
   return {
     props: {
       products: products.data,
-      totalItemQty: totalItemQty.data.total_item_qty,
     }
   }
 }

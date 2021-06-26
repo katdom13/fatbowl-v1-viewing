@@ -16,6 +16,7 @@ import { Link as ALink } from '@material-ui/core'
 import Router from 'next/router'
 import axios from 'axios'
 import { loginUser } from '../config/axios'
+import Head from 'next/head'
 
 const Login = () => {
 
@@ -59,76 +60,81 @@ const Login = () => {
   }
 
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Box component='p'>
-          {error}
-        </Box>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
-        <form className={classes.form} onSubmit={handleSubmit} noValidate>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="username"
-            label="Username"
-            name="username"
-            autoComplete="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            autoFocus
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="password"
-            label="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-          />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
+    <>
+      <Head>
+        <title>Login</title>
+      </Head>
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <div className={classes.paper}>
+          <Box component='p'>
+            {error}
+          </Box>
+          <Avatar className={classes.avatar}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
             Sign in
-          </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link href=".">
-                <ALink variant="body2">
-                  Forgot password?
-                </ALink>
-              </Link>
+          </Typography>
+          <form className={classes.form} onSubmit={handleSubmit} noValidate>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="username"
+              label="Username"
+              name="username"
+              autoComplete="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              autoFocus
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="password"
+              label="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+            />
+            <FormControlLabel
+              control={<Checkbox value="remember" color="primary" />}
+              label="Remember me"
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+            >
+              Sign in
+            </Button>
+            <Grid container>
+              <Grid item xs>
+                <Link href=".">
+                  <ALink variant="body2">
+                    Forgot password?
+                  </ALink>
+                </Link>
+              </Grid>
+              <Grid item>
+                <Link href=".">
+                  <ALink variant="body2">
+                    {"Don't have an account? Sign Up"}
+                  </ALink>
+                </Link>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Link href=".">
-                <ALink variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </ALink>
-              </Link>
-            </Grid>
-          </Grid>
-        </form>
-      </div>
-    </Container>
+          </form>
+        </div>
+      </Container>
+    </>
   )
 }
 

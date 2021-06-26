@@ -80,14 +80,14 @@ const Header = props => {
 
           <Hidden smDown>
             {/* Add to cart button */}
-            <Link href='/' passHref>
+            <Link href='/cart/' passHref>
               <Button variant="outlined" color='inherit' className={classes.cartButton}>
-                  <a className={classes.link}>
-                    <Badge badgeContent={props.totalItemQty} color="secondary" className={classes.cartBadge}>
-                      <ShoppingCartOutlinedIcon />
-                    </Badge>
-                    Cart
-                  </a>
+                <a className={classes.link}>
+                  <Badge badgeContent={props.totalItemQty} color="secondary" className={classes.cartBadge}>
+                    <ShoppingCartOutlinedIcon />
+                  </Badge>
+                  Cart
+                </a>
               </Button>
             </Link>
 
@@ -112,21 +112,21 @@ const Header = props => {
         <Hidden mdUp>
           <AppBar position='static' elevation={0} display='flex'>
             <List className={classes.menuList}>
-              <MenuListItem link href='/'>
+              {/* <MenuListItem link href='/'>
                 Home
               </MenuListItem>
               <StyledDivider variant='middle' />
 
               <MenuListItem link href='/'>
                 Link
-              </MenuListItem>
+              </MenuListItem> */}
               <StyledDivider variant='middle' />
 
               <MenuListItem
                 onClick={ () => setIsCategoryOpen(!isCategoryOpen) }
                 ref={categoryRef}
               >
-                  Dropdown
+                  Categories
               </MenuListItem>
               <StyledDivider variant='middle' />
 
@@ -156,7 +156,11 @@ const Header = props => {
                 </CategoryMenuPaper>
               </Collapse>
 
-              <MenuListItem link href='/'>
+              <MenuListItem link href='/cart/' onClick={() => {
+                  setIsCategoryOpen(!isCategoryOpen)
+                  setIsOpenMenu(!isOpenMenu)
+                }}
+              >
                 <Badge badgeContent={props.totalItemQty} color="secondary" className={classes.cartBadge}>
                   <ShoppingCartOutlinedIcon />
                 </Badge>

@@ -1,5 +1,6 @@
 from rest_framework import generics, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from .models import Category, Product
@@ -13,6 +14,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.products.all()
     serializer_class = ProductSerializer
     lookup_field = 'slug'
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     # Custom methods
     @action(detail=False, methods=['get'], url_path=r'category/(?P<slug>\w+)')
@@ -29,3 +31,4 @@ class ProductViewSet(viewsets.ModelViewSet):
 class CategoryListView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]

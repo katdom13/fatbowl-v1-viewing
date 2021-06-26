@@ -9,18 +9,19 @@ import {
   CardContent,
 } from "@material-ui/core"
 import Link from 'next/link'
+import PageTitle from "./pageTitle"
 
 const ProductGrid = ({category, products}) => {
   return (
-    <CardGrid>
-      <Box component='h5' fontSize={22}>
+    <CardGrid maxWidth='lg'>
+      <PageTitle component='h1' variant='h5'>
         {`${category} (${products.length})`}
-      </Box>
+      </PageTitle>
       <Grid container spacing={2}>
         {
           products && products.map(product => (
             <Link key={product.id} href={`/product/${encodeURIComponent(product.slug)}`}>
-                <Grid item xs={6} sm={4} md={3}>
+                <Grid item xs={12} sm={6} md={3}>
                   <Card elevation={1}>
                     <ProductImage
                       image={product.product_image[0].image}
