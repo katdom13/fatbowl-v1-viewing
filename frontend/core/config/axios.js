@@ -23,6 +23,12 @@ const loginUser = (username, password, csrf) => {
     .catch(error => Promise.reject(error))
 }
 
+const logoutUser = () => {
+  return axiosInstance.get('account/logout/')
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
 const axiosInstance = axios.create({
   baseURL: baseUrl,
   timeout: 5000,
@@ -38,4 +44,4 @@ const whoami = async () => {
     .catch(err => console.error('[WHOAMI ERROR]', err))
 }
 
-export { tokenRequest, loginUser, axiosInstance, whoami, }
+export { tokenRequest, loginUser, logoutUser, axiosInstance, whoami, }

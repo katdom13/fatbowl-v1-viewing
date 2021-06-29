@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import Avatar from '@material-ui/core/Avatar'
 import Button from '@material-ui/core/Button'
 import CssBaseline from '@material-ui/core/CssBaseline'
@@ -15,8 +15,9 @@ import Link from 'next/link'
 import { Link as ALink } from '@material-ui/core'
 import Router from 'next/router'
 import axios from 'axios'
-import { loginUser } from '../config/axios'
+import { loginUser, axiosInstance } from '../config/axios'
 import Head from 'next/head'
+import AppContext from "../contexts/AppContext"
 
 const Login = () => {
 
@@ -26,6 +27,7 @@ const Login = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
+  const {totalItemQty, setTotalItemQty} = useContext(AppContext)
 
   useEffect(() => {
     // Request a CSRF Token from backend
@@ -49,7 +51,15 @@ const Login = () => {
 
     async function login() {
       await loginUser(username, password, csrfToken)
-        .then(response => Router.push('/'))
+        .then(response => {
+          async function getTotalItemQty() {
+            await axiosInstance.get('api/cart/')
+              .then(response => setTotalItemQty(response.data.total_item_qty))
+              .catch(err => console.error(err))
+          }
+      
+          getTotalItemQty()
+        })
         .catch(err => {
           console.error('[LOGIN ERROR]', err.response)
           setError(err.response.data.info)

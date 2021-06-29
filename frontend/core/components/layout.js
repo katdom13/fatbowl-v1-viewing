@@ -3,6 +3,7 @@ import Header from "./header"
 import Head from 'next/head'
 import { axiosInstance } from "../config/axios"
 import AppContext from "../contexts/AppContext"
+import Footer from "./footer"
 
 const DefaultLayout = props => {
   const [categories, setCategories] = useState(null)
@@ -35,6 +36,7 @@ const DefaultLayout = props => {
       </Head>
       <Header categories={categories} totalItemQty={totalItemQty} />
       {props.children}
+      <Footer />
     </>
   )
 }

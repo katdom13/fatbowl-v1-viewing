@@ -21,12 +21,18 @@ import {
   lighten,
   Button,
   Badge,
+  Avatar,
 } from "@material-ui/core"
-import { useRef, useState } from "react"
+import { useContext, useState } from "react"
 import SearchIcon from '@material-ui/icons/Search'
 import MenuIcon from '@material-ui/icons/Menu'
 import ShoppingCartOutlinedIcon from '@material-ui/icons/ShoppingCartOutlined'
+import MeetingRoomOutlinedIcon from '@material-ui/icons/MeetingRoomOutlined'
+import PermIdentityOutlinedIcon from '@material-ui/icons/PermIdentityOutlined'
 import Link from 'next/link'
+import Router from 'next/router'
+import { logoutUser } from '../config/axios'
+import AppContext from "../contexts/AppContext"
 
 const Header = props => {
   const classes = useStyles()
@@ -35,147 +41,197 @@ const Header = props => {
   const [isOpenMenu, setIsOpenMenu] = useState(false)
 
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
-  const categoryRef = useRef(null)
+
+  const { setTotalItemQty } = useContext(AppContext)
 
   const handleCloseCategory = () => {
     setCategoryAnchor(null)
   }
 
+  const handleLogout = () => {
+    async function logout() {
+      await logoutUser()
+        .then(response => {
+          console.log(response)
+          setTotalItemQty(0)
+        })
+        .catch(err => console.error('[LOGOUT ERROR]', err.response.data))
+    }
+    logout()
+    Router.push('/login')
+  }
+
   return (
-    <HeaderContainer>
-      <AppBar position='static' elevation={0}>
-        <Toolbar>
-          <BrandWrapper component='div'>
-            <Brand variant='h6' noWrap>
+    <Box component='header' paddingBottom={2}>
+      <HeaderContainer maxWidth='lg'>
+        <AppBar position='static' elevation={1} color='default' >
+          <Toolbar>
+            <BrandWrapper component='div'>
               <Link href='/'>
                 <a className={classes.link}>
-                  Fatbowl
+                  <Box display='flex' alignItems='center'>
+                    <Avatar src='/logo.png' className={classes.logo} />
+                    <Typography variant='h6' noWrap className={classes.brand}>
+                      Fatbowl
+                    </Typography>
+                  </Box>
                 </a>
               </Link>
-            </Brand>
 
-            <Hidden smDown>
-              <List className={classes.menuList}>
-                <MenuListItem onClick={ event => setCategoryAnchor(event.currentTarget)}>
-                  Categories
-                </MenuListItem>
+              <Hidden smDown>
+                <List className={classes.menuList}>
+                  <MenuListItem onClick={ event => setCategoryAnchor(event.currentTarget)}>
+                    Shop
+                  </MenuListItem>
 
-                <StyledMenu
-                  anchorEl={categoryAnchor}
-                  keepMounted
-                  open={Boolean(categoryAnchor)}
-                  onClose={handleCloseCategory}
-                >
-                  {
-                    props.categories && props.categories.map(category => (
-                      <StyledMenuItem link key={category.slug} href={`/category/${encodeURIComponent(category.slug)}`} onClick={handleCloseCategory}>
-                        {category.name}
-                      </StyledMenuItem>
-                    ))
-                  }
-                </StyledMenu>
-              </List>
-            </Hidden>
-          </BrandWrapper>
-
-          <Hidden smDown>
-            {/* Add to cart button */}
-            <Link href='/cart/' passHref>
-              <Button variant="outlined" color='inherit' className={classes.cartButton}>
-                <a className={classes.link}>
-                  <Badge badgeContent={props.totalItemQty} color="secondary" className={classes.cartBadge}>
-                    <ShoppingCartOutlinedIcon />
-                  </Badge>
-                  Cart
-                </a>
-              </Button>
-            </Link>
-
-            <Searchbar />
-          </Hidden>
-
-          <Hidden mdUp>
-            <MenuIconButton
-              edge='start'
-              color='inherit'
-              aria-label='open drawer'
-              disableRipple
-              onClick={() => setIsOpenMenu(!isOpenMenu)}
-            >
-              <MenuIcon />
-            </MenuIconButton>
-          </Hidden>
-        </Toolbar>
-      </AppBar>
-
-      <Collapse in={isOpenMenu} timeout='auto' unmountOnExit>
-        <Hidden mdUp>
-          <AppBar position='static' elevation={0} display='flex'>
-            <List className={classes.menuList}>
-              {/* <MenuListItem link href='/'>
-                Home
-              </MenuListItem>
-              <StyledDivider variant='middle' />
-
-              <MenuListItem link href='/'>
-                Link
-              </MenuListItem> */}
-              <StyledDivider variant='middle' />
-
-              <MenuListItem
-                onClick={ () => setIsCategoryOpen(!isCategoryOpen) }
-                ref={categoryRef}
-              >
-                  Categories
-              </MenuListItem>
-              <StyledDivider variant='middle' />
-
-              <Collapse in={isCategoryOpen} timeout='auto' unmountOnExit>
-                <CategoryMenuPaper>
-                  <MenuList
-                    autoFocusItem={isCategoryOpen}
-                    id='menu-list-grow'
-                    className={classes.menuList}
+                  <StyledMenu
+                    anchorEl={categoryAnchor}
+                    keepMounted
+                    open={Boolean(categoryAnchor)}
+                    onClose={handleCloseCategory}
                   >
                     {
                       props.categories && props.categories.map(category => (
-                        <StyledMenuItem
-                          link
-                          href={`/category/${encodeURIComponent(category.slug)}`} key={category.slug}
-                          onClick={() => {
-                              setIsCategoryOpen(!isCategoryOpen)
-                              setIsOpenMenu(!isOpenMenu)
-                            }
-                          }
-                        >
+                        <StyledMenuItem link key={category.slug} href={`/category/${encodeURIComponent(category.slug)}`} onClick={handleCloseCategory}>
                           {category.name}
                         </StyledMenuItem>
                       ))
                     }
-                  </MenuList>
-                </CategoryMenuPaper>
-              </Collapse>
+                  </StyledMenu>
+                </List>
+              </Hidden>
+            </BrandWrapper>
 
-              <MenuListItem link href='/cart/' onClick={() => {
-                  setIsCategoryOpen(!isCategoryOpen)
-                  setIsOpenMenu(!isOpenMenu)
-                }}
+            <Hidden smDown>
+              <Box>
+                <Button variant='outlined' color='inherit' className={classes.button} disableRipple onClick={handleLogout}>
+                  <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
+                    <MeetingRoomOutlinedIcon fontSize='default' />
+                    Logout
+                  </Box>
+                </Button>
+                <Button variant='outlined' color='inherit' className={classes.button} disableRipple>
+                  <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
+                    <PermIdentityOutlinedIcon fontSize='default' />
+                    Account
+                  </Box>
+                </Button>
+                <Button variant='outlined' color='inherit' className={classes.button} disableRipple>
+                  <Link href='/cart/' passHref>
+                    <a className={classes.link}>
+                      <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
+                        <Badge badgeContent={props.totalItemQty} color="secondary" className={classes.cartBadge}>
+                          <ShoppingCartOutlinedIcon fontSize='default' />
+                        </Badge>
+                        Cart
+                      </Box>
+                    </a>
+                  </Link>
+                </Button>
+              </Box>
+              <Searchbar />
+            </Hidden>
+
+            <Hidden mdUp>
+              <MenuIconButton
+                edge='start'
+                color='inherit'
+                aria-label='open drawer'
+                disableRipple
+                onClick={() => setIsOpenMenu(!isOpenMenu)}
               >
-                <Badge badgeContent={props.totalItemQty} color="secondary" className={classes.cartBadge}>
-                  <ShoppingCartOutlinedIcon />
-                </Badge>
-                Cart
-              </MenuListItem>
+                <MenuIcon />
+              </MenuIconButton>
+            </Hidden>
+          </Toolbar>
+        </AppBar>
 
-              <MenuListItem>
-                <Searchbar />
-              </MenuListItem>
+        <Collapse in={isOpenMenu} timeout='auto' unmountOnExit>
+          <Hidden mdUp>
+            <AppBar position='static' elevation={1} display='flex' color='default'>
+              <List className={classes.menuList}>
+                <StyledDivider variant='middle' />
 
-            </List>
-          </AppBar>
-        </Hidden>
-      </Collapse>
-    </HeaderContainer>
+                <MenuListItem
+                  onClick={ () => setIsCategoryOpen(!isCategoryOpen) }
+                >
+                    Shop
+                </MenuListItem>
+                <StyledDivider variant='middle' />
+
+                <Collapse in={isCategoryOpen} timeout='auto' unmountOnExit>
+                  <CategoryMenuPaper>
+                    <MenuList
+                      autoFocusItem={isCategoryOpen}
+                      id='menu-list-grow'
+                      className={classes.menuList}
+                    >
+                      {
+                        props.categories && props.categories.map(category => (
+                          <StyledMenuItem
+                            link
+                            href={`/category/${encodeURIComponent(category.slug)}`} key={category.slug}
+                            onClick={() => {
+                                setIsCategoryOpen(!isCategoryOpen)
+                                setIsOpenMenu(!isOpenMenu)
+                              }
+                            }
+                          >
+                            {category.name}
+                          </StyledMenuItem>
+                        ))
+                      }
+                    </MenuList>
+                  </CategoryMenuPaper>
+                </Collapse>
+                <StyledDivider variant='middle' />
+
+                <MenuListItem link href='/' onClick={() => {
+                    setIsCategoryOpen(false)
+                    setIsOpenMenu(!isOpenMenu)
+                    handleLogout()
+                  }}
+                >
+                  <MeetingRoomOutlinedIcon />
+                  <Box marginLeft={2}>
+                    Logout
+                  </Box>
+                </MenuListItem>
+                <StyledDivider variant='middle' />
+
+                <MenuListItem link href='/' onClick={() => {
+                    setIsCategoryOpen(false)
+                    setIsOpenMenu(!isOpenMenu)
+                  }}
+                >
+                  <PermIdentityOutlinedIcon />
+                  <Box marginLeft={2}>
+                    Account
+                  </Box>
+                </MenuListItem>
+                <StyledDivider variant='middle' />
+
+                <MenuListItem link href='/cart/' onClick={() => {
+                    setIsCategoryOpen(false)
+                    setIsOpenMenu(!isOpenMenu)
+                  }}
+                >
+                  <Badge badgeContent={props.totalItemQty} color="secondary" className={classes.cartBadge}>
+                    <ShoppingCartOutlinedIcon />
+                  </Badge>
+                  Cart
+                </MenuListItem>
+
+                <MenuListItem>
+                  <Searchbar />
+                </MenuListItem>
+
+              </List>
+            </AppBar>
+          </Hidden>
+        </Collapse>
+      </HeaderContainer>
+    </Box>
   )
 }
 
@@ -188,17 +244,11 @@ const HeaderContainer = styled(Box)((props) => ({
 
 const BrandWrapper = styled(Box)((props) => ({
   flexGrow: 1,
-  [props.theme.breakpoints.up('md')]: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    height: '100%',
-  },
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'stretch',
+  height: '100%',
 }))
-
-const Brand = styled(Typography)({
-  alignSelf: 'center'
-})
 
 const MenuListItem = props => {
   const classes = useStyles()
@@ -307,7 +357,9 @@ const MenuIconButton = withStyles((theme) => ({
 ))
 
 const StyledDivider = withStyles((theme) => ({
-  background: lighten(theme.palette.common.black, 0.70)
+  root: {
+    background: lighten(theme.palette.common.black, 0.9),
+  }
 }))((props) => (<Divider {...props} />))
 
 const CategoryMenuPaper = styled(Paper)((props) => ({
@@ -321,8 +373,34 @@ const CategoryMenuPaper = styled(Paper)((props) => ({
 }))
 
 const useStyles = makeStyles((theme) => ({
+  brand: {
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+  },
+  button: {
+    border: 'none',
+    textTransform: 'none',
+    background: 'none',
+    '&:hover': {
+      background: 'none',
+      color: theme.palette.secondary.main,
+      transition: 'color 0.2s',
+    },
+    '&:focus': {
+      background: 'none',
+      color: theme.palette.secondary.main,
+      transition: 'color 0.2s',
+    },
+    '&:active': {
+      background: 'none',
+      color: theme.palette.secondary.main,
+      transition: 'color 0.2s',
+    }
+  },
   cartBadge: {
-    marginRight: theme.spacing(2),
+    [theme.breakpoints.down('sm')]: {
+      marginRight: theme.spacing(2),
+    }
   },
   cartButton: {
     padding: theme.spacing(1.5, 2, 1.5, 2),
@@ -330,6 +408,9 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 900,
   },
   inputInput: {
+    border: `1px solid black`,
+    background: fade(theme.palette.common.black, 0.08),
+    borderRadius: theme.shape.borderRadius,
     padding: theme.spacing(1, 1, 1, 0),
 
     // vertical padding + font size from searchIcon
@@ -348,13 +429,12 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
   },
   link: {
+    [theme.breakpoints.down('sm')]: {
+      display: 'flex',
+      alignItems: 'center',
+    },
     color: 'inherit',
     textDecoration: 'none',
-    display: 'flex',
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    cursor: 'pointer',
     '&:hover': {
       backgroundColor: 'none',
       '-webkit-tap-highlight-color': 'rgba(0,0,0,0)',
@@ -366,22 +446,24 @@ const useStyles = makeStyles((theme) => ({
       '-webkit-tap-highlight-color': 'transparent',
     }
   },
+  logo: {
+    width: theme.spacing(8),
+    height: theme.spacing(8),
+    padding: theme.spacing(1),
+  },
   menuList: {
     padding: 0,
     [theme.breakpoints.up('md')]: {
       display: 'flex',
       flexDirection: 'row',
-      marginLeft: theme.spacing(2),
     },
   },
   menuListItem: {
-    padding: theme.spacing(2, 3, 2, 3),
-    [theme.breakpoints.down('xs')]: {
+
+    [theme.breakpoints.down('sm')]: {
       padding: theme.spacing(2, 2, 2, 2)
     },
     [theme.breakpoints.up('md')]: {
-      paddingLeft: theme.spacing(3),
-      paddingRight: theme.spacing(3),
       cursor: 'pointer',
       '&::after': {
         backgroundColor: theme.palette.common.white,
@@ -390,7 +472,6 @@ const useStyles = makeStyles((theme) => ({
         height: '5px',
         left: 0,
         bottom: 0,
-        // transition: 'width 0.35s ease 0s',
         position: 'absolute',
       },
       '&:hover::after': {

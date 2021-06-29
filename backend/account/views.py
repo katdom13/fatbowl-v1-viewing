@@ -1,6 +1,6 @@
 import json
 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
@@ -44,6 +44,11 @@ def login_view(request):
 
     login(request, user)
     return JsonResponse({'info': 'User logged in successfully'})
+
+
+def logout_view(request):
+    logout(request)
+    return JsonResponse({'info': 'User logged out'})
 
 
 class WhoAmIView(APIView):

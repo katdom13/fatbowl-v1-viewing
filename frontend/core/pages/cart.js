@@ -12,6 +12,9 @@ import {
   InputAdornment,
   IconButton,
   makeStyles,
+  Menu,
+  MenuItem,
+  fade,
 } from "@material-ui/core"
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
@@ -27,9 +30,13 @@ import PageTitle from "../components/pageTitle"
 import { Hidden } from "@material-ui/core"
 import AppContext from "../contexts/AppContext"
 import { Typography } from "@material-ui/core"
+import ExpandLessIcon from '@material-ui/icons/ExpandLess'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 
 const Cart = () => {
   const classes = useStyles()
+  const [anchor, setAnchor] = useState(null)
+  
   const [cookies, setCookie] = useCookies(['csrftoken'])
 
   const [items, setItems] = useState([])
@@ -61,6 +68,10 @@ const Cart = () => {
       setQtys(dict)
     }
   }, [items])
+
+  const handleCloseAnchor = () => {
+    setAnchor(null)
+  }
 
   const handleDelete = id => {
     async function deleteItem(id) {
@@ -116,155 +127,250 @@ const Cart = () => {
   }
 
   return (
-    <>
-      <Head>
-        <title>Cart Summary</title>
-      </Head>
-      <Box paddingTop={5}>
-        <Container maxWidth='lg'>
-          <PageTitle component='h1' variant='h5'>
-            Your shopping cart
-          </PageTitle>
-          {
-            items && items.map(item => (
-              <Paper variant='outlined' square key={item.id} className={classes.card}>
-                <Grid container>
-                  <Grid item xs={4} md={5} lg={4} className={classes.img}>
-                    <Image
-                      src={item.product_detail.product_image[0].image}
-                      alt={item.product_detail.product_image[0].alt_text}
-                      width={300}
-                      height={300}
-                    />
-                  </Grid>
-                  <Grid item xs={8} md={7} lg={8} className={classes.detail}>
-                    <Box
-                      display='flex'
-                      flexDirection='row'
-                      alignItems='center'
-                      justifyContent='space-between'
-                      className={classes.titleBox}
-                    >
-                      <Link href={`/product/${encodeURIComponent(item.product_detail.slug)}`} passHref>
-                        <ALink component='h1' variant='h5' className={classes.title}>
-                          {item.product_detail.title}
-                        </ALink>
-                      </Link>
-                    </Box>
-                    <Paper variant='outlined' square>
-                      <Box className={classes.description}>
-                        {/* <Hidden xsDown> */}
-                          <Box marginBottom={2}>
-                            <Grid container>
-                              <Grid item sm={8}>
-                                {item.product_detail.description}
-                              </Grid>
-                              <Grid item xs={12} sm={4} className={classes.price}>
-                                ₱{item.product_detail.regular_price}
-                              </Grid>
-                            </Grid>
-                          </Box>
-                          <Divider/>
-                        {/* </Hidden> */}
-                        <Box className={classes.buttonGroup}>
-                          <FormControl className={classes.formControl}>
-                            <InputLabel htmlFor='qty' classes={{
-                              root: classes.label
-                            }}>Qty</InputLabel>
-                            <OutlinedInput
-                              classes={{
-                                root: classes.qty,
-                                input: classes.qtyInput,
-                              }}
-                              id='qty'
-                              type='number'
-                              value={qtys[item.id]}
-                              onChange={e => {
-                                e.target.value <= 0 ? setQtys({...qtys, [item.id]: 0}) : setQtys({...qtys, [item.id]: e.target.value})
-                              }}
-                              startAdornment={
-                                <InputAdornment position='start'>
-                                  <IconButton
-                                    onClick={() => qtys[item.id] <= 0 ? setQtys({...qtys, [item.id]: 0}) : setQtys({...qtys, [item.id]: qtys[item.id] - 1})}
-                                    size='small'
-                                    color={qtys[item.id] <= 0 ? 'default' : 'primary'}
-                                  >
-                                    <RemoveCircleIcon />
-                                  </IconButton>
-                                </InputAdornment>
-                              }
-                              endAdornment={
-                                <InputAdornment position='end'>
-                                  <IconButton
-                                    onClick={() => setQtys({...qtys, [item.id]: qtys[item.id] + 1})}
-                                    size='small'
-                                    color='primary'
-                                  >
-                                    <AddCircleIcon />
-                                  </IconButton>
-                                </InputAdornment>
-                              }
-                            />
-                          </FormControl>
-                          
-                          <Box display='flex'>
-                            <Hidden xsDown>
-                              <Button
-                                variant='outlined'
-                                size='small'
-                                color='primary'
-                                startIcon={<CreateIcon />}
-                                className={classes.button}
-                                onClick={() => handleUpdate(item.id)}
-                              >
-                                Update
-                              </Button>
-
-                              <Button
-                                variant='outlined'
-                                size='small'
-                                color='default'
-                                startIcon={<ClearIcon />}
-                                className={classes.button}
-                                onClick={() => handleDelete(item.id)}
-                              >
-                                Delete
-                              </Button>
-                            </Hidden>
-                            <Hidden smUp>
-                              <Button variant='outlined' size='small' color='primary' className={classes.button} onClick={() => handleUpdate(item.id)}>
-                                <CreateIcon />
-                              </Button>
-
-                              <Button variant='outlined' size='small' color='default' className={classes.button} onClick={() => handleDelete(item.id)}>
-                                <ClearIcon />
-                              </Button>
-                            </Hidden>
-                          </Box>          
-                        </Box>
-                      </Box>
-                    </Paper>
-                  </Grid>
-                </Grid>
-              </Paper>
-            ))
-          }
-          <Grid container>
-            <Grid item xs={12}>
-              <Box paddingY={2}>
-                <Typography component='h6' className={classes.price}>
-                  Sub total: ₱{price}
+    <Box paddingTop={6}>
+      <Container maxWidth='md'>
+        <Grid container>
+          <Grid item xs={12}>
+            <Typography component='h1' variant='h4' gutterBottom>
+              Your basket
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography component='p' gutterBottom>
+              Manage your <b>items</b> in your basket
+            </Typography>
+          </Grid>
+        </Grid>
+        <Divider className={classes.divider} />
+      </Container>
+      <Container maxWidth='md'>
+        <Grid container>
+          <Grid item xs={12} className={classes.priceDetail}>
+            <Box display='flex' alignItems='center'>
+              <Box paddingRight={2}>
+                <Typography component='p'>
+                  Order
                 </Typography>
               </Box>
-            </Grid>
+              <Button className={classes.shippingButton} disableRipple onClick={event => setAnchor(event.currentTarget)}>
+                <Typography>
+                  Shipping options
+                </Typography>
+                {
+                  Boolean(anchor) ? <ExpandLessIcon color='action' /> : <ExpandMoreIcon color='action' />
+                }
+              </Button>
+
+              <Menu
+                getContentAnchorEl={null}
+                anchorEl={anchor}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                keepMounted
+                open={Boolean(anchor)}
+                onClose={handleCloseAnchor}
+              >
+                <MenuItem>
+                  Next day delivery
+                </MenuItem>
+                <MenuItem>
+                  Premium delivery
+                </MenuItem>
+              </Menu>
+            </Box>
+            
+            <Box className={classes.price}>
+              <Typography gutterBottom>
+                Sub total: <b>₱{price}</b>
+              </Typography>
+              <Typography gutterBottom>
+                Shipping (Next day delivery): <b>₱11.50</b>
+              </Typography>
+              <Typography component='h6' variant='h6'>
+                Total: <b>₱{(parseFloat(price) + 11.50).toFixed(2)}</b>
+              </Typography>
+            </Box>
           </Grid>
-        </Container>
-      </Box>
-    </>
+          <Grid item xs={12} md={9}>
+            {
+              items && items.map(item => (
+                <Paper variant='outlined' square key={item.id} className={classes.card}>
+                  <Grid container>
+                    <Grid item xs={4} md={5} lg={4} className={classes.img}>
+                      <Image
+                        src={item.product_detail.product_image[0].image}
+                        alt={item.product_detail.product_image[0].alt_text}
+                        width={300}
+                        height={300}
+                      />
+                    </Grid>
+                    <Grid item xs={8} md={7} lg={8} className={classes.detail}>
+                      <Box
+                        display='flex'
+                        flexDirection='row'
+                        alignItems='center'
+                        justifyContent='space-between'
+                        className={classes.titleBox}
+                      >
+                        <Link href={`/product/${encodeURIComponent(item.product_detail.slug)}`} passHref>
+                          <ALink component='h1' variant='h5' className={classes.title}>
+                            {item.product_detail.title}
+                          </ALink>
+                        </Link>
+                      </Box>
+                      <Paper variant='outlined' square>
+                        <Box className={classes.description}>
+                          {/* <Hidden xsDown> */}
+                            <Box marginBottom={2}>
+                              <Grid container>
+                                <Grid item sm={8}>
+                                  {item.product_detail.description}
+                                </Grid>
+                                <Grid item xs={12} sm={4} className={classes.itemPrice}>
+                                  ₱{item.product_detail.regular_price}
+                                </Grid>
+                              </Grid>
+                            </Box>
+                            <Divider/>
+                          {/* </Hidden> */}
+                          <Box className={classes.buttonGroup}>
+                            <FormControl className={classes.formControl}>
+                              <InputLabel htmlFor='qty' classes={{
+                                root: classes.label
+                              }}>Qty</InputLabel>
+                              <OutlinedInput
+                                classes={{
+                                  root: classes.qty,
+                                  input: classes.qtyInput,
+                                }}
+                                id='qty'
+                                type='number'
+                                value={qtys[item.id]}
+                                onChange={e => {
+                                  e.target.value <= 0 ? setQtys({...qtys, [item.id]: 0}) : setQtys({...qtys, [item.id]: e.target.value})
+                                }}
+                                startAdornment={
+                                  <InputAdornment position='start'>
+                                    <IconButton
+                                      onClick={() => qtys[item.id] <= 0 ? setQtys({...qtys, [item.id]: 0}) : setQtys({...qtys, [item.id]: qtys[item.id] - 1})}
+                                      size='small'
+                                      color={qtys[item.id] <= 0 ? 'default' : 'primary'}
+                                    >
+                                      <RemoveCircleIcon />
+                                    </IconButton>
+                                  </InputAdornment>
+                                }
+                                endAdornment={
+                                  <InputAdornment position='end'>
+                                    <IconButton
+                                      onClick={() => setQtys({...qtys, [item.id]: qtys[item.id] + 1})}
+                                      size='small'
+                                      color='primary'
+                                    >
+                                      <AddCircleIcon />
+                                    </IconButton>
+                                  </InputAdornment>
+                                }
+                              />
+                            </FormControl>
+                            
+                            <Box display='flex'>
+                              <Hidden xsDown>
+                                <Button
+                                  variant='outlined'
+                                  size='small'
+                                  color='primary'
+                                  startIcon={<CreateIcon />}
+                                  className={classes.button}
+                                  onClick={() => handleUpdate(item.id)}
+                                >
+                                  Update
+                                </Button>
+
+                                <Button
+                                  variant='outlined'
+                                  size='small'
+                                  color='default'
+                                  startIcon={<ClearIcon />}
+                                  className={classes.button}
+                                  onClick={() => handleDelete(item.id)}
+                                >
+                                  Delete
+                                </Button>
+                              </Hidden>
+                              <Hidden smUp>
+                                <Button variant='outlined' size='small' color='primary' className={classes.button} onClick={() => handleUpdate(item.id)}>
+                                  <CreateIcon />
+                                </Button>
+
+                                <Button variant='outlined' size='small' color='default' className={classes.button} onClick={() => handleDelete(item.id)}>
+                                  <ClearIcon />
+                                </Button>
+                              </Hidden>
+                            </Box>          
+                          </Box>
+                        </Box>
+                      </Paper>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              ))
+            }
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Box marginY={2} paddingX={1}>
+              <Box marginBottom={2}>
+                <Button variant='contained' color='primary' fullWidth>
+                  Checkout
+                </Button>
+              </Box>
+              <Box marginBottom={2}>
+                <Button color='primary' fullWidth>
+                  Save for later
+                </Button>
+              </Box>
+            </Box>
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   )
 }
 
 const useStyles = makeStyles((theme) => ({
+  divider: {
+    margin: theme.spacing(2, 0, 2, 0),
+  },
+  price: {
+    textAlign: 'start',
+    padding: theme.spacing(1, 0, 1, 0),
+    [theme.breakpoints.up('md')]: {
+      textAlign: 'end',
+      padding: theme.spacing(0),
+    }
+  },
+  priceDetail: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    background: fade(theme.palette.primary.main, 0.09),
+    padding: theme.spacing(2),
+    [theme.breakpoints.down('xs')]: {
+      padding: theme.spacing(1),
+      flexDirection: 'column',
+    },
+  },
+  shippingButton: {
+    color: 'inherit',
+    textTransform: 'none',
+  },
   button: {
     margin: theme.spacing(1),
   },
@@ -286,16 +392,18 @@ const useStyles = makeStyles((theme) => ({
       padding: theme.spacing(2),
     },
   },
+
   detail: {
     padding: theme.spacing(0, 1, 0, 1),
     flexDirection: 'column',
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.up('lg')]: {
       padding: theme.spacing(0, 2, 0, 2),
     },
     [theme.breakpoints.down('xs')]: {
       marginBottom: theme.spacing(1),
     },
   },
+
   formControl: {
     maxWidth: 200,
   },
@@ -323,7 +431,7 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
-  price: {
+  itemPrice: {
     textAlign: 'end',
     fontWeight: 'bold',
     [theme.breakpoints.down('xs')]: {
@@ -350,16 +458,5 @@ const useStyles = makeStyles((theme) => ({
     }
   }
 }))
-
-// export async function getStaticProps(context) {
-//   const response = await axiosInstance.get('api/cart/')
-//   return {
-//     props: {
-//       items: response.data.items,
-//       qty: response.data.total_item_qty,
-//       price: response.data.total_item_price,
-//     }
-//   }
-// }
 
 export default Cart
