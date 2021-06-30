@@ -1,7 +1,7 @@
 import { Box, makeStyles, } from '@material-ui/core'
 import ProductGrid from '../../components/productGrid'
 import Head from 'next/head'
-import { axiosInstance } from '../../config/axios'
+import { getCategories, getProducts } from '../../config/axios'
 
 const Category = ({category, products}) => {
   return (
@@ -17,20 +17,20 @@ const Category = ({category, products}) => {
 }
 
 export async function getStaticProps(context) {
-  const results = await axiosInstance.get(`http://localhost:8001/api/products/category/${context.params.slug}/`)
+  const response = await getProducts(context.params.slug)
 
   return {
     props: {
-      category: results.data.category,
-      products: results.data.products,
+      category: response.category,
+      products: response.products,
     }
   }
 }
 
 export async function getStaticPaths() {
-  const categories = await axiosInstance.get('http://localhost:8001/api/categories/')
-
-  const paths = categories.data.map(category => ({
+  const categories = await getCategories()
+  
+  const paths = categories.map(category => ({
     params: {
       slug: category.slug
     }

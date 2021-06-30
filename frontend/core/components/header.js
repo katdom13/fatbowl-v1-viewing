@@ -42,23 +42,24 @@ const Header = props => {
 
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
 
-  const { setTotalItemQty } = useContext(AppContext)
+  const { appData, setAppData } = useContext(AppContext)
 
   const handleCloseCategory = () => {
     setCategoryAnchor(null)
   }
 
-  const handleLogout = () => {
-    async function logout() {
-      await logoutUser()
+  const handleUser = () => {
+    if (appData.loggedIn) {
+      logoutUser()
         .then(response => {
           console.log(response)
-          setTotalItemQty(0)
+          setAppData({...appData, loggedIn: false})
+          Router.push('/login')
         })
         .catch(err => console.error('[LOGOUT ERROR]', err.response.data))
+    } else {
+      Router.push('/login')
     }
-    logout()
-    Router.push('/login')
   }
 
   return (
@@ -104,10 +105,10 @@ const Header = props => {
 
             <Hidden smDown>
               <Box>
-                <Button variant='outlined' color='inherit' className={classes.button} disableRipple onClick={handleLogout}>
+                <Button variant='outlined' color='inherit' className={classes.button} disableRipple onClick={handleUser}>
                   <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
                     <MeetingRoomOutlinedIcon fontSize='default' />
-                    Logout
+                    {appData.loggedIn ? 'Logout' : 'Login'}
                   </Box>
                 </Button>
                 <Button variant='outlined' color='inherit' className={classes.button} disableRipple>
@@ -189,12 +190,12 @@ const Header = props => {
                 <MenuListItem link href='/' onClick={() => {
                     setIsCategoryOpen(false)
                     setIsOpenMenu(!isOpenMenu)
-                    handleLogout()
+                    handleUser()
                   }}
                 >
                   <MeetingRoomOutlinedIcon />
                   <Box marginLeft={2}>
-                    Logout
+                    {appData.loggedIn ? 'Logout' : 'Login'}
                   </Box>
                 </MenuListItem>
                 <StyledDivider variant='middle' />

@@ -22,7 +22,7 @@ import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 import { useState, useEffect, useContext } from "react"
 import Head from 'next/head'
-import { axiosInstance, whoami } from "../../config/axios"
+import { addCartItem, getProduct, getProducts, whoami } from "../../config/axios"
 import { useCookies } from 'react-cookie'
 import AppContext from "../../contexts/AppContext"
 import Image from 'next/image'
@@ -32,36 +32,24 @@ const Product = ({product}) => {
 
   const [qty, setQty] = useState(1)
   const [cookies, setCookie] = useCookies(['csrftoken'])
-  const {totalItemQty, setTotalItemQty} = useContext(AppContext)
+  const {appData, setAppData} = useContext(AppContext)
 
   useEffect(() => {
     whoami()
   }, [])
 
   const handleAdd = () => {
-    let csrfCookie = cookies.csrftoken
-
-    async function addToCart(csrf) {
-      await axiosInstance.post('api/cart/',
-        {
-          product_id: product.id,
-          product_qty: qty
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrf
-          }
-        }
-      )
-        .then(response => {
-          console.log('[ADD TO CART]', response.data)
-          setTotalItemQty(response.data.total_item_qty)
-        })
-        .catch(err => console.error('[ADD TO CART ERROR]', err.response.data))
+    let body = {
+      product_id: product.id,
+      product_qty: qty
     }
 
-    addToCart(csrfCookie)
+    addCartItem(body, cookies.csrftoken)
+      .then(response => {
+        console.log('[ADD TO CART]', response.item)
+        setAppData({...appData, totalItemQty: response.total_item_qty})
+      })
+      .catch(err => console.error('[ADD TO CART ERROR]', err.response.data))
   }
 
   return (
@@ -200,19 +188,19 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export async function getStaticProps(context) {
-  const product = await axiosInstance.get(`http://localhost:8001/api/products/${context.params.slug}/`)
+  const product = await getProduct(context.params.slug)
 
   return {
     props: {
-      product: product.data,
+      product: product,
     },
   }
 }
 
 export async function getStaticPaths() {
-  const products = await axiosInstance.get('http://localhost:8001/api/products/')
-
-  const paths = products.data.map(product => ({
+  const products = await getProducts()
+  
+  const paths = products.map(product => ({
     params: {
       slug: product.slug
     }

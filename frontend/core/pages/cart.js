@@ -21,7 +21,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle'
 import CreateIcon from '@material-ui/icons/Create'
 import ClearIcon from '@material-ui/icons/Clear'
 import { useContext, useEffect, useState } from "react"
-import { axiosInstance, whoami } from "../config/axios"
+import { deleteCartItem, getCartItems, updateCartItem, whoami } from "../config/axios"
 import { useCookies } from 'react-cookie'
 import Head from 'next/head'
 import Image from 'next/image'
@@ -43,20 +43,17 @@ const Cart = () => {
   const [qtys, setQtys] = useState({})
   const [price, setPrice] = useState(0)
 
-  const {totalItemQty, setTotalItemQty} = useContext(AppContext)
+  const {appData, setAppData} = useContext(AppContext)
 
   useEffect(() => {
-    async function getItems() {
-      await axiosInstance.get('api/cart/')
-        .then(response => {
-          setItems(response.data.items)
-          setTotalItemQty(response.data.total_item_qty)
-          setPrice(response.data.total_item_price)
-        })
-        .catch(err => console.log('[CART ERROR]', err.response))
-    }
+    getCartItems()
+      .then(response => {
+        setItems(response.items)
+        setPrice(response.total_item_price)
+        setAppData({...appData, totalItemQty: response.total_item_qty})
+      })
+      .catch(err => console.log('[CART ERROR]', err.response))
     whoami()
-    getItems()
   }, [])
 
   // assign multiple quantities for every cart item
@@ -74,56 +71,37 @@ const Cart = () => {
   }
 
   const handleDelete = id => {
-    async function deleteItem(id) {
-      await axiosInstance.delete(`api/cart/${encodeURIComponent(id)}/`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': cookies.csrftoken,
-        }
+    deleteCartItem(id, cookies.csrftoken)
+      .then(response => {
+        console.log('[DELETED ITEM]', response.item)
+        setItems(response.items)
+        setPrice(response.total_item_price)
+        setAppData({...appData, totalItemQty: response.total_item_qty})
       })
-        .then(response => {
-          console.log('[DELETED ITEM]', response.data.item)
-          setItems(response.data.items)
-          setTotalItemQty(response.data.total_item_qty)
-          setPrice(response.data.total_item_price)
-        })
-        .catch(err => console.log('[CART ERROR]', err.response))
-    }
-
-    deleteItem(id)
+      .catch(err => console.log('[CART ERROR]', err.response))
   }
 
   const handleUpdate = (id) => {
+    let item = items.find(item => item.id === id)
     let qty = qtys[id]
 
-    async function updateItem(id) {
-      var item = items.find(item => item.id === id)
-      await axiosInstance.put(`api/cart/${encodeURIComponent(id)}/`,
-        {
-          'product': item.product,
-          'qty': qtys[id],
-        },
-        {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': 'YeNRPzeDCKrO43g94LzovEdYDZ9HdNzs1LmkT8v4MYRC6opa8ZMlBmIcp1rZBmBB',
-        }
-      })
-        .then(response => {
-          console.log('[UPDATED ITEM]', response.data.item)
-          setItems(response.data.items)
-          setTotalItemQty(response.data.total_item_qty)
-          setPrice(response.data.total_item_price)
-        })
-        .catch(err => console.log('[CART ERROR]', err.response))
-    }
-    
-    if (qty === 0) {
+    if (qty <= 0) {
       handleDelete(id)
     } else {
-      updateItem(id)
+      let body = {
+        product: item.product,
+        qty: qty
+      }
+  
+      updateCartItem(id, body, cookies.csrftoken)
+        .then(response => {
+          console.log('[UPDATED ITEM]', response.item)
+          setItems(response.items)
+          setPrice(response.total_item_price)
+          setAppData({...appData, totalItemQty: response.total_item_qty})
+        })
+        .catch(err => console.log('[CART ERROR]', err.response))  
     }
-
   }
 
   return (

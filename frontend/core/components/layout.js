@@ -1,40 +1,32 @@
 import { useContext, useEffect, useState } from "react"
 import Header from "./header"
 import Head from 'next/head'
-import { axiosInstance } from "../config/axios"
+import { getCartItemQty, getCategories } from "../config/axios"
 import AppContext from "../contexts/AppContext"
 import Footer from "./footer"
 
 const DefaultLayout = props => {
   const [categories, setCategories] = useState(null)
-  const {totalItemQty, setTotalItemQty} = useContext(AppContext)
+  const { appData, setAppData } = useContext(AppContext)
 
   useEffect(() => {
-    async function getCategories() {
-      await axiosInstance.get('api/categories/')
-      .then(data => setCategories(data.data))
-      .catch(err => console.error(err))
-    }
-
     getCategories()
+      .then(categories => setCategories(categories))
+      .catch(err => console.error(err))
   }, [])
 
   useEffect(() => {
-    async function getTotalItemQty() {
-      await axiosInstance.get('api/cart/')
-        .then(response => setTotalItemQty(response.data.total_item_qty))
-        .catch(err => console.error(err))
-    }
-
-    getTotalItemQty()
-  }, [totalItemQty])
+    getCartItemQty()
+      .then(response => setAppData({...appData, totalItemQty: response}))
+      .catch(err => console.error(err))  
+  }, [appData.totalItemQty])
 
   return (
     <>
       <Head>
         <title>Home</title>
       </Head>
-      <Header categories={categories} totalItemQty={totalItemQty} />
+      <Header categories={categories} totalItemQty={appData.totalItemQty} />
       {props.children}
       <Footer />
     </>

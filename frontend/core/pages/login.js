@@ -15,7 +15,7 @@ import Link from 'next/link'
 import { Link as ALink } from '@material-ui/core'
 import Router from 'next/router'
 import axios from 'axios'
-import { loginUser, axiosInstance } from '../config/axios'
+import { loginUser, getCsrf, getCartItemQty } from '../config/axios'
 import Head from 'next/head'
 import AppContext from "../contexts/AppContext"
 
@@ -27,46 +27,32 @@ const Login = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
-  const {totalItemQty, setTotalItemQty} = useContext(AppContext)
+  const {appData, setAppData} = useContext(AppContext)
 
   useEffect(() => {
-    // Request a CSRF Token from backend
-    // Define credentials to send cookies with request
-    async function csrf() {
-      await axios.get('http://localhost:8001/account/csrf/', {withCredentials: true})
+    getCsrf()
         .then(response => {
-          let csrf = response.headers['x-csrftoken']
-          setCsrfToken(csrf)
-          console.log(csrf)
+          setCsrfToken(response)
+          console.log('[CSRF]', response)
         })
         .catch(err => console.error('[GET CSRF ERROR]', err.response))
-    }
-
-    csrf()
   }, [])
 
   const handleSubmit = (e) => {
-    let isOk = false
     e.preventDefault()
 
-    async function login() {
-      await loginUser(username, password, csrfToken)
-        .then(response => {
-          async function getTotalItemQty() {
-            await axiosInstance.get('api/cart/')
-              .then(response => setTotalItemQty(response.data.total_item_qty))
-              .catch(err => console.error(err))
-          }
-      
-          getTotalItemQty()
-        })
-        .catch(err => {
-          console.error('[LOGIN ERROR]', err.response)
-          setError(err.response.data.info)
-        })
-    }
-
-    login()
+    loginUser(username, password, csrfToken)
+      .then(response => {
+        Router.push('/')
+        setAppData({...appData, loggedIn: true})
+        // getCartItemQty()
+        //   .then(response => setAppData({...appData, totalItemQty: response}))
+        //   .catch(err => console.error(err))
+      })
+      .catch(err => {
+        console.error('[LOGIN ERROR]', err.response)
+        setError(err.response.data.info)
+      })
   }
 
   return (

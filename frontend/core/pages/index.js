@@ -12,12 +12,12 @@ import {
 import Alert from '@material-ui/lab/Alert'
 import Link from 'next/link'
 import { useContext, useEffect } from 'react'
-import { axiosInstance, whoami } from '../config/axios'
+import { getProducts, whoami } from '../config/axios'
 import AppContext from '../contexts/AppContext'
 import { useCookies } from 'react-cookie'
 import ProductGrid from '../components/productGrid'
 
-export default function Home({products, totalItemQty}) {
+export default function Home({products}) {
   const classes = useStyles()
   const [cookies, setCookie] = useCookies(['csrftoken'])
 
@@ -43,10 +43,10 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export async function getStaticProps(context) {
-  const products = await axiosInstance.get('api/products/')
+  const products = await getProducts()
   return {
     props: {
-      products: products.data,
+      products: products,
     }
   }
 }

@@ -3,11 +3,17 @@ import DefaultLayout from '../components/layout'
 import { useEffect, useState } from 'react'
 import { CookiesProvider } from 'react-cookie'
 import AppContext from '../contexts/AppContext'
+import { getCartItemQty } from '../config/axios'
 
 function MyApp({ Component, pageProps }) {
 
-  const [totalItemQty, setTotalItemQty] = useState(0)
+  const initialAppData = Object.freeze({
+    totalItemQty: 0,
+    loggedIn: false
+  })
 
+  const [appData, setAppData] = useState(initialAppData)
+  
   useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side');
@@ -16,8 +22,18 @@ function MyApp({ Component, pageProps }) {
     }
   }, []);
 
+  useEffect(() => {
+    if (appData.loggedIn) {
+      getCartItemQty()
+        .then(response => setAppData({...appData, totalItemQty: response}))
+        .catch(err => console.error(err))
+    } else {
+      setAppData({...appData, totalItemQty: 0})
+    }
+  }, [appData.loggedIn])
+
   return (
-    <AppContext.Provider value={{totalItemQty, setTotalItemQty}}>
+    <AppContext.Provider value={{appData, setAppData}}>
       <CookiesProvider>
         <DefaultLayout>
           <Component {...pageProps} />
