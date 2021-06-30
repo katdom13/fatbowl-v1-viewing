@@ -46,6 +46,12 @@ const whoami = async () => {
     .catch(err => console.error('[WHOAMI ERROR]', err))
 }
 
+const whoami2 = async () => {
+  return axiosInstance.get('account/whoami/')
+    .then(response => Promise.resolve(response.data.username))
+    .catch(error => Promise.reject(error))
+}
+
 const getCategories = async () => {
   return axiosInstance.get('api/categories')
     .then(response => Promise.resolve(response.data))
@@ -131,6 +137,7 @@ export {
   logoutUser,
   getCsrf,
   whoami,
+  whoami2,
   getCategories,
   getCartItems,
   addCartItem,

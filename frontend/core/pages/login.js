@@ -15,7 +15,7 @@ import Link from 'next/link'
 import { Link as ALink } from '@material-ui/core'
 import Router from 'next/router'
 import axios from 'axios'
-import { loginUser, getCsrf, getCartItemQty } from '../config/axios'
+import { loginUser, getCsrf } from '../config/axios'
 import Head from 'next/head'
 import AppContext from "../contexts/AppContext"
 
@@ -43,11 +43,12 @@ const Login = () => {
 
     loginUser(username, password, csrfToken)
       .then(response => {
+        console.log('AAAAAAAAAAAAAAAA', response)
+        setAppData({
+          ...appData,
+          loggedIn: true
+        })
         Router.push('/')
-        setAppData({...appData, loggedIn: true})
-        // getCartItemQty()
-        //   .then(response => setAppData({...appData, totalItemQty: response}))
-        //   .catch(err => console.error(err))
       })
       .catch(err => {
         console.error('[LOGIN ERROR]', err.response)

@@ -52,9 +52,11 @@ const Header = props => {
     if (appData.loggedIn) {
       logoutUser()
         .then(response => {
-          console.log(response)
-          setAppData({...appData, loggedIn: false})
-          Router.push('/login')
+          setAppData({
+            ...appData,
+            loggedIn: false
+          })
+          Router.push('/')
         })
         .catch(err => console.error('[LOGOUT ERROR]', err.response.data))
     } else {
@@ -121,7 +123,7 @@ const Header = props => {
                   <Link href='/cart/' passHref>
                     <a className={classes.link}>
                       <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
-                        <Badge badgeContent={props.totalItemQty} color="secondary" className={classes.cartBadge}>
+                        <Badge badgeContent={appData.totalItemQty} color="secondary" className={classes.cartBadge}>
                           <ShoppingCartOutlinedIcon fontSize='default' />
                         </Badge>
                         Cart
@@ -217,7 +219,7 @@ const Header = props => {
                     setIsOpenMenu(!isOpenMenu)
                   }}
                 >
-                  <Badge badgeContent={props.totalItemQty} color="secondary" className={classes.cartBadge}>
+                  <Badge badgeContent={appData.totalItemQty} color="secondary" className={classes.cartBadge}>
                     <ShoppingCartOutlinedIcon />
                   </Badge>
                   Cart
