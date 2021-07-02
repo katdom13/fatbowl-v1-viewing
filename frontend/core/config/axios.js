@@ -40,18 +40,6 @@ const getCsrf = async () => {
     .catch(error => Promise.reject(error))
 }
 
-const whoami = async () => {
-  await axiosInstance.get('account/whoami/')
-    .then(response => console.log('[WHOAMI]', response.data.username))
-    .catch(err => console.error('[WHOAMI ERROR]', err))
-}
-
-const whoami2 = async () => {
-  return axiosInstance.get('account/whoami/')
-    .then(response => Promise.resolve(response.data.username))
-    .catch(error => Promise.reject(error))
-}
-
 const getCategories = async () => {
   return axiosInstance.get('api/categories')
     .then(response => Promise.resolve(response.data))
@@ -136,8 +124,6 @@ export {
   loginUser,
   logoutUser,
   getCsrf,
-  whoami,
-  whoami2,
   getCategories,
   getCartItems,
   addCartItem,

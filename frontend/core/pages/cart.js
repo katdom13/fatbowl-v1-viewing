@@ -32,6 +32,7 @@ import AppContext from "../contexts/AppContext"
 import { Typography } from "@material-ui/core"
 import ExpandLessIcon from '@material-ui/icons/ExpandLess'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import withAuthentication from "../components/withAuthentication"
 
 const Cart = () => {
   const classes = useStyles()
@@ -43,28 +44,24 @@ const Cart = () => {
   const [qtys, setQtys] = useState({})
   const [price, setPrice] = useState(0)
 
-  const {appData, setAppData} = useContext(AppContext)
+  const {context: {reload}, state} = useContext(AppContext)
 
   useEffect(() => {
     getCartItems()
       .then(response => {
         setItems(response.items)
+
+        // assign multiple quantities for every cart item
+        // so it can be edited by the text field onChange function
+        var dict = {}
+        response.items.map(item => dict[item.id] = item.qty)
+        setQtys(dict)
+  
         setPrice(response.total_item_price)
-        setAppData({...appData, totalItemQty: response.total_item_qty})
+        reload({...state, qty: response.total_item_qty})
       })
       .catch(err => console.log('[CART ERROR]', err.response))
-    whoami()
   }, [])
-
-  // assign multiple quantities for every cart item
-  // so it can be edited by the text field onChange function
-  useEffect(() => {
-    if (items) {
-      var dict = {}
-      items.map(item => dict[item.id] = item.qty)
-      setQtys(dict)
-    }
-  }, [items])
 
   const handleCloseAnchor = () => {
     setAnchor(null)
@@ -76,7 +73,7 @@ const Cart = () => {
         console.log('[DELETED ITEM]', response.item)
         setItems(response.items)
         setPrice(response.total_item_price)
-        setAppData({...appData, totalItemQty: response.total_item_qty})
+        reload({...state, qty: response.total_item_qty})
       })
       .catch(err => console.log('[CART ERROR]', err.response))
   }
@@ -98,7 +95,7 @@ const Cart = () => {
           console.log('[UPDATED ITEM]', response.item)
           setItems(response.items)
           setPrice(response.total_item_price)
-          setAppData({...appData, totalItemQty: response.total_item_qty})
+          reload({...state, qty: response.total_item_qty})
         })
         .catch(err => console.log('[CART ERROR]', err.response))  
     }

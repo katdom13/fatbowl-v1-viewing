@@ -1,19 +1,62 @@
 import '../styles/globals.css'
 import DefaultLayout from '../components/layout'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useReducer, useState } from 'react'
 import { CookiesProvider } from 'react-cookie'
 import AppContext from '../contexts/AppContext'
-import { getCartItemQty, whoami2 } from '../config/axios'
+import { getCartItemQty } from '../config/axios'
 import Router from 'next/router'
+import { useCookies } from 'react-cookie'
 
 function MyApp({ Component, pageProps }) {
 
-  const initialAppData = Object.freeze({
-    totalItemQty: 0,
-    loggedIn: false,
-  })
+  const [cookies, setCookie] = useCookies(['sessionid'])
 
-  const [appData, setAppData] = useState(initialAppData)
+  const [state, dispatch] = useReducer(
+    (prevState, action) => {
+      switch (action.type) {
+        case 'LOGIN':
+          return {
+            ...prevState,
+            loggedIn: true,
+            totalItemQty: action.qty
+          }
+        case 'LOGOUT':
+          return {
+            ...prevState,
+            loggedIn: false,
+            totalItemQty: 0,
+          }
+        case 'RELOAD':
+          return {
+            ...prevState,
+            loggedIn: action.loggedIn,
+            totalItemQty: action.qty,
+            next: action.next
+          }
+      }
+    },
+    {
+      loggedIn: Boolean(cookies.sessionid),
+      totalItemQty: 0,
+      next: ''
+    },
+  )
+
+  const context = useMemo(() => ({
+    login: async data => dispatch({
+      type: 'LOGIN',
+      qty: data.qty
+    }),
+    logout: async () => dispatch({
+      type: 'LOGOUT'
+    }),
+    reload: async data => dispatch({
+      type: 'RELOAD',
+      qty: data.qty,
+      loggedIn: data.loggedIn,
+      next: data.next
+    })
+  }))
 
   useEffect(() => {
     // Remove the server-side injected CSS.
@@ -21,46 +64,32 @@ function MyApp({ Component, pageProps }) {
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
-
-    Router.events.on('routeChangeStart', () => {
-      console.log('AAAAAAAAAAAA')
-    })
     
     // initialize states
     initializeAppData()
-
   }, [])
 
   useEffect(() => {
     // re-initialize states
     initializeAppData()
-  }, [appData.loggedIn])
+  }, [state.loggedIn])
 
   const initializeAppData = () => {
-    whoami2()
-      .then(response => {
-        getCartItemQty()
-          .then(response => {
-            setAppData({
-              ...appData,
-              totalItemQty: response,
-              loggedIn: true
-            })
-          })
-          .catch(err => console.error(err))
+    if (cookies.sessionid) {
+      getCartItemQty()
+        .then(response => context.reload({
+          qty: response, loggedIn: true
+        }))
+        .catch(err => console.error(err))
+    } else {
+      context.reload({
+        qty: 0, loggedIn: false
       })
-      .catch(err => {
-        console.error('[WHOAMI ERROR]', err)
-        setAppData({
-          ...appData,
-          totalItemQty: 0,
-          loggedIn: err.response.status === 403 ? false : true
-        })
-      })
+    }
   }
 
   return (
-    <AppContext.Provider value={{appData, setAppData}}>
+    <AppContext.Provider value={{context, state}}>
       <CookiesProvider>
         <DefaultLayout>
           <Component {...pageProps} />

@@ -21,10 +21,6 @@ export default function Home({products}) {
   const classes = useStyles()
   const [cookies, setCookie] = useCookies(['csrftoken'])
 
-  useEffect(() => {
-    whoami()
-  }, [])
-
   return (
     <Box component='main'>
       <Container component='div' maxWidth='lg'>

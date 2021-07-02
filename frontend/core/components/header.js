@@ -42,21 +42,18 @@ const Header = props => {
 
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
 
-  const { appData, setAppData } = useContext(AppContext)
+  const {context: {logout}, state} = useContext(AppContext)
 
   const handleCloseCategory = () => {
     setCategoryAnchor(null)
   }
 
   const handleUser = () => {
-    if (appData.loggedIn) {
+    if (state.loggedIn) {
       logoutUser()
         .then(response => {
-          setAppData({
-            ...appData,
-            loggedIn: false
-          })
-          Router.push('/')
+          logout()
+          Router.push('/login')
         })
         .catch(err => console.error('[LOGOUT ERROR]', err.response.data))
     } else {
@@ -110,7 +107,7 @@ const Header = props => {
                 <Button variant='outlined' color='inherit' className={classes.button} disableRipple onClick={handleUser}>
                   <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
                     <MeetingRoomOutlinedIcon fontSize='default' />
-                    {appData.loggedIn ? 'Logout' : 'Login'}
+                    {state.loggedIn ? 'Logout' : 'Login'}
                   </Box>
                 </Button>
                 <Button variant='outlined' color='inherit' className={classes.button} disableRipple>
@@ -123,7 +120,7 @@ const Header = props => {
                   <Link href='/cart/' passHref>
                     <a className={classes.link}>
                       <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
-                        <Badge badgeContent={appData.totalItemQty} color="secondary" className={classes.cartBadge}>
+                        <Badge badgeContent={state.totalItemQty} color="secondary" className={classes.cartBadge}>
                           <ShoppingCartOutlinedIcon fontSize='default' />
                         </Badge>
                         Cart
@@ -197,7 +194,7 @@ const Header = props => {
                 >
                   <MeetingRoomOutlinedIcon />
                   <Box marginLeft={2}>
-                    {appData.loggedIn ? 'Logout' : 'Login'}
+                    {state.loggedIn ? 'Logout' : 'Login'}
                   </Box>
                 </MenuListItem>
                 <StyledDivider variant='middle' />
@@ -219,7 +216,7 @@ const Header = props => {
                     setIsOpenMenu(!isOpenMenu)
                   }}
                 >
-                  <Badge badgeContent={appData.totalItemQty} color="secondary" className={classes.cartBadge}>
+                  <Badge badgeContent={state.totalItemQty} color="secondary" className={classes.cartBadge}>
                     <ShoppingCartOutlinedIcon />
                   </Badge>
                   Cart
@@ -309,15 +306,17 @@ const StyledMenuItem = withStyles((theme) => ({
   },
 }))((props) => {
   const classes = useStyles()
-  return (
+  return props.link ? (
+    <Link href={props.href}>
+      <a className={classes.link}>
+        <MenuItem {...props}>
+          {props.children}
+        </MenuItem>
+      </a>
+    </Link>
+  ) : (
     <MenuItem {...props}>
-      {
-        props.link ? (
-          <Link href={props.href}>
-            <a className={classes.link}>{props.children}</a>
-          </Link>
-        ) : props.children
-      }
+      {props.children}
     </MenuItem>
   )
 })

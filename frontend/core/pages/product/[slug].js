@@ -32,11 +32,7 @@ const Product = ({product}) => {
 
   const [qty, setQty] = useState(1)
   const [cookies, setCookie] = useCookies(['csrftoken'])
-  const {appData, setAppData} = useContext(AppContext)
-
-  useEffect(() => {
-    whoami()
-  }, [])
+  const {context: {reload}, state} = useContext(AppContext)
 
   const handleAdd = () => {
     let body = {
@@ -47,7 +43,7 @@ const Product = ({product}) => {
     addCartItem(body, cookies.csrftoken)
       .then(response => {
         console.log('[ADD TO CART]', response.item)
-        setAppData({...appData, totalItemQty: response.total_item_qty})
+        reload({...state, qty: response.total_item_qty})
       })
       .catch(err => console.error('[ADD TO CART ERROR]', err.response.data))
   }
