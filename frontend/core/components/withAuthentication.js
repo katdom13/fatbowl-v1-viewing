@@ -12,7 +12,7 @@ export default function withAuthentication(WrappedComponent) {
 
     useEffect(() => {
       if (Boolean(cookies.sessionid) === false) {
-        Router.push(`/login?next=${Router.asPath}`)
+        Router.push(`/login?next=${Router.asPath}`, undefined, {shallow: true})
       }
     }, [])
 
@@ -22,6 +22,7 @@ export default function withAuthentication(WrappedComponent) {
       }
     }, [state.next])
 
-    return Boolean(cookies.sessionid) ? <WrappedComponent /> : <Login />
+    // return Boolean(cookies.sessionid) ? <WrappedComponent /> : <Login />
+    return <WrappedComponent />
   }
 }

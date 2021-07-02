@@ -18,6 +18,7 @@ import axios from 'axios'
 import { loginUser, getCsrf, getCartItemQty } from '../config/axios'
 import Head from 'next/head'
 import AppContext from "../contexts/AppContext"
+import { getUrlQueryParams } from '../config/utils'
 
 const Login = () => {
 
@@ -27,7 +28,7 @@ const Login = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
-  const {context: {login}, state} = useContext(AppContext)
+  const {context: {login, reload}, state} = useContext(AppContext)
 
   useEffect(() => {
     getCsrf()
@@ -46,7 +47,16 @@ const Login = () => {
         getCartItemQty()
           .then(response => {
             login({qty: response})
-            Router.push('/')
+
+            let next = getUrlQueryParams(Router.asPath, 'next')
+
+            if (next){
+              Router.push(getUrlQueryParams(Router.asPath, 'next'), undefined, {shallow: true})
+              // reload({...state})
+            } else {
+              Router.push('/', undefined, {shallow: true})
+            }
+
           })
           .catch(err => console.error(err))
       })

@@ -7,6 +7,7 @@ import {
   Divider
 } from "@material-ui/core"
 import Link from 'next/link'
+import withAuthentication from "../components/withAuthentication"
 
 const Dashboard = () => {
   const classes = useStyles()
@@ -48,4 +49,4 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default Dashboard
+export default withAuthentication(Dashboard)

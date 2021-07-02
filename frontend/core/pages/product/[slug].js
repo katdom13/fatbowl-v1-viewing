@@ -26,6 +26,7 @@ import { addCartItem, getProduct, getProducts, whoami } from "../../config/axios
 import { useCookies } from 'react-cookie'
 import AppContext from "../../contexts/AppContext"
 import Image from 'next/image'
+import Router from 'next/router'
 
 const Product = ({product}) => {
   const classes = useStyles()
@@ -35,17 +36,21 @@ const Product = ({product}) => {
   const {context: {reload}, state} = useContext(AppContext)
 
   const handleAdd = () => {
-    let body = {
-      product_id: product.id,
-      product_qty: qty
+    if (state.loggedIn === false) {
+      reload({...state, next: Router.asPath})
+    } else {
+      let body = {
+        product_id: product.id,
+        product_qty: qty
+      }
+  
+      addCartItem(body, cookies.csrftoken)
+        .then(response => {
+          console.log('[ADD TO CART]', response.item)
+          reload({...state, qty: response.total_item_qty})
+        })
+        .catch(err => console.error('[ADD TO CART ERROR]', err.response.data))
     }
-
-    addCartItem(body, cookies.csrftoken)
-      .then(response => {
-        console.log('[ADD TO CART]', response.item)
-        reload({...state, qty: response.total_item_qty})
-      })
-      .catch(err => console.error('[ADD TO CART ERROR]', err.response.data))
   }
 
   return (

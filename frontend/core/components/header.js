@@ -53,11 +53,11 @@ const Header = props => {
       logoutUser()
         .then(response => {
           logout()
-          Router.push('/login')
+          Router.push('/login', undefined, {shallow: true})
         })
         .catch(err => console.error('[LOGOUT ERROR]', err.response.data))
     } else {
-      Router.push('/login')
+      Router.push('/login', undefined, {shallow: true})
     }
   }
 

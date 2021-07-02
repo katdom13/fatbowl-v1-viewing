@@ -12,6 +12,12 @@ let axiosInstance = axios.create({
 })
 
 // Promises
+const whoami = async () => {
+  return axiosInstance.get('account/whoami')
+    .then(response => Promise.resolve(response.data.username))
+    .catch(error => Promise.reject(error))
+}
+
 const loginUser = async (username, password, csrf) => {
   const body = {username, password}
   return axiosInstance.post(
@@ -121,6 +127,7 @@ const getProduct = async slug => {
 }
 
 export {
+  whoami,
   loginUser,
   logoutUser,
   getCsrf,

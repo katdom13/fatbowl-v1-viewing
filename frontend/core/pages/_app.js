@@ -3,7 +3,7 @@ import DefaultLayout from '../components/layout'
 import { useEffect, useMemo, useReducer, useState } from 'react'
 import { CookiesProvider } from 'react-cookie'
 import AppContext from '../contexts/AppContext'
-import { getCartItemQty } from '../config/axios'
+import { getCartItemQty, whoami } from '../config/axios'
 import Router from 'next/router'
 import { useCookies } from 'react-cookie'
 
@@ -74,18 +74,39 @@ function MyApp({ Component, pageProps }) {
     initializeAppData()
   }, [state.loggedIn])
 
-  const initializeAppData = () => {
-    if (cookies.sessionid) {
-      getCartItemQty()
-        .then(response => context.reload({
-          qty: response, loggedIn: true
-        }))
-        .catch(err => console.error(err))
-    } else {
-      context.reload({
-        qty: 0, loggedIn: false
-      })
+  useEffect(() => {
+    if (state.next) {
+      Router.push(`/login?next=${state.next}`, undefined, {shallow: true})
     }
+  }, [state.next])
+
+  const initializeAppData = () => {
+    whoami()
+      .then(response => {
+        getCartItemQty()
+          .then(response => context.reload({
+            ...state, qty: response
+          }))
+          .catch(err => console.error(err))
+      })
+      .catch(err => {
+        console.log('[WHOAMI error]', err)
+        context.reload({
+          ...state,
+          qty: err.response.status === 403 ? 0 : state.qty
+        })
+      })
+    // if (cookies.sessionid) {
+    //   getCartItemQty()
+    //     .then(response => context.reload({
+    //       ...state, qty: response
+    //     }))
+    //     .catch(err => console.error(err))
+    // } else {
+    //   context.reload({
+    //     ...state, qty: 0
+    //   })
+    // }
   }
 
   return (

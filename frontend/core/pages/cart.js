@@ -434,4 +434,4 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default Cart
+export default withAuthentication(Cart)
