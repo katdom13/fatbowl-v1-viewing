@@ -47,16 +47,8 @@ const Login = () => {
         getCartItemQty()
           .then(response => {
             login({qty: response})
-
             let next = getUrlQueryParams(Router.asPath, 'next')
-
-            if (next){
-              Router.push(getUrlQueryParams(Router.asPath, 'next'), undefined, {shallow: true})
-              // reload({...state})
-            } else {
-              Router.push('/', undefined, {shallow: true})
-            }
-
+            Router.push(Boolean(next) ? next : '/', undefined, {shallow: true})
           })
           .catch(err => console.error(err))
       })

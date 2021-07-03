@@ -78,6 +78,7 @@ function MyApp({ Component, pageProps }) {
     if (state.next) {
       Router.push(`/login?next=${state.next}`, undefined, {shallow: true})
     }
+    context.reload({...state, next: ''})
   }, [state.next])
 
   const initializeAppData = () => {
