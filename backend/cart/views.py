@@ -1,4 +1,4 @@
-from rest_framework import response, viewsets
+from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from store.models import Product

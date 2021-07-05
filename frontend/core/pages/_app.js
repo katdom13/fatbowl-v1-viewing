@@ -6,6 +6,7 @@ import AppContext from '../contexts/AppContext'
 import { getCartItemQty, whoami } from '../config/axios'
 import Router from 'next/router'
 import { useCookies } from 'react-cookie'
+import { CssBaseline } from '@material-ui/core'
 
 function MyApp({ Component, pageProps }) {
 
@@ -111,13 +112,16 @@ function MyApp({ Component, pageProps }) {
   }
 
   return (
-    <AppContext.Provider value={{context, state}}>
-      <CookiesProvider>
-        <DefaultLayout>
-          <Component {...pageProps} />
-        </DefaultLayout>
-      </CookiesProvider>
-    </AppContext.Provider>
+    <>
+      {/* <CssBaseline /> */}
+      <AppContext.Provider value={{context, state}}>
+        <CookiesProvider>
+          <DefaultLayout>
+            <Component {...pageProps} />
+          </DefaultLayout>
+        </CookiesProvider>
+      </AppContext.Provider>
+    </>
   )
 }
 

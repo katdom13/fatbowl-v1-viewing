@@ -116,18 +116,18 @@ const Header = props => {
                     Account
                   </Box>
                 </Button>
-                <Button variant='outlined' color='inherit' className={classes.button} disableRipple>
-                  <Link href='/cart/' passHref>
-                    <a className={classes.link}>
+                <Link href='/cart/'>
+                  <a className={classes.link}>
+                    <Button variant='outlined' color='inherit' className={classes.button} disableRipple>
                       <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
                         <Badge badgeContent={state.totalItemQty} color="secondary" className={classes.cartBadge}>
                           <ShoppingCartOutlinedIcon fontSize='default' />
                         </Badge>
                         Cart
                       </Box>
-                    </a>
-                  </Link>
-                </Button>
+                    </Button>
+                  </a>
+                </Link>
               </Box>
               <Searchbar />
             </Hidden>
@@ -253,15 +253,17 @@ const BrandWrapper = styled(Box)((props) => ({
 const MenuListItem = props => {
   const classes = useStyles()
 
-  return (
+  return props.link ? (
+    <Link href={props.href}>
+      <a className={classes.link}>
+        <ListItem className={classes.menuListItem} {...props}>
+          {props.children}
+        </ListItem>
+      </a>
+    </Link>
+  ) : (
     <ListItem className={classes.menuListItem} {...props}>
-      {
-        props.link ? (
-          <Link href={props.href}>
-            <a className={classes.link}>{props.children}</a>
-          </Link>
-        ) : props.children
-      }
+      {props.children}
     </ListItem>
   )
 }

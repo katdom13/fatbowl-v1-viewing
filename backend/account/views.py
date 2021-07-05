@@ -5,8 +5,17 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.views.decorators.http import require_POST
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+)
+from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from account.permissions import IsOwnerOrAdmin
+from account.serializers import UserSerializer
 
 
 def get_csrf(request):
@@ -58,3 +67,36 @@ class WhoAmIView(APIView):
     def get(request, format=None):
         print('COOKIES', request.COOKIES)
         return JsonResponse({'username': request.user.username})
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides 'list', 'retrieve',
+    'create', 'update', and 'destroy' actions
+    """
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        return User.objects.filter(is_active=True).all()
+
+    def get_permissions(self):
+        if self.action == 'list' or self.action == 'retrieve':
+            permission_classes = [IsAuthenticated]
+        elif self.action == 'update' or self.action == 'destroy':
+            permission_classes = [IsOwnerOrAdmin]
+        elif self.action == 'create':
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticatedOrReadOnly]
+
+        return [permission() for permission in permission_classes]
+
+    # Set partial update to true for ignoring
+    # required updates on fields that are not in the PUT request
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(serializer.data)

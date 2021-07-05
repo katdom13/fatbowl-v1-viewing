@@ -126,6 +126,21 @@ const getProduct = async slug => {
     .catch(error => Promise.reject(error))
 }
 
+const register = async (data, csrf) => {
+  return axiosInstance.post(
+    'account/users/',
+    data,
+    {
+      headers: {
+        ...axiosInstance.defaults.headers,
+        'X-CSRFToken': csrf
+      }
+    }
+  )
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
 export {
   whoami,
   loginUser,
@@ -139,4 +154,5 @@ export {
   getCartItemQty,
   getProducts,
   getProduct,
+  register,
 }

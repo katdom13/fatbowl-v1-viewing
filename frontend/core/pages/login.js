@@ -19,6 +19,7 @@ import { loginUser, getCsrf, getCartItemQty } from '../config/axios'
 import Head from 'next/head'
 import AppContext from "../contexts/AppContext"
 import { getUrlQueryParams } from '../config/utils'
+import { Alert } from '@material-ui/lab'
 
 const Login = () => {
 
@@ -27,16 +28,25 @@ const Login = () => {
   const [csrfToken, setCsrfToken] = useState("")
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
+  const [alert, setAlert] = useState({
+    severity: '',
+    message: '',
+  })
   const {context: {login, reload}, state} = useContext(AppContext)
 
   useEffect(() => {
+    let isRegistered = Boolean(Router.query.register)
+    
     getCsrf()
         .then(response => {
           setCsrfToken(response)
           console.log('[CSRF]', response)
         })
         .catch(err => console.error('[GET CSRF ERROR]', err.response))
+
+    if (isRegistered) {
+      setAlert({severity: 'success', message: 'Successfully registered. Please log in.'})
+    }
   }, [])
 
   const handleSubmit = (e) => {
@@ -54,7 +64,10 @@ const Login = () => {
       })
       .catch(err => {
         console.error('[LOGIN ERROR]', err.response)
-        setError(err.response.data.info)
+        setAlert({
+          severity: 'error',
+          message: err.response.data.info,
+        })
       })
   }
 
@@ -66,9 +79,15 @@ const Login = () => {
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
-          <Box component='p'>
-            {error}
-          </Box>
+          {
+            alert && alert.message ? (
+              <Box width='100%' marginBottom={2}>
+                <Alert severity={alert.severity}>
+                  {alert.message}
+                </Alert>
+              </Box>
+            ) : null
+          }
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
           </Avatar>
@@ -123,7 +142,7 @@ const Login = () => {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href=".">
+                <Link href="/register">
                   <ALink variant="body2">
                     {"Don't have an account? Sign Up"}
                   </ALink>
@@ -139,7 +158,7 @@ const Login = () => {
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(4),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
