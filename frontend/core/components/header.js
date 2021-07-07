@@ -110,12 +110,16 @@ const Header = props => {
                     {state.loggedIn ? 'Logout' : 'Login'}
                   </Box>
                 </Button>
-                <Button variant='outlined' color='inherit' className={classes.button} disableRipple>
-                  <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
-                    <PermIdentityOutlinedIcon fontSize='default' />
-                    Account
-                  </Box>
-                </Button>
+                <Link href='/dashboard/'>
+                  <a className={classes.link}>
+                    <Button variant='outlined' color='inherit' className={classes.button} disableRipple>
+                      <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
+                        <PermIdentityOutlinedIcon fontSize='default' />
+                        Account
+                      </Box>
+                    </Button>
+                  </a>
+                </Link>
                 <Link href='/cart/'>
                   <a className={classes.link}>
                     <Button variant='outlined' color='inherit' className={classes.button} disableRipple>
@@ -186,7 +190,7 @@ const Header = props => {
                 </Collapse>
                 <StyledDivider variant='middle' />
 
-                <MenuListItem link href='/' onClick={() => {
+                <MenuListItem onClick={() => {
                     setIsCategoryOpen(false)
                     setIsOpenMenu(!isOpenMenu)
                     handleUser()
@@ -199,7 +203,7 @@ const Header = props => {
                 </MenuListItem>
                 <StyledDivider variant='middle' />
 
-                <MenuListItem link href='/' onClick={() => {
+                <MenuListItem link href='/dashboard/' onClick={() => {
                     setIsCategoryOpen(false)
                     setIsOpenMenu(!isOpenMenu)
                   }}

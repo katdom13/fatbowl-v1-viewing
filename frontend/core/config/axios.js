@@ -141,6 +141,49 @@ const register = async (data, csrf) => {
     .catch(error => Promise.reject(error))
 }
 
+const getUser = async (username, csrf) => {
+  return axiosInstance.get(
+    `account/users/${username}/`,
+    {
+      headers: {
+        ...axiosInstance.defaults.headers,
+        'X-CSRFToken': csrf
+      }
+    }
+  )
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
+const updateUser = async (username, data, csrf) => {
+  return axiosInstance.put(
+    `account/users/${username}/`,
+    data,
+    {
+      headers: {
+        ...axiosInstance.defaults.headers,
+        'X-CSRFToken': csrf
+      }
+    }
+  )
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
+const deleteUser = async (username, csrf) => {
+  return axiosInstance.delete(
+    `account/users/${username}/`,
+    {
+      headers: {
+        ...axiosInstance.defaults.headers,
+        'X-CSRFToken': csrf
+      }
+    }
+  )
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
 export {
   whoami,
   loginUser,
@@ -155,4 +198,7 @@ export {
   getProducts,
   getProduct,
   register,
+  getUser,
+  updateUser,
+  deleteUser,
 }

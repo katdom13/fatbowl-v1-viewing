@@ -32,10 +32,11 @@ const Login = () => {
     severity: '',
     message: '',
   })
-  const {context: {login, reload}, state} = useContext(AppContext)
+  const {context: {login}} = useContext(AppContext)
 
   useEffect(() => {
     let isRegistered = Boolean(Router.query.register)
+    let isPasswordChanged = Boolean(Router.query['password-change'])
     
     getCsrf()
         .then(response => {
@@ -46,6 +47,8 @@ const Login = () => {
 
     if (isRegistered) {
       setAlert({severity: 'success', message: 'Successfully registered. Please log in.'})
+    } else if (isPasswordChanged) {
+      setAlert({severity: 'success', message: 'Password changed. Please log in.'})
     }
   }, [])
 

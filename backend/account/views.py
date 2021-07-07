@@ -75,6 +75,7 @@ class UserViewSet(viewsets.ModelViewSet):
     'create', 'update', and 'destroy' actions
     """
     serializer_class = UserSerializer
+    lookup_field = 'username'
 
     def get_queryset(self):
         return User.objects.filter(is_active=True).all()
@@ -95,8 +96,25 @@ class UserViewSet(viewsets.ModelViewSet):
     # required updates on fields that are not in the PUT request
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
+
+        # Prune items in request data without values
+        data = {key: value for key, value in request.data.items() if value}
+
+        # handle changing password
+        if data.get('old_password') and data.get('new_password'):
+            old = data.pop('old_password')
+            new = data.pop('new_password')
+
+            if instance.check_password(old):
+                data['password'] = new
+
+            else:
+                return Response({'password': 'Invalid password'}, 403)
+
+        serializer = self.get_serializer(instance, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
+
+        print('AAAAAAAAAAAAAAAAAAAAAAAAA', serializer.errors)
 
         return Response(serializer.data)
