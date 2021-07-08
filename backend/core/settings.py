@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'store',
     'cart',
+    'account.apps.AccountConfig',
 ]
 
 MIDDLEWARE = [

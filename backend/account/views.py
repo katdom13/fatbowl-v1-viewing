@@ -14,6 +14,7 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from account.models import CustomUser
 from account.permissions import IsOwnerOrAdmin
 from account.serializers import UserSerializer
 
@@ -75,10 +76,10 @@ class UserViewSet(viewsets.ModelViewSet):
     'create', 'update', and 'destroy' actions
     """
     serializer_class = UserSerializer
-    lookup_field = 'username'
+    lookup_field = 'user__username'
 
     def get_queryset(self):
-        return User.objects.filter(is_active=True).all()
+        return CustomUser.objects.filter(user__is_active=True).all()
 
     def get_permissions(self):
         if self.action == 'list' or self.action == 'retrieve':
@@ -96,6 +97,7 @@ class UserViewSet(viewsets.ModelViewSet):
     # required updates on fields that are not in the PUT request
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
+        print('[USERVIEWSET OBJECT]', instance)
 
         # Prune items in request data without values
         data = {key: value for key, value in request.data.items() if value}
@@ -105,7 +107,7 @@ class UserViewSet(viewsets.ModelViewSet):
             old = data.pop('old_password')
             new = data.pop('new_password')
 
-            if instance.check_password(old):
+            if instance.user.check_password(old):
                 data['password'] = new
 
             else:
@@ -115,6 +117,6 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 
-        print('AAAAAAAAAAAAAAAAAAAAAAAAA', serializer.errors)
+        print('[SERIALIZER ERRORS]', serializer.errors)
 
         return Response(serializer.data)

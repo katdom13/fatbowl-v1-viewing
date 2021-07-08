@@ -173,7 +173,7 @@ const Profile = () => {
             logoutUser()
               .then(response => logout())
           })
-          .catch(err => console.error('[DELETE USER ERROR]', err))
+          .catch(err => console.error('[DELETE USER ERROR]', err.response))
       })
       .catch(err => console.error('[WHOAMI ERROR]', err))
   }
