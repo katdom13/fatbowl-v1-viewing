@@ -4,8 +4,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.http import require_POST
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
@@ -17,6 +20,8 @@ from rest_framework.views import APIView
 from account.models import CustomUser
 from account.permissions import IsOwnerOrAdmin
 from account.serializers import UserSerializer
+
+from .tokens import account_activation_token
 
 
 def get_csrf(request):
@@ -120,3 +125,29 @@ class UserViewSet(viewsets.ModelViewSet):
         print('[SERIALIZER ERRORS]', serializer.errors)
 
         return Response(serializer.data)
+
+    @action(methods=['get'], detail=False, url_path=r'whatev')
+    def whatev(self, request):
+        return Response({'success'})
+
+    # Custom methods
+    @action(
+        detail=False,
+        methods=['get'],
+        url_path=r'activate/(?P<uidb64>\w+)/(?P<token>(\w+-?\w+)+)'
+    )
+    def activate(self, request, uidb64, token):
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+            print('[USER ERROR]')
+            user = None
+
+        if user and account_activation_token.check_token(user, token):
+            user.is_active = True
+            user.save()
+            # login(request, user)
+            return Response({'info': 'User account is activated'})
+        else:
+            return Response({'error': 'User account activation failed'}, 400)

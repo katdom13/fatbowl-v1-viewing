@@ -31,7 +31,7 @@ const Dashboard = () => {
                 <Typography component='p' gutterBottom>
                   Manage your <b>orders</b> and personal detail
                 </Typography>
-                <Link href='/'>
+                <Link href='/settings/profile'>
                   <a className={classes.detailLink}>
                     Change details
                   </a>

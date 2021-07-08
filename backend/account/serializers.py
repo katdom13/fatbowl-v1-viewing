@@ -1,8 +1,13 @@
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from rest_framework import serializers
 
 from account.models import CustomUser
+
+from .tokens import account_activation_token
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -14,13 +19,29 @@ class UserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['id', 'username', 'email', 'password', 'phone_number']
 
-    # Hash password on create
     def create(self, validated_data):
         user_data = validated_data.pop('user')
 
+        # Hash password on create
         user = User.objects.create(
             password=make_password(user_data.pop('password')),
             **user_data
+        )
+
+        # Make the user inactive by default
+        user.is_active = False
+        user.save()
+
+        # Send registration email
+        user.email_user(
+            subject='Activate your Account',
+            message=render_to_string('account/registration/account_activation_email.html', {
+                'user': user,
+                'url': 'http://localhost:3001/account/activate/{uidb64}/{token}'.format(
+                    uidb64=urlsafe_base64_encode(force_bytes(user.pk)),
+                    token=account_activation_token.make_token(user)
+                )
+            })
         )
 
         return CustomUser.objects.create(
@@ -60,32 +81,3 @@ class UserSerializer(serializers.ModelSerializer):
 
             raise serializers.ValidationError('This email is already registered')
         return value
-
-# class UserSerializer(serializers.ModelSerializer):
-#     # Hash password on create
-#     def create(self, validated_data):
-#         return User.objects.create(
-#             password=make_password(validated_data.pop('password')),
-#             **validated_data
-#         )
-
-#     # Hash password on update
-#     def update(self, instance, validated_data):
-#         instance = super().update(instance, validated_data)
-#         if 'password' in validated_data:
-#             instance.password = make_password(validated_data['password'])
-#         instance.save()
-#         return instance
-
-#     # Validate email to be unique
-#     def validate_email(self, value):
-#         if User.objects.filter(email=value).exists():
-#             if self.instance and self.instance.email == value:
-#                 return value
-
-#             raise serializers.ValidationError('This email is already registered')
-#         return value
-
-#     class Meta:
-#         model = User
-#         fields = ['id', 'username', 'email', 'password']

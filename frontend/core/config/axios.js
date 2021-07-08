@@ -184,6 +184,20 @@ const deleteUser = async (username, csrf) => {
     .catch(error => Promise.reject(error))
 }
 
+const activateUser = async (uidb64, token, csrf) => {
+  return axiosInstance.get(
+    `account/users/activate/${uidb64}/${token}/`,
+    {
+      headers: {
+        ...axiosInstance.defaults.headers,
+        'X-CSRFToken': csrf
+      }
+    }
+  )
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
 export {
   whoami,
   loginUser,
@@ -201,4 +215,5 @@ export {
   getUser,
   updateUser,
   deleteUser,
+  activateUser,
 }

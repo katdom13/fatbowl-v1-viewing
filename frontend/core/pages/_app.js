@@ -95,7 +95,7 @@ function MyApp({ Component, pageProps }) {
         console.log('[WHOAMI error]', err)
         context.reload({
           ...state,
-          qty: err.response.status === 403 ? 0 : state.qty
+          qty: err.response && err.response.status === 403 ? 0 : state.qty
         })
       })
     // if (cookies.sessionid) {
