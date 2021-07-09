@@ -138,7 +138,7 @@ const Login = () => {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href=".">
+                <Link href="/forgot-password">
                   <ALink variant="body2">
                     Forgot password?
                   </ALink>

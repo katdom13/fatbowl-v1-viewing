@@ -198,6 +198,36 @@ const activateUser = async (uidb64, token, csrf) => {
     .catch(error => Promise.reject(error))
 }
 
+const forgotPassword = async (email, csrf) => {
+  return axiosInstance.post(
+    'account/password_reset/',
+    {email,},
+    {
+      headers: {
+        ...axiosInstance.defaults.headers,
+        'X-CSRFToken': csrf
+      }
+    }
+  )
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
+const passwordReset = async (uidb64, token, password, csrf) => {
+  return axiosInstance.post(
+    `account/password_reset_confirm/${uidb64}/${token}/`,
+    {password,},
+    {
+      headers: {
+        ...axiosInstance.defaults.headers,
+        'X-CSRFToken': csrf
+      }
+    }
+  )
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
 export {
   whoami,
   loginUser,
@@ -216,4 +246,6 @@ export {
   updateUser,
   deleteUser,
   activateUser,
+  forgotPassword,
+  passwordReset,
 }

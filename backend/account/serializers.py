@@ -1,8 +1,8 @@
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes, force_text
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from rest_framework import serializers
 
 from account.models import CustomUser

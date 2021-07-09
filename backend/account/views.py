@@ -1,11 +1,14 @@
 import json
 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
-from django.utils.encoding import force_text
-from django.utils.http import urlsafe_base64_decode
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.decorators.http import require_POST
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -151,3 +154,51 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({'info': 'User account is activated'})
         else:
             return Response({'error': 'User account activation failed'}, 400)
+
+
+class PasswordResetView(APIView):
+    permission_classes = [AllowAny]
+
+    email_template_name = 'account/user/password_reset_email.html'
+
+    def post(self, request, format=None):
+        email = request.data.get('email')
+        user = User.objects.filter(email=email).first()
+
+        if user:
+            user.email_user(
+                subject='FatOwl - Password reset request for {username}'.format(
+                        username=user.username
+                ),
+                message=render_to_string(
+                    self.email_template_name,
+                    {
+                        'user': user,
+                        'base_url': 'http://localhost:3001',
+                        'path': 'password-reset/{uidb64}/{token}'.format(
+                            uidb64=urlsafe_base64_encode(force_bytes(user.pk)),
+                            token=default_token_generator.make_token(user)
+                        )
+                    }
+                )
+            )
+            return Response({'success': 'Email sent'})
+        else:
+            return Response({'error': 'There is no user with that email'}, 404)
+
+
+class PasswordResetConfirmView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, uidb64, token, format=None):
+        password = request.data.get('password')
+
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+
+        if user and default_token_generator.check_token(user, token):
+            user.password = make_password(password)
+            user.save()
+            return Response({'success': 'Password has been set'})
+        else:
+            return Response({'error': 'Password reset failed. Please try again'}, 400)
