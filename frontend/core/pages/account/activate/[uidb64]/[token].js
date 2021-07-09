@@ -30,6 +30,7 @@ const Activate = () => {
         setIsSuccess(true)
       })
       .catch(err => {
+        console.error('AAAAAAAAAA', err.response)
         setTitle(err.response && err.response.data && err.response.data.error)
         setBody('This link may now be invalid or expired. Please try again.')
         setIsSuccess(false)

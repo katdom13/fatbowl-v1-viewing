@@ -13,7 +13,7 @@ let axiosInstance = axios.create({
 
 // Promises
 const whoami = async () => {
-  return axiosInstance.get('account/whoami')
+  return axiosInstance.get('account/whoami/')
     .then(response => Promise.resolve(response.data.username))
     .catch(error => Promise.reject(error))
 }
@@ -41,13 +41,13 @@ const logoutUser = async () => {
 }
 
 const getCsrf = async () => {
-  return axiosInstance.get('account/csrf')
+  return axiosInstance.get('account/csrf/')
     .then(response => Promise.resolve(response.headers['x-csrftoken']))
     .catch(error => Promise.reject(error))
 }
 
 const getCategories = async () => {
-  return axiosInstance.get('api/categories')
+  return axiosInstance.get('api/categories/')
     .then(response => Promise.resolve(response.data))
     .catch(error => Promise.reject(error))
 }
@@ -121,7 +121,7 @@ const getProducts = async (category = '') => {
 }
 
 const getProduct = async slug => {
-  return axiosInstance.get(`api/products/${slug}`)
+  return axiosInstance.get(`api/products/${slug}/`)
     .then(response => Promise.resolve(response.data))
     .catch(error => Promise.reject(error))
 }
@@ -186,7 +186,7 @@ const deleteUser = async (username, csrf) => {
 
 const activateUser = async (uidb64, token, csrf) => {
   return axiosInstance.get(
-    `account/users/activate/${uidb64}/${token}/`,
+    `account/activate/${uidb64}/${token}/`,
     {
       headers: {
         ...axiosInstance.defaults.headers,

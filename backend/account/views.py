@@ -11,7 +11,8 @@ from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.decorators.http import require_POST
 from rest_framework import viewsets
-from rest_framework.decorators import action
+
+# from rest_framework.decorators import action
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
@@ -52,12 +53,14 @@ def login_view(request):
     user = User.objects.filter(username=username).first()
 
     if user:
-        user = authenticate(username=username, password=password)
+        if not user.is_active:
+            return JsonResponse({'info': 'Account is inactive'}, status=400)
+        else:
+            user = authenticate(username=username, password=password)
 
-        if not user:
-            return JsonResponse({'info': 'Invalid credentials'}, status=401)
-
-    if not user:
+            if not user:
+                return JsonResponse({'info': 'Invalid credentials'}, status=401)
+    else:
         return JsonResponse({'info': 'User does not exist'}, status=400)
 
     login(request, user)
@@ -129,17 +132,33 @@ class UserViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
 
-    @action(methods=['get'], detail=False, url_path=r'whatev')
-    def whatev(self, request):
-        return Response({'success'})
-
     # Custom methods
-    @action(
-        detail=False,
-        methods=['get'],
-        url_path=r'activate/(?P<uidb64>\w+)/(?P<token>(\w+-?\w+)+)'
-    )
-    def activate(self, request, uidb64, token):
+    # @action(
+    #     detail=False,
+    #     methods=['get'],
+    #     url_path=r'activate/(?P<uidb64>\w+)/(?P<token>(\w+-?\w+)+)'
+    # )
+    # def activate(self, request, uidb64, token):
+    #     try:
+    #         uid = force_text(urlsafe_base64_decode(uidb64))
+    #         user = User.objects.get(pk=uid)
+    #     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+    #         print('[USER ERROR]')
+    #         user = None
+
+    #     if user and account_activation_token.check_token(user, token):
+    #         user.is_active = True
+    #         user.save()
+    #         # login(request, user)
+    #         return Response({'info': 'User account is activated'})
+    #     else:
+    #         return Response({'error': 'User account activation failed'}, 400)
+
+
+class UserActivationView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, uidb64, token, format=None):
         try:
             uid = force_text(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
