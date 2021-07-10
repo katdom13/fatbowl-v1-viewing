@@ -16,6 +16,7 @@ import Link from 'next/link'
 import Router from 'next/router'
 import { useEffect, useState } from 'react'
 import { useCookies } from 'react-cookie'
+import ProgressLoader from '../../../components/progressLoader'
 import { passwordReset } from '../../../config/axios'
 
 const PasswordReset = () => {
@@ -30,7 +31,7 @@ const PasswordReset = () => {
   const [formdata, setFormdata] = useState(initialFormdata)
   const [formErrors, setFormErrors] = useState(initialFormdata)
   const [isValid, setIsValid] = useState(false)
-  const [isDone, setIsDone] = useState(false)
+  const [status, setStatus] = useState('idle')
   const [alert, setAlert] = useState({
     severity: '',
     message: ''
@@ -63,6 +64,7 @@ const PasswordReset = () => {
 
   const handleSubmit = e => {
     e.preventDefault()
+    setStatus('loading')
 
     if (isValid) {
       let query = Router.query
@@ -70,13 +72,14 @@ const PasswordReset = () => {
       let token = query.token
   
       passwordReset(uidb64, token, formdata.password, cookies.csrftoken)
-        .then(response => setIsDone(true))
+        .then(response => setStatus('done'))
         .catch(err => {
           console.log('[PASSWORD RESET ERROR]:', err.response ? err.response : err)
           setAlert({
             severity: 'error',
             message: err.response && err.response.data && err.response.data.error
           })
+          setStatus('idle')
         })
     }
   }
@@ -100,19 +103,7 @@ const PasswordReset = () => {
                 <Grid container>
                   <Grid item xs={12}>
                     {
-                      isDone ? (
-                        <Box display='flex' flexDirection='column' justifyContent='center' paddingY={3}>
-                          <Typography component='h3' variant='h5' gutterBottom>
-                            Password reset success
-                          </Typography>
-
-                          <Link href='/login' passHref>
-                            <ALink color='primary' variant='body1' gutterBottom>
-                              You may now log in
-                            </ALink>
-                          </Link>
-                        </Box>
-                      ) : (
+                      status === 'idle' ? (
                         <>
                           {
                             alert && alert.message ? (
@@ -181,8 +172,31 @@ const PasswordReset = () => {
                             </Box>
                           </form>
                         </>
-                      )
+                      ) : null
                     }
+
+                    {
+                      status === 'loading' ? (
+                        <ProgressLoader />
+                      ) : null
+                    }
+
+                    {
+                      status === 'done' ? (
+                        <Box display='flex' flexDirection='column' justifyContent='center' paddingY={3}>
+                          <Typography component='h3' variant='h5' gutterBottom>
+                            Password reset success
+                          </Typography>
+
+                          <Link href='/login' passHref>
+                            <ALink color='primary' variant='body1' gutterBottom>
+                              You may now log in
+                            </ALink>
+                          </Link>
+                        </Box>
+                      ) : null
+                    }
+
                   </Grid>
                 </Grid>
               </Container>

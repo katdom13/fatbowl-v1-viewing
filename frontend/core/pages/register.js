@@ -15,6 +15,7 @@ import { register } from "../config/axios"
 import { useCookies } from "react-cookie"
 import Router from "next/router"
 import Head from 'next/head'
+import ProgressLoader from "../components/progressLoader"
 
 const Register = () => {
   const classes = useStyles()
@@ -29,7 +30,7 @@ const Register = () => {
   const [formdata, setFormdata] = useState(initialFormdata)
   const [formErrors, setFormErrors] = useState(initialFormdata)
   const [isValid, setIsValid] = useState(false)
-  const [isDone, setIsDone] = useState(false)
+  const [status, setStatus] = useState('idle')
 
   const handleChange = (name, value) => {
     setFormdata({
@@ -71,6 +72,7 @@ const Register = () => {
 
   const handleSubmit = e => {
     e.preventDefault()
+    setStatus('loading')
     setFormErrors(initialFormdata)
     if (isValid) {
       register(
@@ -81,11 +83,9 @@ const Register = () => {
         },
         cookies.csrftoken,
       )
-        .then(response => {
-          // Router.push('/login?register=success', '/login')
-          setIsDone(true)
-        })
+        .then(response => setStatus('done'))
         .catch(err => {
+          setStatus('idle')
           if (err.response && err.response.status === 400) {
             let errors = {...err.response.data}
             
@@ -114,16 +114,7 @@ const Register = () => {
         <Grid container>
           <Grid item xs={12}>
             {
-              isDone ? (
-                <Box display='flex' flexDirection='column' justifyContent='center' paddingY={3}>
-                  <Typography component='h3' variant='h5' gutterBottom>
-                    Successfully created an account for {formdata.username}!
-                  </Typography>
-                  <Typography component='p' variant='body1' gutterBottom>
-                    Please check your inbox for the activation email
-                  </Typography>
-                </Box>
-              ) : (
+              status === 'idle' ? (
                 <Box display='flex' alignItems='center' paddingY={3}>
                   <form className={classes.form} noValidate onSubmit={handleSubmit}>
                     <Typography component='h3' variant='h5' gutterBottom>
@@ -213,8 +204,25 @@ const Register = () => {
                     </Box>
 
                   </form>
-                </Box>   
-              )
+                </Box>
+              ) : null
+            }
+            {
+              status === 'loading' ? (
+                <ProgressLoader />
+              ) : null
+            }
+            {
+              status === 'done' ? (
+                <Box display='flex' flexDirection='column' justifyContent='center' paddingY={3}>
+                  <Typography component='h3' variant='h5' gutterBottom>
+                    Successfully created an account for {formdata.username}!
+                  </Typography>
+                  <Typography component='p' variant='body1' gutterBottom>
+                    Please check your inbox for the activation email
+                  </Typography>
+                </Box>
+              ) : null
             }
           </Grid>
         </Grid>

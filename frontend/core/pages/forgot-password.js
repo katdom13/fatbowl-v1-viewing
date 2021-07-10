@@ -8,27 +8,35 @@ import {
   Button,
   Link as ALink,
   Typography,
+  Fade,
 } from '@material-ui/core'
 import Head from 'next/head'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 import { forgotPassword } from '../config/axios'
 import { useCookies } from 'react-cookie'
+import ProgressLoader from '../components/progressLoader'
 
 const ForgotPassword = () => {
   const classes = useStyles()
+  const [cookies, setCookie] = useCookies(['csrftoken'])
 
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
-  const [cookies, setCookie] = useCookies(['csrftoken'])
-  const [isDone, setIsDone] = useState(false)
+  
+  const [status, setStatus] = useState('idle')
 
   const handleSubmit = e => {
     e.preventDefault()
+    setStatus('loading')
     forgotPassword(email, cookies.csrftoken)
-      .then(response => setIsDone(true))
+      .then(response => {
+        setStatus('done')
+      })
       .catch(err => {
         setError(err.response && err.response.data && err.response.data.error)
+        setStatus('idle')
       })
   }
 
@@ -42,17 +50,9 @@ const ForgotPassword = () => {
         <Grid container>
           <Grid item xs={12}>
             <Box display='flex' alignItems='center' paddingY={3}>
+
               {
-                isDone ? (
-                  <Box display='flex' flexDirection='column' justifyContent='center' paddingY={3}>
-                    <Typography component='h3' variant='h5' gutterBottom>
-                      Email sent
-                    </Typography>
-                    <Typography component='p' variant='body1' gutterBottom>
-                      Please check your inbox for instructions on how to reset your password.
-                    </Typography>
-                  </Box>
-                ) : (
+                status === 'idle' ? (
                   <form className={classes.form} noValidate onSubmit={handleSubmit}>
                     <Typography component='h3' variant='h5' gutterBottom>
                       Forgot your password?
@@ -94,8 +94,30 @@ const ForgotPassword = () => {
                       </Link>
                     </Box>
                   </form>
-                )
+                ) : null
               }
+
+              {
+                status === 'loading' ? (
+                  <Fade in={status === 'loading'}>
+                    <ProgressLoader />
+                  </Fade>
+                ) : null
+              }
+
+              {
+                status === 'done' ? (
+                  <Box display='flex' flexDirection='column' justifyContent='center' paddingY={3}>
+                    <Typography component='h3' variant='h5' gutterBottom>
+                      Email sent
+                    </Typography>
+                    <Typography component='p' variant='body1' gutterBottom>
+                      Please check your inbox for instructions on how to reset your password.
+                    </Typography>
+                  </Box>
+                ) : null
+              }
+
             </Box>
           </Grid>
         </Grid>
