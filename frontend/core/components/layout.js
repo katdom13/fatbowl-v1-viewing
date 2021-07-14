@@ -4,6 +4,9 @@ import Head from 'next/head'
 import { getCategories } from "../config/axios"
 import AppContext from "../contexts/AppContext"
 import Footer from "./footer"
+import {
+  Box,
+} from '@material-ui/core'
 
 const DefaultLayout = props => {
   const [categories, setCategories] = useState(null)
@@ -20,7 +23,9 @@ const DefaultLayout = props => {
         <title>Home</title>
       </Head>
       <Header categories={categories} />
-      {props.children}
+        <Box component='main' paddingTop={4}>
+          {props.children}
+        </Box>
       <Footer />
     </>
   )

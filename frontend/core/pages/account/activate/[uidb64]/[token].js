@@ -46,7 +46,7 @@ const Activate = () => {
         <CssBaseline />
         <Grid container>
           <Grid item xs={12}>
-            <Box display='flex' flexDirection='column' justifyContent='center' paddingY={3}>
+            <Box display='flex' flexDirection='column' justifyContent='center'>
               <Typography component='h3' variant='h5' gutterBottom>
                 {title}
               </Typography>

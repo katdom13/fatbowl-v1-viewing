@@ -79,18 +79,18 @@ const Login = () => {
       <Head>
         <title>Login</title>
       </Head>
-      <Container component="main" maxWidth="xs">
+      <Container component="main" maxWidth="sm">
         <CssBaseline />
-        <div className={classes.paper}>
-          {
-            alert && alert.message ? (
-              <Box width='100%' marginBottom={2}>
-                <Alert severity={alert.severity}>
-                  {alert.message}
-                </Alert>
-              </Box>
-            ) : null
-          }
+        {
+          alert && alert.message ? (
+            <Box width='100%' marginBottom={2}>
+              <Alert severity={alert.severity}>
+                {alert.message}
+              </Alert>
+            </Box>
+          ) : null
+        }
+        <Box display='flex' flexDirection='column' alignItems='center'>
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
           </Avatar>
@@ -137,23 +137,27 @@ const Login = () => {
               Sign in
             </Button>
             <Grid container>
-              <Grid item xs>
-                <Link href="/forgot-password">
-                  <ALink variant="body2">
-                    Forgot password?
-                  </ALink>
-                </Link>
+              <Grid item xs={12}>
+                <Box textAlign='center'>
+                  <Link href="/forgot-password">
+                    <ALink variant="body2" gutterBottom>
+                      Forgot password?
+                    </ALink>
+                  </Link>
+                </Box>
               </Grid>
-              <Grid item>
-                <Link href="/register">
-                  <ALink variant="body2">
-                    {"Don't have an account? Sign Up"}
-                  </ALink>
-                </Link>
+              <Grid item xs={12}>
+                <Box textAlign='center'>
+                  <Link href="/register">
+                    <ALink variant="body2" gutterBottom>
+                      {"Don't have an account? Sign Up"}
+                    </ALink>
+                  </Link>
+                </Box>
               </Grid>
             </Grid>
           </form>
-        </div>
+        </Box>
       </Container>
     </>
   )

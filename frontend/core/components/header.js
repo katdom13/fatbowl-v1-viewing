@@ -92,7 +92,7 @@ const Header = props => {
                   >
                     {
                       props.categories && props.categories.map(category => (
-                        <StyledMenuItem link key={category.slug} href={`/category/${encodeURIComponent(category.slug)}`} onClick={handleCloseCategory}>
+                        <StyledMenuItem link="true" key={category.slug} href={`/category/${encodeURIComponent(category.slug)}`} onClick={handleCloseCategory}>
                           {category.name}
                         </StyledMenuItem>
                       ))
@@ -203,7 +203,7 @@ const Header = props => {
                 </MenuListItem>
                 <StyledDivider variant='middle' />
 
-                <MenuListItem link href='/dashboard/' onClick={() => {
+                <MenuListItem link="true" href='/dashboard/' onClick={() => {
                     setIsCategoryOpen(false)
                     setIsOpenMenu(!isOpenMenu)
                   }}
@@ -215,7 +215,7 @@ const Header = props => {
                 </MenuListItem>
                 <StyledDivider variant='middle' />
 
-                <MenuListItem link href='/cart/' onClick={() => {
+                <MenuListItem link="true" href='/cart/' onClick={() => {
                     setIsCategoryOpen(false)
                     setIsOpenMenu(!isOpenMenu)
                   }}

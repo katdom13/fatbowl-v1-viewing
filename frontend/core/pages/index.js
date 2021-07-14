@@ -22,16 +22,16 @@ export default function Home({products}) {
   const [cookies, setCookie] = useCookies(['csrftoken'])
 
   return (
-    <Box component='main'>
+    <>
       <Container component='div' maxWidth='lg'>
         <Alert severity="info">
           COVID-19 - <u>Click here for our latest updates</u> on our stores, website and contact centre. Thank you for your patience and support.
         </Alert>
-        <Box component='main' paddingY={4}>
-          <ProductGrid category={`All`} products={products} />
-        </Box>
       </Container>
-    </Box>
+      <Box component='main' paddingY={4}>
+        <ProductGrid category={`All`} products={products} />
+      </Box>
+    </>
   )
 }
 

@@ -49,8 +49,7 @@ const ForgotPassword = () => {
         <CssBaseline />
         <Grid container>
           <Grid item xs={12}>
-            <Box display='flex' alignItems='center' paddingY={3}>
-
+            <Box display='flex' alignItems='center'>
               {
                 status === 'idle' ? (
                   <form className={classes.form} noValidate onSubmit={handleSubmit}>
@@ -107,7 +106,7 @@ const ForgotPassword = () => {
 
               {
                 status === 'done' ? (
-                  <Box display='flex' flexDirection='column' justifyContent='center' paddingY={3}>
+                  <Box display='flex' flexDirection='column' justifyContent='center'>
                     <Typography component='h3' variant='h5' gutterBottom>
                       Email sent
                     </Typography>

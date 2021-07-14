@@ -185,7 +185,7 @@ const Profile = () => {
         {
           isDeleted ? (
             <Grid item xs={12}>
-              <Box display='flex' alignItems='center' paddingY={3}>
+              <Box display='flex' alignItems='center'>
                 <Box className={classes.form}>
                   <Typography component='h3' variant='h5' gutterBottom>
                     Your account has been deleted
@@ -199,7 +199,7 @@ const Profile = () => {
           ) : (
             <>
               <Grid item xs={12}>
-                <Box display='flex' alignItems='center' paddingY={3}>
+                <Box display='flex' alignItems='center'>
                   <form className={classes.form} noValidate onSubmit={handleSubmit}>
                     {
                       alert && alert.message ? (
@@ -327,7 +327,7 @@ const Profile = () => {
 
               </Grid>
               <Grid item xs={12}>
-                <Box display='flex' alignItems='center' paddingY={3}>
+                <Box display='flex' alignItems='center'>
                   <form className={classes.form} noValidate onSubmit={handleDelete}>
                     <Typography component='h3' variant='h5' gutterBottom>
                       Delete Account

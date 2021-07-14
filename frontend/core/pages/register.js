@@ -85,6 +85,7 @@ const Register = () => {
       )
         .then(response => setStatus('done'))
         .catch(err => {
+          console.error('[REGISTER ERROR]', err && err.response ? err.response : err)
           setStatus('idle')
           if (err.response && err.response.status === 400) {
             let errors = {...err.response.data}
@@ -113,9 +114,10 @@ const Register = () => {
         <CssBaseline />
         <Grid container>
           <Grid item xs={12}>
-            {
-              status === 'idle' ? (
-                <Box display='flex' alignItems='center' paddingY={3}>
+            <Box display='flex' alignItems='center'>
+
+              {
+                status === 'idle' ? (
                   <form className={classes.form} noValidate onSubmit={handleSubmit}>
                     <Typography component='h3' variant='h5' gutterBottom>
                       Create an account
@@ -136,7 +138,7 @@ const Register = () => {
                       value={formdata.username}
                       onChange={(e) => handleChange(e.target.name, e.target.value)}
                       autoFocus
-                      error={formErrors.username}
+                      error={Boolean(formErrors.username)}
                       helperText={formErrors.username}
                     />
                     <TextField
@@ -150,7 +152,7 @@ const Register = () => {
                       autoComplete="email"
                       value={formdata.email}
                       onChange={(e) => handleChange(e.target.name, e.target.value)}
-                      error={formErrors.email}
+                      error={Boolean(formErrors.email)}
                       helperText={formErrors.email}
                     />
                     <TextField
@@ -165,7 +167,7 @@ const Register = () => {
                       value={formdata.password}
                       onChange={(e) => handleChange(e.target.name, e.target.value)}
                       autoComplete="current-password"
-                      error={formErrors.password}
+                      error={Boolean(formErrors.password)}
                       helperText={formErrors.password}
                     />
                     <TextField
@@ -180,7 +182,7 @@ const Register = () => {
                       value={formdata.password2}
                       onChange={(e) => handleChange(e.target.name, e.target.value)}
                       autoComplete="repeat-password"
-                      error={formErrors.password}
+                      error={Boolean(formErrors.password)}
                       helperText={formErrors.password}
                     />
 
@@ -204,26 +206,28 @@ const Register = () => {
                     </Box>
 
                   </form>
-                </Box>
-              ) : null
-            }
-            {
-              status === 'loading' ? (
-                <ProgressLoader />
-              ) : null
-            }
-            {
-              status === 'done' ? (
-                <Box display='flex' flexDirection='column' justifyContent='center' paddingY={3}>
-                  <Typography component='h3' variant='h5' gutterBottom>
-                    Successfully created an account for {formdata.username}!
-                  </Typography>
-                  <Typography component='p' variant='body1' gutterBottom>
-                    Please check your inbox for the activation email
-                  </Typography>
-                </Box>
-              ) : null
-            }
+                ) : null
+              }
+
+              {
+                status === 'loading' ? (
+                  <ProgressLoader />
+                ) : null
+              }
+
+              {
+                status === 'done' ? (
+                  <Box display='flex' flexDirection='column' justifyContent='center'>
+                    <Typography component='h3' variant='h5' gutterBottom>
+                      Successfully created an account for {formdata.username}!
+                    </Typography>
+                    <Typography component='p' variant='body1' gutterBottom>
+                      Please check your inbox for the activation email
+                    </Typography>
+                  </Box>
+                ) : null
+              }
+            </Box>
           </Grid>
         </Grid>
       </Container>

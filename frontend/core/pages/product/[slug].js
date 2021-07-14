@@ -16,7 +16,8 @@ import {
   Button,
   OutlinedInput,
   InputAdornment,
-  IconButton
+  IconButton,
+  Divider
 } from "@material-ui/core"
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
@@ -59,94 +60,94 @@ const Product = ({product}) => {
         <title>{product.title}</title>
       </Head>
       <Container maxWidth='md'>
-        <Box component='main' pt={5}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={5}>
-              <Box display='flex' justifyContent='center'>
-                <Image
-                  src={product.product_image[0].image}
-                  alt={product.product_image[0].alt_text}
-                  width={400}
-                  height={400}
-                />
-              </Box>
-            </Grid>
-            <Grid item xs={12} md={7}>
-              <Box my={1}>
-                <Typography variant='h4' component='h1' className={classes.title}>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={7}>
+
+            <Grid container>
+              <Grid item xs={12}>
+                <Typography variant='h3' component='h1' className={classes.title}>
                   {product.title}
                 </Typography>
-              </Box>
-              <Box component='p'>
-                {product.description}
-              </Box>
-              <TableContainer component={Paper} elevation={0} className={classes.tableContainer}>
-                <Table>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell className={classes.tableCell}>
-                        <Box component='p' fontWeight={700}>
-                          Price
-                        </Box>
-                      </TableCell>
-                      <TableCell className={classes.tableCell} align='right'>
-                        <Typography variant='h4' component='p' style={{ fontWeight: 700 }}>
-                          ₱{ product.regular_price }
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className={classes.tableCell}>
-                        <FormControl className={classes.formControl}>
-                          <InputLabel htmlFor='qty' classes={{
-                            root: classes.label
-                          }}>Qty</InputLabel>
-                          <OutlinedInput
-                            classes={{
-                              root: classes.qty,
-                              input: classes.qtyInput,
-                            }}
-                            id='qty'
-                            type='number'
-                            value={qty}
-                            onChange={e => setQty(e.target.value)}
-                            startAdornment={
-                              <InputAdornment position='start'>
-                                <IconButton
-                                  onClick={() => qty === 0 ? setQty(0) : setQty(qty - 1)}
-                                  size='small'
-                                  color={qty === 0 ? 'default' : 'primary'}
-                                >
-                                  <RemoveCircleIcon />
-                                </IconButton>
-                              </InputAdornment>
-                            }
-                            endAdornment={
-                              <InputAdornment position='end'>
-                                <IconButton
-                                  onClick={() => setQty(qty + 1)}
-                                  size='small'
-                                  color='primary'
-                                >
-                                  <AddCircleIcon />
-                                </IconButton>
-                              </InputAdornment>
-                            }
-                          />
-                        </FormControl>
-                      </TableCell>
-                      <TableCell className={classes.tableCell} align='right'>
-                        <Button variant="contained" color="primary" onClick={handleAdd}>
-                          Add to Cart
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                <Typography variant='body1' component='p' color='textSecondary' gutterBottom>
+                  {product.description}
+                </Typography>
+
+                <Box display='flex' justifyContent='center' paddingTop={2}>
+                  <Image
+                    src={product.product_image[0].image}
+                    alt={product.product_image[0].alt_text}
+                    width={400}
+                    height={400}
+                  />
+                </Box>
+              </Grid>
             </Grid>
+
           </Grid>
-        </Box>
+
+          <Grid item xs={12} md={5}>
+            <Box component='div' display='grid' gridGap={`0.5rem`}>
+              <Box component='div' display='flex' justifyContent='space-between'>
+                <Box component='div'>
+                  <Typography variant='h4' component='p' style={{ fontWeight: 400 }}>
+                    ₱{ product.regular_price }
+                  </Typography>
+                  <Typography variant='body1' component='p' color='textSecondary' style={{ fontWeight: 400 }}>
+                    includes tax
+                  </Typography>
+                </Box>
+
+                <FormControl className={classes.formControl}>
+                  <InputLabel htmlFor='qty' classes={{
+                    root: classes.label
+                  }}>Qty</InputLabel>
+                  <OutlinedInput
+                    classes={{
+                      root: classes.qty,
+                      input: classes.qtyInput,
+                    }}
+                    id='qty'
+                    type='number'
+                    value={qty}
+                    onChange={e => setQty(e.target.value)}
+                    startAdornment={
+                      <InputAdornment position='start'>
+                        <IconButton
+                          onClick={() => qty === 0 ? setQty(0) : setQty(qty - 1)}
+                          size='small'
+                          color={qty === 0 ? 'default' : 'primary'}
+                        >
+                          <RemoveCircleIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    endAdornment={
+                      <InputAdornment position='end'>
+                        <IconButton
+                          onClick={() => setQty(qty + 1)}
+                          size='small'
+                          color='primary'
+                        >
+                          <AddCircleIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                  />
+                </FormControl>
+              </Box>
+
+              <Divider variant='middle' component='hr' style={{margin: '16px'}} />
+
+              <Button variant="contained" color="primary" onClick={handleAdd}>
+                Add to Cart
+              </Button>
+
+              <Button variant="contained" color="default">
+                Add to favorites
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
       </Container>
     </>
   )
@@ -160,7 +161,7 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   formControl: {
-    maxWidth: 200,
+    maxWidth: 150,
   },
   label: {
     margin: theme.spacing(0.5, 0, 0, 1)

@@ -14,3 +14,11 @@ body, p {
 p {
   font-size: 0.875rem;
 }
+
+.fw-bold {
+  font-weight: bold;
+}
+
+a {
+  cursor: pointer;
+}

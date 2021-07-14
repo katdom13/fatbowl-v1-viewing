@@ -9,9 +9,9 @@ const Category = ({category, products}) => {
       <Head>
         <title>{category}</title>
       </Head>
-      <Box component='main' paddingTop={4}>
-        <ProductGrid category={category} products={products} />
-      </Box>
+      
+      <ProductGrid category={category} products={products} />
+      
     </>
   )
 }

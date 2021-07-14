@@ -183,7 +183,7 @@ const PasswordReset = () => {
 
                     {
                       status === 'done' ? (
-                        <Box display='flex' flexDirection='column' justifyContent='center' paddingY={3}>
+                        <Box display='flex' flexDirection='column' justifyContent='center'>
                           <Typography component='h3' variant='h5' gutterBottom>
                             Password reset success
                           </Typography>
@@ -226,10 +226,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
   },
   main: {
-    padding: theme.spacing(4, 0),
-    [theme.breakpoints.up('md')]: {
-      padding: 0,
-    }
+    padding: 0,
   },
   submit: {
     margin: theme.spacing(6, 0, 2),
