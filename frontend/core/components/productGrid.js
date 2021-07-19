@@ -42,26 +42,31 @@ const ProductGrid = ({category, products}) => {
         ) : (
           <Grid container spacing={2}>
             {
-              products && products.map(product => (
-                <Link key={product.id} href={`/product/${encodeURIComponent(product.slug)}`}>
-                    <Grid item xs={12} sm={6} md={3}>
-                      <Card elevation={1}>
-                        <ProductImage
-                          image={product.product_image[0].image}
-                          alt={product.product_image[0].alt_text}
-                        />
-                        <CardContent>
-                          <Typography gutterBottom component="p">
-                            { product.title }
-                          </Typography>
-                          <Box component="p" fontSize={16} fontWeight={900}>
-                            ₱{ product.regular_price }
-                          </Box>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                </Link>
-              ))
+              products && products.map(product => {
+                let product_image = product.product_image.find(
+                  product_image => product_image.is_feature === true
+                )
+                return (
+                  <Link key={product.id} href={`/product/${encodeURIComponent(product.slug)}`}>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Card elevation={1}>
+                          <ProductImage
+                            image={product_image.image}
+                            alt={product_image.alt_text}
+                          />
+                          <CardContent>
+                            <Typography gutterBottom component="p">
+                              { product.title }
+                            </Typography>
+                            <Box component="p" fontSize={16} fontWeight={900}>
+                              ₱{ product.regular_price }
+                            </Box>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                  </Link>
+                )
+              })
             }
           </Grid>
         )

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from mptt.admin import MPTTModelAdmin
 
 from .models import (
     Category,
@@ -15,7 +16,7 @@ class ProductSpecificationAdmin(admin.ModelAdmin):
 
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(MPTTModelAdmin):
     list_display = ('name', 'slug')
     prepopulated_fields = {
         'slug': ('name', )

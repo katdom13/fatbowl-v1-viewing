@@ -2,14 +2,8 @@ import {
   Container,
   Grid,
   Box,
-  Paper,
   makeStyles,
   Typography,
-  TableContainer,
-  TableBody,
-  TableRow,
-  TableCell,
-  Table,
   fade,
   InputLabel,
   FormControl,
@@ -17,7 +11,11 @@ import {
   OutlinedInput,
   InputAdornment,
   IconButton,
-  Divider
+  Divider,
+  Avatar,
+  Hidden,
+  Tabs,
+  Tab,
 } from "@material-ui/core"
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
@@ -34,7 +32,13 @@ const Product = ({product}) => {
 
   const [qty, setQty] = useState(1)
   const [cookies, setCookie] = useCookies(['csrftoken'])
+  const [image, setImage] = useState(0)
   const {context: {reload}, state} = useContext(AppContext)
+
+  useEffect(() => {
+    let imageIndex = product.product_image.findIndex(image => image.is_feature === true)
+    setImage(imageIndex)
+  }, [])
 
   const handleAdd = () => {
     if (state.loggedIn === false) {
@@ -60,9 +64,46 @@ const Product = ({product}) => {
         <title>{product.title}</title>
       </Head>
       <Container maxWidth='md'>
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={7}>
+        <Grid container spacing={2}>
 
+          <Hidden smDown>
+            <Grid item xs={12} md={2}>
+              <Box display='flex' flexDirection='column'>
+                <Tabs value={image} onChange={(e, val) => setImage(val)} orientation='vertical'>
+                  {
+                    product.product_image.map(
+                      product_image => (
+                        <Tab
+                          key={product_image.id}
+                          className={classes.image}
+                          disableRipple
+                          style={{
+                            background: `url(${product_image.image})`,
+                            position: "relative",
+                            backgroundSize: 'contain',
+                            backgroundPosition: 'center',
+                            backgroundRepeat: 'no-repeat'
+                            // minWidth: 'unset',
+                          }}
+                          label={<span className={classes.imageLayer} />}
+                        >
+                        </Tab>
+                      )
+                    )  
+                  }
+                </Tabs>
+                {/* {
+                  product.product_image.map(
+                    product_image => (
+                      <Avatar variant='square' src={product_image.image} className={classes.image}/>
+                    )
+                  )
+                } */}
+              </Box>
+            </Grid>
+          </Hidden>
+
+          <Grid item xs={12} md={6}>
             <Grid container>
               <Grid item xs={12}>
                 <Typography variant='h3' component='h1' className={classes.title}>
@@ -74,18 +115,44 @@ const Product = ({product}) => {
 
                 <Box display='flex' justifyContent='center' paddingTop={2}>
                   <Image
-                    src={product.product_image[0].image}
-                    alt={product.product_image[0].alt_text}
+                    src={product.product_image[image].image}
+                    alt={product.product_image[image].alt_text}
                     width={400}
                     height={400}
                   />
                 </Box>
               </Grid>
             </Grid>
-
           </Grid>
 
-          <Grid item xs={12} md={5}>
+          <Hidden mdUp>
+            <Grid item xs={12} md={2}>
+              <Box display='flex' flexDirection='row' justifyContent='center' alignContent='center'>
+                <Tabs value={image} onChange={(e, val) => setImage(val)}>
+                  {
+                    product.product_image.map(
+                      product_image => (
+                        <Tab
+                          key={product_image.id}
+                          className={classes.image}
+                          style={{
+                            background: `url(${product_image.image})`,
+                            position: "relative",
+                            backgroundSize: 'cover',
+                            minWidth: 'unset',
+                          }}
+                          label={<span className={classes.imageLayer} />}
+                        >
+                        </Tab>
+                      )
+                    )  
+                  }
+                </Tabs>
+              </Box>
+            </Grid>
+          </Hidden>
+
+          <Grid item xs={12} md={4}>
             <Box component='div' display='grid' gridGap={`0.5rem`}>
               <Box component='div' display='flex' justifyContent='space-between'>
                 <Box component='div'>
@@ -162,6 +229,35 @@ const useStyles = makeStyles((theme) => ({
   },
   formControl: {
     maxWidth: 150,
+  },
+  image: {
+    alignSelf: 'center',
+    width: theme.spacing(8),
+    height: theme.spacing(8),
+    padding: theme.spacing(1, 1, 1, 1),
+    margin: theme.spacing(1, 0, 1, 1),
+    [theme.breakpoints.up('md')]: {
+      width: theme.spacing(10),
+      height: theme.spacing(10),
+      padding: theme.spacing(1, 0, 1, 0),
+      margin: theme.spacing(1, 0, 1, 0),
+    },
+    position: 'relative',
+    backgroundSize: 'cover',
+  },
+  imageLayer: {
+    backgroundColor: 'white',
+    opacity: 0,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    transition: theme.transitions.create('opacity'),
+
+    '&:hover': {
+      opacity: 0.15
+    }
   },
   label: {
     margin: theme.spacing(0.5, 0, 0, 1)

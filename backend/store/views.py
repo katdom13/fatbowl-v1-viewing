@@ -19,7 +19,10 @@ class ProductViewSet(viewsets.ModelViewSet):
     # Custom methods
     @action(detail=False, methods=['get'], url_path=r'category/(?P<slug>\w+)')
     def category(self, request, slug):
-        queryset = self.get_queryset().filter(category__slug=slug)
+        # queryset = self.get_queryset().filter(category__slug=slug)
+        queryset = self.get_queryset().filter(
+            category__in=Category.objects.get(slug=slug).get_descendants(include_self=True)
+        )
         serializer = self.get_serializer(queryset, many=True)
 
         return Response({
@@ -29,6 +32,9 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 class CategoryListView(generics.ListAPIView):
-    queryset = Category.objects.all()
+    # queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        return Category.objects.filter(level=0)

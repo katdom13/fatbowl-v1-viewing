@@ -172,6 +172,7 @@ const Profile = () => {
             setIsDeleted(true)
             logoutUser()
               .then(response => logout())
+              .catch(err => console.error('[LOGOUT ERROR]', err && err.response ? err.response : err))
           })
           .catch(err => console.error('[DELETE USER ERROR]', err.response))
       })

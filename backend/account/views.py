@@ -132,28 +132,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
 
-    # Custom methods
-    # @action(
-    #     detail=False,
-    #     methods=['get'],
-    #     url_path=r'activate/(?P<uidb64>\w+)/(?P<token>(\w+-?\w+)+)'
-    # )
-    # def activate(self, request, uidb64, token):
-    #     try:
-    #         uid = force_text(urlsafe_base64_decode(uidb64))
-    #         user = User.objects.get(pk=uid)
-    #     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
-    #         print('[USER ERROR]')
-    #         user = None
-
-    #     if user and account_activation_token.check_token(user, token):
-    #         user.is_active = True
-    #         user.save()
-    #         # login(request, user)
-    #         return Response({'info': 'User account is activated'})
-    #     else:
-    #         return Response({'error': 'User account activation failed'}, 400)
-
 
 class UserActivationView(APIView):
     permission_classes = [AllowAny]

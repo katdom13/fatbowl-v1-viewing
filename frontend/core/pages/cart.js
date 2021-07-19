@@ -189,136 +189,141 @@ const Cart = () => {
               </Grid>
               <Grid item xs={12} md={9}>
                 {
-                  items && items.map(item => (
-                    <Paper variant='outlined' square key={item.id} className={classes.card}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12} md={5} lg={4} className={classes.img}>
-                          <Image
-                            src={item.product_detail.product_image[0].image}
-                            alt={item.product_detail.product_image[0].alt_text}
-                            width={300}
-                            height={300}
-                          />
-                        </Grid>
-                        <Grid item xs={12} md={7} lg={8}>
-                          <Grid container>
-                            <Grid item xs={12}>
-                              <Box margin={1}>
-                              
-                                <Box className={classes.titleBox}>
-                                  <Link href={`/product/${encodeURIComponent(item.product_detail.slug)}`} passHref>
-                                    <ALink component='h1' variant='h5' className={classes.title} gutterBottom>
-                                      {item.product_detail.title}
-                                    </ALink>
-                                  </Link>
-                                </Box>
-
-                                <Paper variant='outlined' square>
-                                  <Box component='div' display='grid' gridGap={`0.5rem`} padding={1}>
-                                    
-                                    <Grid container>
-                                      <Grid item xs={12} md={8}>
-                                        <Typography variant='body1' component='p' color='textSecondary' gutterBottom>
-                                          {item.product_detail.description}
-                                        </Typography>
-                                      </Grid>
-                                      <Grid item xs={12} md={4}>
-                                        <Box textAlign='end'>
-                                          <Typography variant='body1' component='p'>
-                                            <Box component='span' fontWeight='bold'>₱{item.product_detail.regular_price}</Box>
-                                          </Typography>
-                                        </Box>
-                                      </Grid>
-                                    </Grid>
-
-                                    <Divider/>
-
-                                    <Box className={classes.buttonGroup}>
-                                      <FormControl className={classes.formControl}>
-                                        <InputLabel htmlFor='qty' classes={{
-                                          root: classes.label
-                                        }}>Qty</InputLabel>
-                                        <OutlinedInput
-                                          classes={{
-                                            root: classes.qty,
-                                            input: classes.qtyInput,
-                                          }}
-                                          id='qty'
-                                          type='number'
-                                          value={qtys[item.id]}
-                                          onChange={e => {
-                                            e.target.value <= 0 ? setQtys({...qtys, [item.id]: 0}) : setQtys({...qtys, [item.id]: e.target.value})
-                                          }}
-                                          startAdornment={
-                                            <InputAdornment position='start'>
-                                              <IconButton
-                                                onClick={() => qtys[item.id] <= 0 ? setQtys({...qtys, [item.id]: 0}) : setQtys({...qtys, [item.id]: qtys[item.id] - 1})}
-                                                size='small'
-                                                color={qtys[item.id] <= 0 ? 'default' : 'primary'}
-                                              >
-                                                <RemoveCircleIcon />
-                                              </IconButton>
-                                            </InputAdornment>
-                                          }
-                                          endAdornment={
-                                            <InputAdornment position='end'>
-                                              <IconButton
-                                                onClick={() => setQtys({...qtys, [item.id]: qtys[item.id] + 1})}
-                                                size='small'
-                                                color='primary'
-                                              >
-                                                <AddCircleIcon />
-                                              </IconButton>
-                                            </InputAdornment>
-                                          }
-                                        />
-                                      </FormControl>
-                                      
-                                      <Box display='flex'>
-                                        <Hidden xsDown>
-                                          <Button
-                                            variant='outlined'
-                                            size='small'
-                                            color='primary'
-                                            startIcon={<CreateIcon />}
-                                            className={classes.button}
-                                            onClick={() => handleUpdate(item.id)}
-                                          >
-                                            Update
-                                          </Button>
-
-                                          <Button
-                                            variant='outlined'
-                                            size='small'
-                                            color='default'
-                                            startIcon={<ClearIcon />}
-                                            className={classes.button}
-                                            onClick={() => handleDelete(item.id)}
-                                          >
-                                            Delete
-                                          </Button>
-                                        </Hidden>
-                                        <Hidden smUp>
-                                          <Button variant='outlined' size='small' color='primary' className={classes.button} onClick={() => handleUpdate(item.id)}>
-                                            <CreateIcon />
-                                          </Button>
-
-                                          <Button variant='outlined' size='small' color='default' className={classes.button} onClick={() => handleDelete(item.id)}>
-                                            <ClearIcon />
-                                          </Button>
-                                        </Hidden>
-                                      </Box>          
-                                    </Box>
+                  items && items.map(item => {
+                    let product_image = item.product_detail.product_image.find(
+                      product_image => product_image.is_feature === true
+                    )
+                    return (
+                      <Paper variant='outlined' square key={item.id} className={classes.card}>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} md={5} lg={4} className={classes.img}>
+                            <Image
+                              src={product_image.image}
+                              alt={product_image.alt_text}
+                              width={300}
+                              height={300}
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={7} lg={8}>
+                            <Grid container>
+                              <Grid item xs={12}>
+                                <Box margin={1}>
+                                
+                                  <Box className={classes.titleBox}>
+                                    <Link href={`/product/${encodeURIComponent(item.product_detail.slug)}`} passHref>
+                                      <ALink component='h1' variant='h5' className={classes.title} gutterBottom>
+                                        {item.product_detail.title}
+                                      </ALink>
+                                    </Link>
                                   </Box>
-                                </Paper>
-                              </Box>
+  
+                                  <Paper variant='outlined' square>
+                                    <Box component='div' display='grid' gridGap={`0.5rem`} padding={1}>
+                                      
+                                      <Grid container>
+                                        <Grid item xs={12} md={8}>
+                                          <Typography variant='body1' component='p' color='textSecondary' gutterBottom>
+                                            {item.product_detail.description}
+                                          </Typography>
+                                        </Grid>
+                                        <Grid item xs={12} md={4}>
+                                          <Box textAlign='end'>
+                                            <Typography variant='body1' component='p'>
+                                              <Box component='span' fontWeight='bold'>₱{item.product_detail.regular_price}</Box>
+                                            </Typography>
+                                          </Box>
+                                        </Grid>
+                                      </Grid>
+  
+                                      <Divider/>
+  
+                                      <Box className={classes.buttonGroup}>
+                                        <FormControl className={classes.formControl}>
+                                          <InputLabel htmlFor='qty' classes={{
+                                            root: classes.label
+                                          }}>Qty</InputLabel>
+                                          <OutlinedInput
+                                            classes={{
+                                              root: classes.qty,
+                                              input: classes.qtyInput,
+                                            }}
+                                            id='qty'
+                                            type='number'
+                                            value={qtys[item.id]}
+                                            onChange={e => {
+                                              e.target.value <= 0 ? setQtys({...qtys, [item.id]: 0}) : setQtys({...qtys, [item.id]: e.target.value})
+                                            }}
+                                            startAdornment={
+                                              <InputAdornment position='start'>
+                                                <IconButton
+                                                  onClick={() => qtys[item.id] <= 0 ? setQtys({...qtys, [item.id]: 0}) : setQtys({...qtys, [item.id]: qtys[item.id] - 1})}
+                                                  size='small'
+                                                  color={qtys[item.id] <= 0 ? 'default' : 'primary'}
+                                                >
+                                                  <RemoveCircleIcon />
+                                                </IconButton>
+                                              </InputAdornment>
+                                            }
+                                            endAdornment={
+                                              <InputAdornment position='end'>
+                                                <IconButton
+                                                  onClick={() => setQtys({...qtys, [item.id]: qtys[item.id] + 1})}
+                                                  size='small'
+                                                  color='primary'
+                                                >
+                                                  <AddCircleIcon />
+                                                </IconButton>
+                                              </InputAdornment>
+                                            }
+                                          />
+                                        </FormControl>
+                                        
+                                        <Box display='flex'>
+                                          <Hidden xsDown>
+                                            <Button
+                                              variant='outlined'
+                                              size='small'
+                                              color='primary'
+                                              startIcon={<CreateIcon />}
+                                              className={classes.button}
+                                              onClick={() => handleUpdate(item.id)}
+                                            >
+                                              Update
+                                            </Button>
+  
+                                            <Button
+                                              variant='outlined'
+                                              size='small'
+                                              color='default'
+                                              startIcon={<ClearIcon />}
+                                              className={classes.button}
+                                              onClick={() => handleDelete(item.id)}
+                                            >
+                                              Delete
+                                            </Button>
+                                          </Hidden>
+                                          <Hidden smUp>
+                                            <Button variant='outlined' size='small' color='primary' className={classes.button} onClick={() => handleUpdate(item.id)}>
+                                              <CreateIcon />
+                                            </Button>
+  
+                                            <Button variant='outlined' size='small' color='default' className={classes.button} onClick={() => handleDelete(item.id)}>
+                                              <ClearIcon />
+                                            </Button>
+                                          </Hidden>
+                                        </Box>          
+                                      </Box>
+                                    </Box>
+                                  </Paper>
+                                </Box>
+                              </Grid>
                             </Grid>
                           </Grid>
+                          
                         </Grid>
-                        
-                      </Grid>
-                    </Paper>
-                  ))
+                      </Paper>
+                    )
+                  })
                 }
               </Grid>
               <Grid item xs={12} md={3}>
