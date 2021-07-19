@@ -1,3 +1,4 @@
+from account.models import CustomUser
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
@@ -16,7 +17,7 @@ class CartViewSet(viewsets.ModelViewSet):
 
     # override
     def get_queryset(self):
-        return CartItem.objects.filter(cart__user__id=self.request.user.id)
+        return CartItem.objects.filter(cart__custom_user__user__id=self.request.user.id)
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -37,10 +38,11 @@ class CartViewSet(viewsets.ModelViewSet):
         })
 
     def create(self, request, *args, **kwargs):
-        cart = Cart.objects.filter(user__id=request.user.id).first()
+        cart = Cart.objects.filter(custom_user__user__id=request.user.id).first()
 
         if not cart:
-            cart = Cart.objects.create(user=request.user)
+            custom_user = CustomUser.objects.get(user=request.user)
+            cart = Cart.objects.create(custom_user=custom_user)
 
         product = Product.objects.filter(id=request.data.get('product_id')).first()
 
