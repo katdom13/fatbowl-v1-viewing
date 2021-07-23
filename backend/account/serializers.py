@@ -5,7 +5,7 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from rest_framework import serializers
 
-from account.models import CustomUser
+from account.models import Address, CustomUser
 
 from .tokens import account_activation_token
 
@@ -17,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'password', 'phone_number']
+        fields = ['id', 'username', 'email', 'password']
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
@@ -81,3 +81,19 @@ class UserSerializer(serializers.ModelSerializer):
 
             raise serializers.ValidationError('This email is already registered')
         return value
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = [
+            'public_id',
+            'custom_user',
+            'phone_number',
+            'address_line_1',
+            'address_line_2',
+            'town_city',
+            'postcode',
+            'is_default',
+        ]
+        read_only_fields = ['public_id', ]

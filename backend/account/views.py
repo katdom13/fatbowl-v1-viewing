@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.decorators.http import require_POST
-from rest_framework import viewsets
+from rest_framework import serializers, viewsets
 
 # from rest_framework.decorators import action
 from rest_framework.permissions import (
@@ -21,9 +21,9 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from account.models import CustomUser
+from account.models import Address, CustomUser
 from account.permissions import IsOwnerOrAdmin
-from account.serializers import UserSerializer
+from account.serializers import AddressSerializer, UserSerializer
 
 from .tokens import account_activation_token
 
@@ -199,3 +199,39 @@ class PasswordResetConfirmView(APIView):
             return Response({'success': 'Password has been set'})
         else:
             return Response({'error': 'Password reset failed. Please try again'}, 400)
+
+
+class AddressViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides 'list', 'retrieve',
+    'create', 'update', and 'destroy' actions
+    """
+    serializer_class = AddressSerializer
+    lookup_field = 'public_id'
+    permission_classes = [IsOwnerOrAdmin]
+
+    def get_queryset(self):
+        return Address.objects.filter(custom_user__user_id=self.request.user.id).all()
+
+    # Automatically include custom user in creation and update to safeguard updating
+    # others' address
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        data['custom_user'] = request.user.customuser.id
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        data = request.data
+        data['custom_user'] = request.user.customuser.id
+
+        serializer = self.get_serializer(instance, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(serializer.data)

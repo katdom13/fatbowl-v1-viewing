@@ -38,14 +38,18 @@ const Header = props => {
   const classes = useStyles()
 
   const [categoryAnchor, setCategoryAnchor] = useState(null)
+  const [accountAnchor, setAccountAnchor] = useState(null)
   const [isOpenMenu, setIsOpenMenu] = useState(false)
 
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
+  const [isAccountOpen, setIsAccountOpen] = useState(false)
 
   const {context: {logout}, state} = useContext(AppContext)
 
-  const handleCloseCategory = () => {
-    setCategoryAnchor(null)
+  const handleCloseAll = () => {
+    setIsCategoryOpen(false)
+    setIsAccountOpen(false)
+    setIsOpenMenu(false)
   }
 
   const handleUser = () => {
@@ -88,11 +92,11 @@ const Header = props => {
                     anchorEl={categoryAnchor}
                     keepMounted
                     open={Boolean(categoryAnchor)}
-                    onClose={handleCloseCategory}
+                    onClose={() => setCategoryAnchor(null)}
                   >
                     {
                       props.categories && props.categories.map(category => (
-                        <StyledMenuItem link="true" key={category.slug} href={`/category/${encodeURIComponent(category.slug)}`} onClick={handleCloseCategory}>
+                        <StyledMenuItem link="true" key={category.slug} href={`/category/${encodeURIComponent(category.slug)}`} onClick={() => setCategoryAnchor(null)}>
                           {category.name}
                         </StyledMenuItem>
                       ))
@@ -103,23 +107,50 @@ const Header = props => {
             </BrandWrapper>
 
             <Hidden smDown>
-              <Box>
-                <Button variant='outlined' color='inherit' className={classes.button} disableRipple onClick={handleUser}>
-                  <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
-                    <MeetingRoomOutlinedIcon fontSize='default' />
-                    {state.loggedIn ? 'Logout' : 'Login'}
-                  </Box>
-                </Button>
-                <Link href='/dashboard/'>
-                  <a className={classes.link}>
-                    <Button variant='outlined' color='inherit' className={classes.button} disableRipple>
+              <List className={classes.menuList}>
+                {
+                  !state.loggedIn ? (
+                    <Button variant='outlined' color='inherit' className={classes.button} disableRipple onClick={handleUser}>
                       <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
-                        <PermIdentityOutlinedIcon fontSize='default' />
-                        Account
+                        <MeetingRoomOutlinedIcon fontSize='default' />
+                        Login
                       </Box>
                     </Button>
-                  </a>
-                </Link>
+                  ) : (
+                    <>
+                      <Button variant='outlined' color='inherit' className={classes.button} disableRipple onClick={
+                        event => setAccountAnchor(event.currentTarget)
+                      }>
+                        <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
+                          <PermIdentityOutlinedIcon fontSize='default' />
+                          Account
+                        </Box>
+                      </Button>
+
+                      <StyledMenu
+                        anchorEl={accountAnchor}
+                        keepMounted
+                        open={Boolean(accountAnchor)}
+                        onClose={() => setAccountAnchor(null)}
+                      >
+                        <StyledMenuItem link='true' href='/dashboard' onClick={() => setAccountAnchor(null)}>
+                          My Account
+                        </StyledMenuItem>
+                        <StyledMenuItem link='true' href='/' onClick={() => {
+                          setAccountAnchor(null)
+                        }}>
+                          Orders
+                        </StyledMenuItem>
+                        <StyledMenuItem onClick={() => {
+                          handleUser()
+                          setAccountAnchor(null)
+                        }}>
+                          Logout
+                        </StyledMenuItem>
+                      </StyledMenu>
+                    </>
+                  )
+                }
                 <Link href='/cart/'>
                   <a className={classes.link}>
                     <Button variant='outlined' color='inherit' className={classes.button} disableRipple>
@@ -132,7 +163,7 @@ const Header = props => {
                     </Button>
                   </a>
                 </Link>
-              </Box>
+              </List>
               <Searchbar />
             </Hidden>
 
@@ -166,8 +197,6 @@ const Header = props => {
                 <Collapse in={isCategoryOpen} timeout='auto' unmountOnExit>
                   <CategoryMenuPaper>
                     <MenuList
-                      autoFocusItem={isCategoryOpen}
-                      id='menu-list-grow'
                       className={classes.menuList}
                     >
                       {
@@ -175,11 +204,7 @@ const Header = props => {
                           <StyledMenuItem
                             link
                             href={`/category/${encodeURIComponent(category.slug)}`} key={category.slug}
-                            onClick={() => {
-                                setIsCategoryOpen(!isCategoryOpen)
-                                setIsOpenMenu(!isOpenMenu)
-                              }
-                            }
+                            onClick={handleCloseAll}
                           >
                             {category.name}
                           </StyledMenuItem>
@@ -190,29 +215,67 @@ const Header = props => {
                 </Collapse>
                 <StyledDivider variant='middle' />
 
-                <MenuListItem onClick={() => {
-                    setIsCategoryOpen(false)
-                    setIsOpenMenu(!isOpenMenu)
-                    handleUser()
-                  }}
-                >
-                  <MeetingRoomOutlinedIcon />
-                  <Box marginLeft={2}>
-                    {state.loggedIn ? 'Logout' : 'Login'}
-                  </Box>
-                </MenuListItem>
-                <StyledDivider variant='middle' />
+                {
+                  !state.loggedIn ? (
+                    <MenuListItem onClick={() => {
+                        setIsOpenMenu(!isOpenMenu)
+                        handleUser()
+                      }}
+                    >
+                      <MeetingRoomOutlinedIcon />
+                      <Box marginLeft={2}>
+                        Login
+                      </Box>
+                    </MenuListItem>
 
-                <MenuListItem link="true" href='/dashboard/' onClick={() => {
-                    setIsCategoryOpen(false)
-                    setIsOpenMenu(!isOpenMenu)
-                  }}
-                >
-                  <PermIdentityOutlinedIcon />
-                  <Box marginLeft={2}>
-                    Account
-                  </Box>
-                </MenuListItem>
+                  ) : (
+                    <>
+                      <MenuListItem onClick={() => {
+                          setIsAccountOpen(!isAccountOpen)
+                        }}
+                      >
+                        <PermIdentityOutlinedIcon />
+                        <Box marginLeft={2}>
+                          Account
+                        </Box>
+                      </MenuListItem>
+                      <StyledDivider variant='middle' />
+
+                      <Collapse in={isAccountOpen} timeout='auto' unmountOnExit>
+                        <CategoryMenuPaper>
+                          <MenuList
+                            className={classes.menuList}
+                          >
+                            <StyledMenuItem
+                              link
+                              href='/dashboard'
+                              onClick={handleCloseAll}
+                            >
+                              My account
+                            </StyledMenuItem>
+                            <StyledMenuItem
+                              link
+                              href='/'
+                              onClick={handleCloseAll}
+                            >
+                              Orders
+                            </StyledMenuItem>
+                            <StyledMenuItem
+                              onClick={() => {
+                                  handleCloseAll()
+                                  handleUser()
+                                }
+                              }
+                            >
+                              Logout
+                            </StyledMenuItem>
+                          </MenuList>
+                        </CategoryMenuPaper>
+                      </Collapse>
+                    </>
+                  )
+                }
+
                 <StyledDivider variant='middle' />
 
                 <MenuListItem link="true" href='/cart/' onClick={() => {
@@ -303,6 +366,7 @@ const StyledMenu = withStyles((theme) => ({
 const StyledMenuItem = withStyles((theme) => ({
   root: {
     padding: theme.spacing(1, 2, 1, 2),
+    width: '100%',
     '&:hover': {
       backgroundColor: theme.palette.grey[400],
     },

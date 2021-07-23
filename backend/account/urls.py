@@ -10,8 +10,12 @@ app_name = 'account'
 router = DefaultRouter()
 router.register(r'users', views.UserViewSet, basename='user')
 
+address_router = DefaultRouter()
+address_router.register(r'address', views.AddressViewSet, basename='address')
+
 urlpatterns = [
     path('', include(router.urls)),
+    path('', include(address_router.urls)),
     path('csrf/', views.get_csrf, name='api-csrf'),
     path('login/', views.login_view, name='api-login'),
     path('logout/', views.logout_view),

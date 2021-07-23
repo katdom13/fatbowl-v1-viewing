@@ -1,5 +1,6 @@
 import {
   Container,
+  Divider,
   Grid,
   Box,
   CssBaseline,
@@ -126,6 +127,8 @@ const Register = () => {
                       It's free and only takes a minute
                     </Typography>
 
+                    <Divider className={classes.divider} />
+
                     <TextField
                       variant="outlined"
                       margin="normal"
@@ -236,6 +239,9 @@ const Register = () => {
 }
 
 const useStyles = makeStyles((theme) => ({
+  divider: {
+    margin: theme.spacing(2, 0, 2, 0),
+  },
   form: {
     width: "100%",
     marginTop: theme.spacing(1),

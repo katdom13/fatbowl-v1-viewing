@@ -180,8 +180,7 @@ const Profile = () => {
   }
 
   return (
-    <Container component='main' maxWidth='sm'>
-      <CssBaseline />
+    <Container maxWidth='sm'>
       <Grid container>
         {
           isDeleted ? (
@@ -307,20 +306,19 @@ const Profile = () => {
                           error={Boolean(formErrors.password2)}
                           helperText={formErrors.password2}
                         />
+
+                        <Button
+                          type="submit"
+                          fullWidth
+                          variant="contained"
+                          color="primary"
+                          className={classes.submit}
+                          disabled={!isValid}
+                        >
+                          Save changes
+                        </Button>
                       </AccordionDetails>
                     </Accordion>
-
-                    <Button
-                      type="submit"
-                      fullWidth
-                      variant="contained"
-                      color="primary"
-                      className={classes.submit}
-                      disabled={!isValid}
-                    >
-                      Save changes
-                    </Button>
-
                   </form>
                 </Box>
                 

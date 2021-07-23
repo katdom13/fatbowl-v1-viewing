@@ -92,13 +92,6 @@ const Product = ({product}) => {
                     )  
                   }
                 </Tabs>
-                {/* {
-                  product.product_image.map(
-                    product_image => (
-                      <Avatar variant='square' src={product_image.image} className={classes.image}/>
-                    )
-                  )
-                } */}
               </Box>
             </Grid>
           </Hidden>

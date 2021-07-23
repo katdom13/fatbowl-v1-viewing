@@ -228,7 +228,66 @@ const passwordReset = async (uidb64, token, password, csrf) => {
     .catch(error => Promise.reject(error))
 }
 
+const getAddresses = async () => {
+  return axiosInstance.get('account/address/')
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
+const getAddress = async public_id => {
+  return axiosInstance.get(
+    `account/address/${public_id}/`
+  )
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
+const createAddress = async (body, csrf) => {
+  return axiosInstance.post(
+    'account/address/',
+    body,
+    {
+      headers: {
+        ...axiosInstance.defaults.headers,
+        'X-CSRFToken': csrf
+      }
+    }
+  )
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
+const updateAddress = async (public_id, body, csrf) => {
+  return axiosInstance.put(
+    `account/address/${public_id}/`,
+    body,
+    {
+      headers: {
+        ...axiosInstance.defaults.headers,
+        'X-CSRFToken': csrf
+      }
+    }
+  )
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
+const deleteAddress = async (public_id, csrf) => {
+  return axiosInstance.delete(
+    `account/address/${public_id}/`,
+    {
+      headers: {
+        ...axiosInstance.defaults.headers,
+        'X-CSRFToken': csrf
+      }
+    }
+  )
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
 export {
+  axiosInstance,
   whoami,
   loginUser,
   logoutUser,
@@ -248,4 +307,9 @@ export {
   activateUser,
   forgotPassword,
   passwordReset,
+  getAddresses,
+  getAddress,
+  createAddress,
+  updateAddress,
+  deleteAddress,
 }
