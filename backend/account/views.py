@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.decorators.http import require_POST
-from rest_framework import serializers, viewsets
+from rest_framework import generics, viewsets
 
 # from rest_framework.decorators import action
 from rest_framework.permissions import (
@@ -20,6 +20,9 @@ from rest_framework.permissions import (
 )
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from store.models import Product
+from store.permissions import IsWishlistOwner
+from store.serializers import ProductSerializer
 
 from account.models import Address, CustomUser
 from account.permissions import IsOwnerOrAdmin
@@ -235,3 +238,42 @@ class AddressViewSet(viewsets.ModelViewSet):
         self.perform_update(serializer)
 
         return Response(serializer.data)
+
+
+class WishList(generics.ListAPIView):
+    """
+    View to list all wishlist items for the current logged in user.
+
+    * public api
+    """
+    serializer_class = ProductSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return Product.objects.filter(users_wishlist=self.request.user.customuser)
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class WishListDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ProductSerializer
+    permission_classes = [IsWishlistOwner]
+
+    def get_object(self, id):
+        return Product.objects.get(id=id)
+        # return self.request.user.customuser.wishlist.get(id=id)
+
+    def update(self, request, id, *args, **kwargs):
+        try:
+            product = self.get_object(id)
+            if product.users_wishlist.filter(user_id=request.user.id).exists():
+                product.users_wishlist.remove(request.user.customuser)
+                return Response({'success': f'{product.title} has been removed from your wishlist'})
+            else:
+                product.users_wishlist.add(request.user.customuser)
+                return Response({'success': f'Added {product.title} to your wishlist'})
+        except(TypeError, ValueError, OverflowError, Product.DoesNotExist):
+            return Response({'error': 'Product does not exist'}, status=404)

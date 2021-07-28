@@ -4,6 +4,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from rest_framework import serializers
+from store.serializers import ProductSerializer
 
 from account.models import Address, CustomUser
 
@@ -14,10 +15,11 @@ class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
     email = serializers.EmailField(source='user.email')
     password = serializers.CharField(source='user.password')
+    wishlist = ProductSerializer(read_only=True, many=True)
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'password']
+        fields = ['id', 'username', 'email', 'password', 'wishlist']
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')

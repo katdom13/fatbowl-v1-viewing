@@ -16,16 +16,19 @@ import {
   Hidden,
   Tabs,
   Tab,
+  Link as ALink,
 } from "@material-ui/core"
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
+import Alert from '@material-ui/lab/Alert'
 import { useState, useEffect, useContext } from "react"
 import Head from 'next/head'
-import { addCartItem, getProduct, getProducts, whoami } from "../../config/axios"
+import { addCartItem, getProduct, getProducts, updateWishlist, whoami } from "../../config/axios"
 import { useCookies } from 'react-cookie'
 import AppContext from "../../contexts/AppContext"
 import Image from 'next/image'
 import Router from 'next/router'
+import Link from 'next/link'
 
 const Product = ({product}) => {
   const classes = useStyles()
@@ -34,6 +37,11 @@ const Product = ({product}) => {
   const [cookies, setCookie] = useCookies(['csrftoken'])
   const [image, setImage] = useState(0)
   const {context: {reload}, state} = useContext(AppContext)
+
+  const [alert, setAlert] = useState({
+    severity: '',
+    message: ''
+  })
 
   useEffect(() => {
     let imageIndex = product.product_image.findIndex(image => image.is_feature === true)
@@ -58,12 +66,38 @@ const Product = ({product}) => {
     }
   }
 
+  const handleWishlist = () => {
+    if (state.loggedIn === false) {
+      reload({...state, next: Router.asPath})
+    } else {
+      updateWishlist(product.id, cookies.csrftoken)
+        .then(res => setAlert({severity: 'info', message: res.success}))
+        .catch(err => console.error('[WISHLIST ERROR]', err && err.response ? err.response : err))
+    }
+  }
+
   return (
     <>
       <Head>
         <title>{product.title}</title>
       </Head>
       <Container maxWidth='md'>
+        {
+          alert && alert.message ? (
+            <Box marginBottom={3}>
+              <Alert severity={alert.severity}>
+                <Box display='flex' gridGap={4}>
+                  {alert.message} -
+                  <Link href='/account/wishlist' passHref>
+                    <ALink variant='body2' color='inherit'>
+                      <b><u>Go to wishlist</u></b>
+                    </ALink>
+                  </Link>
+                </Box>
+              </Alert>
+            </Box>
+          ) : null
+        }
         <Grid container spacing={2}>
 
           <Hidden smDown>
@@ -147,7 +181,7 @@ const Product = ({product}) => {
 
           <Grid item xs={12} md={4}>
             <Box component='div' display='grid' gridGap={`0.5rem`}>
-              <Box component='div' display='flex' justifyContent='space-between'>
+              <Box component='div' display='flex' justifyContent='space-between' gridGap={10}>
                 <Box component='div'>
                   <Typography variant='h4' component='p' style={{ fontWeight: 400 }}>
                     ₱{ product.regular_price }
@@ -202,8 +236,8 @@ const Product = ({product}) => {
                 Add to Cart
               </Button>
 
-              <Button variant="contained" color="default">
-                Add to favorites
+              <Button variant="contained" color="default" onClick={handleWishlist}>
+                Add to wishlist
               </Button>
             </Box>
           </Grid>

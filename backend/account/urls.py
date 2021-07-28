@@ -14,8 +14,13 @@ address_router = DefaultRouter()
 address_router.register(r'address', views.AddressViewSet, basename='address')
 
 urlpatterns = [
+    # Account info
     path('', include(router.urls)),
+
+    # Address
     path('', include(address_router.urls)),
+
+    # Authentication
     path('csrf/', views.get_csrf, name='api-csrf'),
     path('login/', views.login_view, name='api-login'),
     path('logout/', views.logout_view),
@@ -30,5 +35,9 @@ urlpatterns = [
         'password_reset_confirm/<slug:uidb64>/<slug:token>/',
         views.PasswordResetConfirmView.as_view(),
         name='password_reset_confirm'
-    )
+    ),
+
+    # Wishlist
+    path('wishlist/', views.WishList.as_view(), name='wishlist'),
+    path('wishlist/<int:id>/', views.WishListDetail.as_view(), name='wishlist-item'),
 ]

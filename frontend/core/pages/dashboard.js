@@ -100,6 +100,27 @@ const Dashboard = () => {
               </Paper>
             </Link>
           </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Link href='/account/wishlist'>
+              <Paper variant='outlined' className={classes.paper}>
+                <Box margin={1} style={{ height: '100%' }}>
+                  <Grid container spacing={2} style={{ height: '100%' }}>
+                    <Grid item xs={2} className={classes.iconGrid} >
+                      <LocalShippingOutlinedIcon fontSize='large'/>
+                    </Grid>
+                    <Grid item xs={10}>
+                      <Typography variant='h5' component='h1' gutterBottom>
+                        Your wishlist
+                      </Typography>
+                      <Typography variant='body1' component='p' color='textSecondary'>
+                        View and edit items in your wishlist
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Paper>
+            </Link>
+          </Grid>
         </Grid>
       </Container>
     </>

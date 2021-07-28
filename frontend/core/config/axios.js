@@ -286,6 +286,27 @@ const deleteAddress = async (public_id, csrf) => {
     .catch(error => Promise.reject(error))
 }
 
+const getWishlist = async () => {
+  return axiosInstance.get('account/wishlist/')
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
+const updateWishlist = async (item_id, csrf) => {
+  return axiosInstance.put(
+    `account/wishlist/${item_id}/`,
+    {},
+    {
+      headers: {
+        ...axiosInstance.defaults.headers,
+        'X-CSRFToken': csrf
+      }
+    }
+  )
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
 export {
   axiosInstance,
   whoami,
@@ -312,4 +333,6 @@ export {
   createAddress,
   updateAddress,
   deleteAddress,
+  getWishlist,
+  updateWishlist,
 }

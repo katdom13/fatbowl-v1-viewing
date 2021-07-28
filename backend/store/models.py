@@ -1,3 +1,4 @@
+from account.models import CustomUser
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -109,6 +110,7 @@ class Product(models.Model):
     )
     objects = models.Manager()
     products = ProductManager()
+    users_wishlist = models.ManyToManyField(CustomUser, related_name='wishlist', blank=True)
 
     class Meta:
         ordering = ('-created_at',)
