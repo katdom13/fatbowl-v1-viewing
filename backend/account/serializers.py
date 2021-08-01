@@ -53,8 +53,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     # Hash password on update
     def update(self, instance, validated_data):
-        # print('[CUSTOM USER SERIALIZER INSTANCE]', instance.user.email, type(instance), validated_data)
-
         user_data = validated_data.pop('user')
         instance = super().update(instance, validated_data)
 

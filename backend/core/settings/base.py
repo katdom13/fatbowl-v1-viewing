@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'store',
     'cart',
     'account.apps.AccountConfig',
+    'checkout',
 ]
 
 MIDDLEWARE = [

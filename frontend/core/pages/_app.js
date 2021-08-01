@@ -99,17 +99,6 @@ function MyApp({ Component, pageProps }) {
           qty: err.response && err.response.status === 403 ? 0 : state.qty
         })
       })
-    // if (cookies.sessionid) {
-    //   getCartItemQty()
-    //     .then(response => context.reload({
-    //       ...state, qty: response
-    //     }))
-    //     .catch(err => console.error(err))
-    // } else {
-    //   context.reload({
-    //     ...state, qty: 0
-    //   })
-    // }
   }
 
   return (

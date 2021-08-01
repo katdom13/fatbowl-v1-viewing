@@ -5,20 +5,23 @@ from .models import Cart, CartItem
 
 
 class CartItemSerializer(serializers.ModelSerializer):
-    product_detail = ProductSerializer(source='product', read_only=True)
+    detail = ProductSerializer(source='product', read_only=True)
 
     class Meta:
         model = CartItem
-        fields = ['id', 'product', 'product_detail', 'qty']
+        fields = ['id', 'product', 'detail', 'qty']
 
 
 class CartSerializer(serializers.ModelSerializer):
-    # items = CartItemSerializer(many=True, read_only=True)
-    item = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    items = CartItemSerializer(many=True, read_only=True)
+    total_qty = serializers.ReadOnlyField()
+    total_price = serializers.ReadOnlyField()
 
     class Meta:
         model = Cart
         fields = [
-            'custom_user',
-            'item',
+            'public_id',
+            'items',
+            'total_qty',
+            'total_price'
         ]

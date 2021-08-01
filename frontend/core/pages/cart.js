@@ -26,12 +26,14 @@ import { useCookies } from 'react-cookie'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
+import Router from 'next/router'
 import { Hidden } from "@material-ui/core"
 import AppContext from "../contexts/AppContext"
 import { Typography } from "@material-ui/core"
 import ExpandLessIcon from '@material-ui/icons/ExpandLess'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import withAuthentication from "../components/withAuthentication"
+import { options } from "colorette"
 
 const Cart = () => {
   const classes = useStyles()
@@ -39,6 +41,7 @@ const Cart = () => {
   
   const [cookies, setCookie] = useCookies(['csrftoken'])
 
+  const [publicId, setPublicId] = useState('')
   const [items, setItems] = useState([])
   const [qtys, setQtys] = useState({})
   const [price, setPrice] = useState(0)
@@ -48,6 +51,7 @@ const Cart = () => {
   useEffect(() => {
     getCartItems()
       .then(response => {
+        setPublicId(response.public_id)
         setItems(response.items)
 
         // assign multiple quantities for every cart item
@@ -56,8 +60,8 @@ const Cart = () => {
         response.items.map(item => dict[item.id] = item.qty)
         setQtys(dict)
   
-        setPrice(response.total_item_price)
-        reload({...state, qty: response.total_item_qty})
+        setPrice(response.total_price)
+        reload({...state, qty: response.total_qty})
       })
       .catch(err => console.log('[CART ERROR]', err.response))
   }, [])
@@ -69,10 +73,10 @@ const Cart = () => {
   const handleDelete = id => {
     deleteCartItem(id, cookies.csrftoken)
       .then(response => {
-        console.log('[DELETED ITEM]', response.item)
+        setPublicId(response.public_id)
         setItems(response.items)
-        setPrice(response.total_item_price)
-        reload({...state, qty: response.total_item_qty})
+        setPrice(response.total_price)
+        reload({...state, qty: response.total_qty})
       })
       .catch(err => console.log('[CART ERROR]', err.response))
   }
@@ -91,10 +95,11 @@ const Cart = () => {
   
       updateCartItem(id, body, cookies.csrftoken)
         .then(response => {
-          console.log('[UPDATED ITEM]', response.item)
+          setPublicId(response.public_id)
           setItems(response.items)
-          setPrice(response.total_item_price)
-          reload({...state, qty: response.total_item_qty})
+          console.log('AAAAAAAAAAAAAAA', response.items)
+          setPrice(response.total_price)
+          reload({...state, qty: response.total_qty})
         })
         .catch(err => console.log('[CART ERROR]', err.response))  
     }
@@ -190,15 +195,16 @@ const Cart = () => {
               <Grid item xs={12} md={9}>
                 {
                   items && items.map(item => {
-                    let product_image = item.product_detail.product_image.find(
+                    let product_image = item.detail.product_image.find(
                       product_image => product_image.is_feature === true
                     )
+                    console.log('AAAAAA', product_image)
                     return (
                       <Paper variant='outlined' square key={item.id} className={classes.card}>
                         <Grid container spacing={2}>
                           <Grid item xs={12} md={5} lg={4} className={classes.img}>
                             <Image
-                              src={product_image.image}
+                              src={`${product_image.image}`}
                               alt={product_image.alt_text}
                               width={300}
                               height={300}
@@ -210,9 +216,9 @@ const Cart = () => {
                                 <Box margin={1}>
                                 
                                   <Box className={classes.titleBox}>
-                                    <Link href={`/product/${encodeURIComponent(item.product_detail.slug)}`} passHref>
+                                    <Link href={`/product/${encodeURIComponent(item.detail.slug)}`} passHref>
                                       <ALink component='h1' variant='h5' className={classes.title} gutterBottom>
-                                        {item.product_detail.title}
+                                        {item.detail.title}
                                       </ALink>
                                     </Link>
                                   </Box>
@@ -223,13 +229,13 @@ const Cart = () => {
                                       <Grid container>
                                         <Grid item xs={12} md={8}>
                                           <Typography variant='body1' component='p' color='textSecondary' gutterBottom>
-                                            {item.product_detail.description}
+                                            {item.detail.description}
                                           </Typography>
                                         </Grid>
                                         <Grid item xs={12} md={4}>
                                           <Box textAlign='end'>
                                             <Typography variant='body1' component='p'>
-                                              <Box component='span' fontWeight='bold'>₱{item.product_detail.regular_price}</Box>
+                                              <Box component='span' fontWeight='bold'>₱{item.detail.regular_price}</Box>
                                             </Typography>
                                           </Box>
                                         </Grid>
@@ -329,9 +335,15 @@ const Cart = () => {
               <Grid item xs={12} md={3}>
                 <Box marginY={2} paddingX={1}>
                   <Box marginBottom={2}>
-                    <Button variant='contained' color='primary' fullWidth>
-                      Checkout
-                    </Button>
+                    <Link href={`checkout/${encodeURIComponent(publicId)}`} passHref>
+                      <Button
+                        variant='contained'
+                        color='primary'
+                        fullWidth
+                      >
+                        Checkout
+                      </Button>
+                    </Link>
                   </Box>
                   <Box marginBottom={2}>
                     <Button color='primary' fullWidth>

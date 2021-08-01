@@ -59,10 +59,9 @@ const Product = ({product}) => {
   
       addCartItem(body, cookies.csrftoken)
         .then(response => {
-          console.log('[ADD TO CART]', response.item)
-          reload({...state, qty: response.total_item_qty})
+          reload({...state, qty: response.total_qty})
         })
-        .catch(err => console.error('[ADD TO CART ERROR]', err.response.data))
+        .catch(err => console.error('[ADD TO CART ERROR]', err && err.response ? err.response.data : err))
     }
   }
 

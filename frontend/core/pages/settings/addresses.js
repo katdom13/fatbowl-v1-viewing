@@ -113,7 +113,7 @@ const Addresses = () => {
                         }}
                       >
                         Default
-                      </Typography>  
+                      </Typography>
                     }
                     classes={{
                       root: classes.cardHeader,

@@ -52,6 +52,12 @@ const getCategories = async () => {
     .catch(error => Promise.reject(error))
 }
 
+const getCart = async publicId => {
+  return axiosInstance.get(`api/cart/${publicId}`)
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
 const getCartItems = async () => {
   return axiosInstance.get('api/cart/')
     .then(response => Promise.resolve(response.data))
@@ -104,7 +110,7 @@ const updateCartItem = async (id, body, csrf) => {
 
 const getCartItemQty = async () => {
   return getCartItems()
-    .then(response => Promise.resolve(response.total_item_qty))
+    .then(response => Promise.resolve(response.total_qty))
     .catch(error => Promise.reject(error))
 }
 
@@ -307,6 +313,14 @@ const updateWishlist = async (item_id, csrf) => {
     .catch(error => Promise.reject(error))
 }
 
+const getDeliveryOptions = async () => {
+  return axiosInstance.get(
+    'checkout/delivery_options/'
+  )
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
 export {
   axiosInstance,
   whoami,
@@ -315,6 +329,7 @@ export {
   getCsrf,
   getCategories,
   getCartItems,
+  getCart,
   addCartItem,
   deleteCartItem,
   updateCartItem,
@@ -335,4 +350,5 @@ export {
   deleteAddress,
   getWishlist,
   updateWishlist,
+  getDeliveryOptions,
 }

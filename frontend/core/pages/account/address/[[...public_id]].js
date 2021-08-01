@@ -69,7 +69,7 @@ const Address = () => {
         formdata,
         cookies.csrftoken
       )
-        .then(response => Router.push('/settings/addresses'))
+        .then(response => Router.back())
         .catch(err => {
           if (err && err.response) {
             setFormErrors({
@@ -85,7 +85,7 @@ const Address = () => {
         formdata,
         cookies.csrftoken
       )
-        .then(response => Router.push('/settings/addresses'))
+        .then(response => Router.back())
         .catch(err => console.error('[EDIT ADDRESS ERROR]', err && err.response ? err.response : err))
     )
     

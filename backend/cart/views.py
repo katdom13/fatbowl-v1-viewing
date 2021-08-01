@@ -1,106 +1,128 @@
 from account.models import CustomUser
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from store.models import Product
 
 from .models import Cart, CartItem
-from .serializers import CartItemSerializer
+from .serializers import CartItemSerializer, CartSerializer
 
 
 class CartViewSet(viewsets.ModelViewSet):
-    """
-    This viewset provides 'list' and 'retrieve' actions
-    """
-    serializer_class = CartItemSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    lookup_fields = ('id', 'public_id')
 
-    # override
+    def get_serializer_class(self):
+        if self.action == 'list' or self.action == 'create' or self.action == 'retrieve':
+            return CartSerializer
+        elif self.action == 'update' or self.action == 'delete':
+            return CartItemSerializer
+
     def get_queryset(self):
-        return CartItem.objects.filter(cart__custom_user__user__id=self.request.user.id)
+        if self.action == 'list' or self.action == 'create' or self.action == 'retrieve':
+            return Cart.objects.get(custom_user__user__id=self.request.user.id)
+        elif self.action == 'update' or self.action == 'delete':
+            return CartItem.objects.filter(cart__custom_user__user__id=self.request.user.id)
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        queryset = self.filter_queryset(queryset)
+
+        filter = {}
+
+        if self.action == 'retrieve':
+            field = self.lookup_fields[1]
+            model = Cart
+        else:
+            field = self.lookup_fields[0]
+            model = CartItem
+
+        filter[field] = self.kwargs['pk']
+
+        obj = get_object_or_404(model, **filter)  # Lookup the object
+        self.check_object_permissions(self.request, obj)
+        return obj
 
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-
-        items = serializer.data
-
-        # Compute total price (price * qunatity)
-        # and add to serializer data
-        for item in items:
-            item['total_price'] = float(item['product_detail']['regular_price']) * int(item['qty'])
-
-        return Response({
-            'items': items,
-            'total_item_qty': sum(item.qty for item in queryset),
-            'total_item_price':
-                '{:.2f}'.format(sum(item.product.regular_price * item.qty for item in queryset))
-        })
+        try:
+            queryset = self.get_queryset()
+            serializer = self.get_serializer(queryset, many=False)
+            return Response(serializer.data)
+        except Cart.DoesNotExist:
+            return Response({
+                'public_id': '',
+                'items': [],
+                'total_qty': 0,
+                'total_price': '{:.2f}'.format(0),
+            })
 
     def create(self, request, *args, **kwargs):
         cart = Cart.objects.filter(custom_user__user__id=request.user.id).first()
 
+        # If there is no cart yet, create one
         if not cart:
-            custom_user = CustomUser.objects.get(user=request.user)
-            cart = Cart.objects.create(custom_user=custom_user)
+            user = CustomUser.objects.get(user__id=request.user.id)
+            cart = Cart.objects.create(custom_user=user)
 
-        product = Product.objects.filter(id=request.data.get('product_id')).first()
+        product = Product.objects.get(id=request.data.get('product_id'))
+        qty = request.data.get('product_qty')
 
-        cart_item = CartItem.objects.filter(
-            cart__id=cart.id,
+        item = CartItem.objects.filter(
+            cart__public_id=cart.public_id,
             product__id=product.id
         ).first()
 
-        if cart_item:
-            cart_item.qty = cart_item.qty + request.data.get('product_qty')
-            cart_item.save()
+        if item:
+            item.qty += qty
+            item.save()
         else:
-            cart_item = CartItem.objects.create(
+            item = CartItem.objects.create(
                 cart=cart,
-                product=Product.objects.filter(id=request.data.get('product_id')).first(),
-                qty=request.data.get('product_qty')
+                product=product,
+                qty=qty
             )
 
-        # Return generated cart item json
-        serializer = self.get_serializer(cart_item)
+        # return all cart items
         queryset = self.get_queryset()
-        return Response({
-            'item': serializer.data,
-            'total_item_qty': sum(item.qty for item in queryset)
-        })
-
-    def destroy(self, request, *args, **kwargs):
-        cart_item = self.get_object()
-        serializer = self.get_serializer(cart_item)
-        item = serializer.data
-
-        super().destroy(request, *args, **kwargs)
-
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-
-        return Response({
-            'item': item,
-            'items': serializer.data,
-            'total_item_qty': sum(item.qty for item in queryset),
-            'total_item_price': sum(item.product.regular_price * item.qty for item in queryset),
-        })
+        serializer = self.get_serializer(queryset, many=False)
+        return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
-        print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAA', request.headers)
-        cart_item = self.get_object()
-        serializer = self.get_serializer(cart_item)
-        item = serializer.data
+        try:
+            super().update(request, *args, **kwargs)
 
-        super().update(request, *args, **kwargs)
+            # Force to return cart data
+            queryset = Cart.objects.get(custom_user__user__id=self.request.user.id)
+            serializer = CartSerializer(queryset, context={'request': request}, many=False)
+            return Response(serializer.data)
+        except Cart.DoesNotExist:
+            return Response({'error': 'Item does not exist'}, status=404)
 
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
+    def destroy(self, request, *args, **kwargs):
+        try:
+            cart = Cart.objects.get(custom_user__user__id=request.user.id)
 
-        return Response({
-            'item': item,
-            'items': serializer.data,
-            'total_item_qty': sum(item.qty for item in queryset),
-            'total_item_price':
-                '{:.2f}'.format(sum(item.product.regular_price * item.qty for item in queryset))
-        })
+            super().destroy(request, *args, **kwargs)
+
+            # Delete whole cart if it is empty and return an empty json
+            if not len(cart.items.all()):
+                cart.delete()
+                return Response({
+                    'public_id': '',
+                    'items': [],
+                    'total_qty': 0,
+                    'total_price': '{:.2f}'.format(0),
+                })
+
+            queryset = Cart.objects.get(custom_user__user__id=self.request.user.id)
+            serializer = CartSerializer(queryset, context={'request': request}, many=False)
+            return Response(serializer.data)
+        except Cart.DoesNotExist:
+            return Response({'error': 'Item does not exist'}, status=404)
+
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            return super().retrieve(request, *args, **kwargs)
+        except Cart.DoesNotExist:
+            return Response({'error': 'Cart does not exist'}, status=404)
