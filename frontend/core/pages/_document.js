@@ -10,6 +10,9 @@ export default class MyDocument extends Document {
         <Head>
           {/* PWA primary color */}
           <meta name="theme-color" content={theme.palette.primary.main} />
+          <script
+            src="https://www.paypal.com/sdk/js?client-id=AYRtjDBRTGfo4R4QmOaWqOLCGv3StMDfSyfJTe9QNIpszRTsC4mNt9n_bPwrSraKMOBCypuhoHjeC3Op&currency=PHP">
+          </script>
         </Head>
         <body>
           <Main />

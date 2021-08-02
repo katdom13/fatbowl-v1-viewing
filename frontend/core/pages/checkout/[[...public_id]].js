@@ -24,11 +24,13 @@ import {
 import LocalShippingOutlinedIcon from '@material-ui/icons/LocalShippingOutlined'
 import Head from "next/head"
 import Link from 'next/link'
-import { useEffect, useState } from "react"
-import { getAddresses, getCart, getDeliveryOptions, updateAddress } from "../../config/axios"
+import { useContext, useEffect, useRef, useState } from "react"
+import { getAddresses, getCart, getCartItems, getDeliveryOptions, payment, updateAddress } from "../../config/axios"
 import Router from 'next/router'
 import { useCookies } from "react-cookie"
 import Alert from '@material-ui/lab/Alert'
+import AppContext from "../../contexts/AppContext"
+
 
 const Checkout = ({options}) => {
   const classes = useStyles()
@@ -53,6 +55,8 @@ const Checkout = ({options}) => {
   const [addresses, setAddresses] = useState([])
   const [selectedAddress, setSelectedAddress] = useState({})
 
+  const [success, setSuccess] = useState(false)
+
   useEffect(() => {
     let public_id = Object.entries(Router.query).length > 0 ? Router.query.public_id[0] : ''
     if (Boolean(public_id)) {
@@ -67,6 +71,7 @@ const Checkout = ({options}) => {
         setAddresses(res)
         if (Object.entries(selectedAddress).length > 0) {
           setSelectedAddress(selectedAddress)
+          console.log('BBBB', selectedAddress)
         }
       })
       .catch(err => console.error('[GET ADDRESSES ERROR]', err && err.response ? err.response : err))
@@ -128,6 +133,7 @@ const Checkout = ({options}) => {
             setAddresses(res)
             if (Object.entries(selectedAddress).length > 0) {
               setSelectedAddress(selectedAddress)
+              console.log('CCCCCCC', selectedAddress)
             }
           })
           .catch(err => console.error('[GET ADDRESSES ERROR]', err && err.response ? err.response : err))
@@ -136,6 +142,10 @@ const Checkout = ({options}) => {
       })
       .catch(err => console.error('[UPDATE ADDRESS ERROR]', err && err.response ? err.response : err))
   }
+
+  useEffect(() => {
+    console.log('ZZZZZZ', selectedAddress)
+  }, [selectedAddress])
 
   return(
     <>
@@ -184,7 +194,33 @@ const Checkout = ({options}) => {
                   handleSelect={handleSelect} />
               ) : null
             }
-
+            {console.log('!!!!!!!', selectedAddress)}
+            {
+              pageState === 'paypal' ? (
+                <Paypal
+                  total={total}
+                  setPageState={setPageState}
+                  selectedAddress={selectedAddress}/>
+              ) : null
+            }
+            {
+              pageState === 'success' ? (
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <Box display='flex' gridGap={4} alignItems='center'>
+                      <Typography variant='body1'>
+                        Order successful.
+                      </Typography>
+                      <Link href='.'>
+                        <ALink>
+                          View all orders.
+                        </ALink>
+                      </Link>
+                    </Box>
+                  </Grid>
+                </Grid>
+              ) : null
+            }
           </Grid>
           <Grid item xs={12} md={4}>
             <Box display='flex' alignItems='center' padding={1}>
@@ -218,13 +254,17 @@ const Checkout = ({options}) => {
                 <b>₱{total}</b>
               </Typography>
             </Box>
-            <Box marginTop={1}>
-              <Button variant='contained' fullWidth color='primary'
-                onClick={handlePageState}
-              >
-                Pay securely
-              </Button>
-            </Box>
+            {
+              !['paypal', 'success'].includes(pageState) ? (
+                <Box marginTop={1}>
+                  <Button variant='contained' fullWidth color='primary'
+                    onClick={handlePageState}
+                  >
+                    Pay securely
+                  </Button>
+                </Box>
+              ) : null
+            }
           </Grid>
         </Grid>
       </Container>
@@ -292,6 +332,46 @@ const DeliveryOptions = ({options, deliveryOption, handleChangeDeliveryOption}) 
           ))
       }
     </Grid>
+  )
+}
+
+const Paypal = ({total, setPageState, selectedAddress}) => {
+  const paypal = useRef()
+  const [cookies, setCookie] = useCookies(['csrftoken'])
+
+  const {context: {reload}, state} = useContext(AppContext)
+
+  useEffect(() => {
+    window.paypal.Buttons({
+      createOrder: (data, actions) => {
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              currency_code: 'PHP',
+              value: total,
+            }
+          }],
+        })
+      },
+      onApprove: async data => {
+        return payment(data.orderID, selectedAddress, cookies.csrftoken)
+        .then(res => {
+          setPageState('success'),
+          getCartItems()
+            .then(response => {
+              reload({...state, qty: response.total_qty})
+            })
+            .catch(err => console.log('[CART ERROR]', err.response))
+        })
+          .catch(err => console.error('[PAYPAL ERROR]'. err && err.response ? err.response : err))
+      }
+    }).render(paypal.current)
+  }, [])
+
+  return (
+    <Box>
+      <Box ref={paypal}></Box>
+    </Box>
   )
 }
 

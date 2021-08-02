@@ -321,6 +321,33 @@ const getDeliveryOptions = async () => {
     .catch(error => Promise.reject(error))
 }
 
+const payment = async (orderId, address, csrf) => {
+  console.log('!!!!ZZZZZZZZZZZ', orderId, csrf, address)
+  const addressBody = {
+    'address_line_1': address.address_line_1,
+    'address_line_2': address.address_line_2,
+    'town_city': address.town_city,
+    'postcode': address.postcode,
+  }
+  return axiosInstance.post(
+    'checkout/payment/',
+    {
+      'order_id': orderId,
+      'address': addressBody
+    },
+    {
+      headers: {
+        ...axiosInstance.defaults.headers,
+        'Content-Type': 'application/json',
+        'accept': 'application/json',
+        'X-CSRFToken': csrf
+      }
+    }
+  )
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
 export {
   axiosInstance,
   whoami,
@@ -351,4 +378,5 @@ export {
   getWishlist,
   updateWishlist,
   getDeliveryOptions,
+  payment,
 }

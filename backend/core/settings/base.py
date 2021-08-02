@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'cart',
     'account.apps.AccountConfig',
     'checkout',
+    'order',
 ]
 
 MIDDLEWARE = [
@@ -211,3 +212,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASS")
+
+# PAYPAL
+FATOWL_CLIENT_ID = os.environ.get('FATOWL_CLIENT_ID')
+FATOWL_CLIENT_SECRET = os.environ.get('FATOWL_CLIENT_SECRET')
