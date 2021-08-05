@@ -10,6 +10,9 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.decorators.http import require_POST
+from order.models import Order
+from order.permissions import IsOrderOwnerOrAdmin
+from order.serializers import OrderSerializer
 from rest_framework import generics, viewsets
 
 # from rest_framework.decorators import action
@@ -277,3 +280,11 @@ class WishListDetail(generics.RetrieveUpdateDestroyAPIView):
                 return Response({'success': f'Added {product.title} to your wishlist'})
         except(TypeError, ValueError, OverflowError, Product.DoesNotExist):
             return Response({'error': 'Product does not exist'}, status=404)
+
+
+class OrderListView(generics.ListAPIView):
+    serializer_class = OrderSerializer
+    permission_classes = [IsOrderOwnerOrAdmin]
+
+    def get_queryset(self):
+        return Order.objects.filter(user__user__id=self.request.user.id).all()

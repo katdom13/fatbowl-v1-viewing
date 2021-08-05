@@ -348,6 +348,14 @@ const payment = async (orderId, address, csrf) => {
     .catch(error => Promise.reject(error))
 }
 
+const getOrders = async () => {
+  return axiosInstance.get(
+    'account/orders/'
+  )
+    .then(response => Promise.resolve(response.data))
+    .catch(error => Promise.reject(error))
+}
+
 export {
   axiosInstance,
   whoami,
@@ -379,4 +387,5 @@ export {
   updateWishlist,
   getDeliveryOptions,
   payment,
+  getOrders,
 }

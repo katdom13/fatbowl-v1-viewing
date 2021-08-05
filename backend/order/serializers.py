@@ -29,9 +29,10 @@ class OrderSerializer(serializers.ModelSerializer):
             'postcode',
             'country_code',
             'created_at',
-            'update_at',
+            'updated_at',
             'total_paid',
             'order_key',
             'payment_option',
             'billing_status',
+            'items',
         ]
