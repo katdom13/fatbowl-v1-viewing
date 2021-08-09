@@ -71,7 +71,6 @@ const Checkout = ({options}) => {
         setAddresses(res)
         if (Object.entries(selectedAddress).length > 0) {
           setSelectedAddress(selectedAddress)
-          console.log('BBBB', selectedAddress)
         }
       })
       .catch(err => console.error('[GET ADDRESSES ERROR]', err && err.response ? err.response : err))
@@ -133,7 +132,6 @@ const Checkout = ({options}) => {
             setAddresses(res)
             if (Object.entries(selectedAddress).length > 0) {
               setSelectedAddress(selectedAddress)
-              console.log('CCCCCCC', selectedAddress)
             }
           })
           .catch(err => console.error('[GET ADDRESSES ERROR]', err && err.response ? err.response : err))
@@ -142,10 +140,6 @@ const Checkout = ({options}) => {
       })
       .catch(err => console.error('[UPDATE ADDRESS ERROR]', err && err.response ? err.response : err))
   }
-
-  useEffect(() => {
-    console.log('ZZZZZZ', selectedAddress)
-  }, [selectedAddress])
 
   return(
     <>
@@ -194,7 +188,6 @@ const Checkout = ({options}) => {
                   handleSelect={handleSelect} />
               ) : null
             }
-            {console.log('!!!!!!!', selectedAddress)}
             {
               pageState === 'paypal' ? (
                 <Paypal

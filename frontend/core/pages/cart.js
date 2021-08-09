@@ -97,7 +97,6 @@ const Cart = () => {
         .then(response => {
           setPublicId(response.public_id)
           setItems(response.items)
-          console.log('AAAAAAAAAAAAAAA', response.items)
           setPrice(response.total_price)
           reload({...state, qty: response.total_qty})
         })
@@ -198,7 +197,6 @@ const Cart = () => {
                     let product_image = item.detail.product_image.find(
                       product_image => product_image.is_feature === true
                     )
-                    console.log('AAAAAA', product_image)
                     return (
                       <Paper variant='outlined' square key={item.id} className={classes.card}>
                         <Grid container spacing={2}>

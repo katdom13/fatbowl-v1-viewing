@@ -2,16 +2,12 @@ import {
   Container,
   Grid,
   Box,
-  CssBaseline,
   makeStyles,
   Typography,
   TextField,
   Button,
   Link as ALink,
   Divider,
-  // Accordion,
-  // AccordionSummary,
-  // AccordionDetails,
   withStyles,
 } from "@material-ui/core"
 import MuiAccordion from '@material-ui/core/Accordion'
@@ -127,7 +123,6 @@ const Profile = () => {
               if (Boolean(data.old_password) && Boolean(data.new_password)) {
                 logoutUser()
                   .then(response => {
-                    console.log('BBBBBBB', response)
                     logout()
                     Router.push('/login?password-change=success', '/login')
                   })
@@ -142,7 +137,7 @@ const Profile = () => {
             .catch(err => {
               if (err.response && err.response.status !== 200) {
                 let errors = {...err.response.data}
-
+                
                 Object.keys(errors).map(key => {
                   let value = errors[key]
                   if (typeof value === 'object') {
@@ -152,17 +147,7 @@ const Profile = () => {
 
                 setFormErrors({
                   ...errors
-                })            
-                // Object.keys(errors).map(key => {
-                //   let value = errors[key]
-                //   if (typeof value === 'object') {
-                //     errors = {...errors, [key]: value[0]}
-                //   }
-                // })
-
-                // setFormErrors({
-                //   ...errors,
-                // })
+                })
               } else {
                 console.error('[UPDATE USER ERROR]', err.response)
               }
