@@ -1,48 +1,34 @@
-import {
-  Container,
-  Typography,
-  Box,
-  Button,
-  makeStyles,
-  Grid,
-  Card,
-  CardMedia,
-  CardContent,
-} from '@material-ui/core'
-import Alert from '@material-ui/lab/Alert'
-import Link from 'next/link'
-import { useContext, useEffect } from 'react'
-import { getProducts, whoami } from '../config/axios'
-import AppContext from '../contexts/AppContext'
-import { useCookies } from 'react-cookie'
-import ProductGrid from '../components/productGrid'
+/* eslint-disable react/prop-types */
+import React from "react"
 
-export default function Home({products}) {
-  const classes = useStyles()
-  const [cookies, setCookie] = useCookies(['csrftoken'])
+import { Container, Box } from "@material-ui/core"
+import Alert from "@material-ui/lab/Alert"
 
+import ProductGrid from "../components/productGrid"
+import { getProducts } from "../config/axios"
+
+export default function Home({ products }) {
   return (
     <>
-      <Container component='div' maxWidth='lg'>
+      <Container component="div" maxWidth="lg">
         <Alert severity="info">
-          COVID-19 - <u>Click here for our latest updates</u> on our stores, website and contact centre. Thank you for your patience and support.
+          COVID-19 - <u>Click here for our latest updates</u> on our stores, website
+          and contact centre. Thank you for your patience and support.
         </Alert>
       </Container>
-      <Box component='main' paddingY={4}>
-        <ProductGrid category={`All`} products={products} />
+      <Box component="main" paddingY={4}>
+        <ProductGrid category={"All"} products={products} />
       </Box>
     </>
   )
 }
 
-const useStyles = makeStyles((theme) => ({
-}))
-
+// eslint-disable-next-line no-unused-vars
 export async function getStaticProps(context) {
   const products = await getProducts()
   return {
     props: {
       products: products,
-    }
+    },
   }
 }

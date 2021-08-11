@@ -1,72 +1,77 @@
-import '../styles/globals.css'
-import DefaultLayout from '../components/layout'
-import { useEffect, useMemo, useReducer, useState } from 'react'
-import { CookiesProvider } from 'react-cookie'
-import AppContext from '../contexts/AppContext'
-import { getCartItemQty, whoami } from '../config/axios'
-import Router from 'next/router'
-import { useCookies } from 'react-cookie'
-import { ThemeProvider } from '@material-ui/core'
-import theme from '../src/theme'
+/* eslint-disable react/prop-types */
+import "../styles/globals.css"
+import React, { useEffect, useMemo, useReducer } from "react"
+
+import { ThemeProvider } from "@material-ui/core"
+import Router from "next/router"
+import { CookiesProvider } from "react-cookie"
+import { useCookies } from "react-cookie"
+
+import DefaultLayout from "../components/layout"
+import { getCartItemQty, whoami } from "../config/axios"
+import AppContext from "../contexts/AppContext"
+import theme from "../src/theme"
 
 function MyApp({ Component, pageProps }) {
-
-  const [cookies, setCookie] = useCookies(['sessionid'])
+  const [cookies] = useCookies(["sessionid"])
 
   const [state, dispatch] = useReducer(
     (prevState, action) => {
       switch (action.type) {
-        case 'LOGIN':
+        case "LOGIN":
           return {
             ...prevState,
             loggedIn: true,
-            totalItemQty: action.qty
+            totalItemQty: action.qty,
           }
-        case 'LOGOUT':
+        case "LOGOUT":
           return {
             ...prevState,
             loggedIn: false,
             totalItemQty: 0,
           }
-        case 'RELOAD':
+        case "RELOAD":
           return {
             ...prevState,
             loggedIn: action.loggedIn,
             totalItemQty: action.qty,
-            next: action.next
+            next: action.next,
           }
       }
     },
     {
       loggedIn: Boolean(cookies.sessionid),
       totalItemQty: 0,
-      next: ''
-    },
+      next: "",
+    }
   )
 
   const context = useMemo(() => ({
-    login: async data => dispatch({
-      type: 'LOGIN',
-      qty: data.qty
-    }),
-    logout: async () => dispatch({
-      type: 'LOGOUT'
-    }),
-    reload: async data => dispatch({
-      type: 'RELOAD',
-      qty: data.qty,
-      loggedIn: data.loggedIn,
-      next: data.next
-    })
+    login: async (data) =>
+      dispatch({
+        type: "LOGIN",
+        qty: data.qty,
+      }),
+    logout: async () =>
+      dispatch({
+        type: "LOGOUT",
+      }),
+    reload: async (data) =>
+      dispatch({
+        type: "RELOAD",
+        qty: data.qty,
+        loggedIn: data.loggedIn,
+        next: data.next,
+      }),
   }))
 
   useEffect(() => {
     // Remove the server-side injected CSS.
-    const jssStyles = document.querySelector('#jss-server-side');
+    const jssStyles = document.querySelector("#jss-server-side")
     if (jssStyles) {
-      jssStyles.parentElement.removeChild(jssStyles);
+      jssStyles.parentElement.removeChild(jssStyles)
     }
-    
+
     // initialize states
     initializeAppData()
   }, [])
@@ -78,25 +83,28 @@ function MyApp({ Component, pageProps }) {
 
   useEffect(() => {
     if (state.next) {
-      Router.push(`/login?next=${state.next}`, undefined, {shallow: true})
+      Router.push(`/login?next=${state.next}`, undefined, { shallow: true })
     }
-    context.reload({...state, next: ''})
+    context.reload({ ...state, next: "" })
   }, [state.next])
 
   const initializeAppData = () => {
     whoami()
-      .then(response => {
+      .then(() => {
         getCartItemQty()
-          .then(response => context.reload({
-            ...state, qty: response
-          }))
-          .catch(err => console.error(err))
+          .then((response) =>
+            context.reload({
+              ...state,
+              qty: response,
+            })
+          )
+          .catch((err) => console.error(err))
       })
-      .catch(err => {
-        console.log('[WHOAMI error]', err)
+      .catch((err) => {
+        console.log("[WHOAMI error]", err)
         context.reload({
           ...state,
-          qty: err.response && err.response.status === 403 ? 0 : state.qty
+          qty: err.response && err.response.status === 403 ? 0 : state.qty,
         })
       })
   }
@@ -105,7 +113,7 @@ function MyApp({ Component, pageProps }) {
     <>
       {/* <CssBaseline /> */}
       <ThemeProvider theme={theme}>
-        <AppContext.Provider value={{context, state}}>
+        <AppContext.Provider value={{ context, state }}>
           <CookiesProvider>
             <DefaultLayout>
               <Component {...pageProps} />

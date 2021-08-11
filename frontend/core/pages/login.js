@@ -1,54 +1,59 @@
-import React, { useState, useEffect, useContext } from 'react'
-import Avatar from '@material-ui/core/Avatar'
-import Button from '@material-ui/core/Button'
-import CssBaseline from '@material-ui/core/CssBaseline'
-import TextField from '@material-ui/core/TextField'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Checkbox from '@material-ui/core/Checkbox'
-import Grid from '@material-ui/core/Grid'
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
-import Typography from '@material-ui/core/Typography'
-import { makeStyles } from '@material-ui/core/styles'
-import Container from '@material-ui/core/Container'
-import Box from '@material-ui/core/Box'
-import Link from 'next/link'
-import { Link as ALink } from '@material-ui/core'
-import Router from 'next/router'
-import axios from 'axios'
-import { loginUser, getCsrf, getCartItemQty } from '../config/axios'
-import Head from 'next/head'
+import React, { useState, useEffect, useContext } from "react"
+
+import { Link as ALink } from "@material-ui/core"
+import Avatar from "@material-ui/core/Avatar"
+import Box from "@material-ui/core/Box"
+import Button from "@material-ui/core/Button"
+import Checkbox from "@material-ui/core/Checkbox"
+import Container from "@material-ui/core/Container"
+import CssBaseline from "@material-ui/core/CssBaseline"
+import FormControlLabel from "@material-ui/core/FormControlLabel"
+import Grid from "@material-ui/core/Grid"
+import { makeStyles } from "@material-ui/core/styles"
+import TextField from "@material-ui/core/TextField"
+import Typography from "@material-ui/core/Typography"
+import LockOutlinedIcon from "@material-ui/icons/LockOutlined"
+import { Alert } from "@material-ui/lab"
+import Head from "next/head"
+import Link from "next/link"
+import Router from "next/router"
+
+import { loginUser, getCsrf, getCartItemQty } from "../config/axios"
+import { getUrlQueryParams } from "../config/utils"
 import AppContext from "../contexts/AppContext"
-import { getUrlQueryParams } from '../config/utils'
-import { Alert } from '@material-ui/lab'
 
 const Login = () => {
-
   const classes = useStyles()
 
   const [csrfToken, setCsrfToken] = useState("")
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [alert, setAlert] = useState({
-    severity: '',
-    message: '',
+    severity: "",
+    message: "",
   })
-  const {context: {login}} = useContext(AppContext)
+  const {
+    context: { login },
+  } = useContext(AppContext)
 
   useEffect(() => {
     let isRegistered = Boolean(Router.query.register)
-    let isPasswordChanged = Boolean(Router.query['password-change'])
-    
+    let isPasswordChanged = Boolean(Router.query["password-change"])
+
     getCsrf()
-        .then(response => {
-          setCsrfToken(response)
-          console.log('[CSRF]', response)
-        })
-        .catch(err => console.error('[GET CSRF ERROR]', err.response))
+      .then((response) => {
+        setCsrfToken(response)
+        console.log("[CSRF]", response)
+      })
+      .catch((err) => console.error("[GET CSRF ERROR]", err.response))
 
     if (isRegistered) {
-      setAlert({severity: 'success', message: 'Successfully registered. Please log in.'})
+      setAlert({
+        severity: "success",
+        message: "Successfully registered. Please log in.",
+      })
     } else if (isPasswordChanged) {
-      setAlert({severity: 'success', message: 'Password changed. Please log in.'})
+      setAlert({ severity: "success", message: "Password changed. Please log in." })
     }
   }, [])
 
@@ -56,19 +61,19 @@ const Login = () => {
     e.preventDefault()
 
     loginUser(username, password, csrfToken)
-      .then(response => {
+      .then(() => {
         getCartItemQty()
-          .then(response => {
-            login({qty: response})
-            let next = getUrlQueryParams(Router.asPath, 'next')
-            Router.push(Boolean(next) ? next : '/', undefined, {shallow: true})
+          .then((response) => {
+            login({ qty: response })
+            let next = getUrlQueryParams(Router.asPath, "next")
+            Router.push(next ? next : "/", undefined, { shallow: true })
           })
-          .catch(err => console.error(err))
+          .catch((err) => console.error(err))
       })
-      .catch(err => {
-        console.error('[LOGIN ERROR]', err && err.response ? err.response.data : err)
+      .catch((err) => {
+        console.error("[LOGIN ERROR]", err && err.response ? err.response.data : err)
         setAlert({
-          severity: 'error',
+          severity: "error",
           message: err.response.data.error,
         })
       })
@@ -81,16 +86,12 @@ const Login = () => {
       </Head>
       <Container component="main" maxWidth="sm">
         <CssBaseline />
-        {
-          alert && alert.message ? (
-            <Box width='100%' marginBottom={2}>
-              <Alert severity={alert.severity}>
-                {alert.message}
-              </Alert>
-            </Box>
-          ) : null
-        }
-        <Box display='flex' flexDirection='column' alignItems='center'>
+        {alert && alert.message ? (
+          <Box width="100%" marginBottom={2}>
+            <Alert severity={alert.severity}>{alert.message}</Alert>
+          </Box>
+        ) : null}
+        <Box display="flex" flexDirection="column" alignItems="center">
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
           </Avatar>
@@ -138,7 +139,7 @@ const Login = () => {
             </Button>
             <Grid container>
               <Grid item xs={12}>
-                <Box textAlign='center'>
+                <Box textAlign="center">
                   <Link href="/forgot-password">
                     <ALink variant="body2" gutterBottom>
                       Forgot password?
@@ -147,7 +148,7 @@ const Login = () => {
                 </Box>
               </Grid>
               <Grid item xs={12}>
-                <Box textAlign='center'>
+                <Box textAlign="center">
                   <Link href="/register">
                     <ALink variant="body2" gutterBottom>
                       {"Don't have an account? Sign Up"}

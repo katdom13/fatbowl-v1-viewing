@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from "react"
+
 import {
   Container,
   Divider,
@@ -10,28 +12,27 @@ import {
   Button,
   Link as ALink,
 } from "@material-ui/core"
-import Link from 'next/link'
-import { useEffect, useState } from "react"
-import { register } from "../config/axios"
+import Head from "next/head"
+import Link from "next/link"
 import { useCookies } from "react-cookie"
-import Router from "next/router"
-import Head from 'next/head'
+
 import ProgressLoader from "../components/progressLoader"
+import { register } from "../config/axios"
 
 const Register = () => {
   const classes = useStyles()
-  const [cookies, setCookie] = useCookies(['csrftoken'])
+  const [cookies] = useCookies(["csrftoken"])
 
   const initialFormdata = Object.freeze({
-    username: '',
-    email: '',
-    password: '',
-    password2: '',
+    username: "",
+    email: "",
+    password: "",
+    password2: "",
   })
   const [formdata, setFormdata] = useState(initialFormdata)
   const [formErrors, setFormErrors] = useState(initialFormdata)
   const [isValid, setIsValid] = useState(false)
-  const [status, setStatus] = useState('idle')
+  const [status, setStatus] = useState("idle")
 
   const handleChange = (name, value) => {
     setFormdata({
@@ -49,17 +50,20 @@ const Register = () => {
       return Boolean(a) && Boolean(b)
     })
 
-    let samePassword = formdata.password && formdata.password2 && formdata.password == formdata.password2
+    let samePassword =
+      formdata.password &&
+      formdata.password2 &&
+      formdata.password == formdata.password2
 
     if (formdata.password != formdata.password2) {
       setFormErrors({
         ...formErrors,
-        password: 'Passwords must be the same'
+        password: "Passwords must be the same",
       })
     } else {
       setFormErrors({
         ...formErrors,
-        password: ''
+        password: "",
       })
     }
 
@@ -71,30 +75,30 @@ const Register = () => {
     setIsValid(_isValid)
   }, [formdata])
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault()
-    setStatus('loading')
+    setStatus("loading")
     setFormErrors(initialFormdata)
     if (isValid) {
       register(
         {
           username: formdata.username,
           email: formdata.email,
-          password: formdata.password
+          password: formdata.password,
         },
-        cookies.csrftoken,
+        cookies.csrftoken
       )
-        .then(response => setStatus('done'))
-        .catch(err => {
-          console.error('[REGISTER ERROR]', err && err.response ? err.response : err)
-          setStatus('idle')
+        .then(() => setStatus("done"))
+        .catch((err) => {
+          console.error("[REGISTER ERROR]", err && err.response ? err.response : err)
+          setStatus("idle")
           if (err.response && err.response.status === 400) {
-            let errors = {...err.response.data}
-            
-            Object.keys(errors).map(key => {
+            let errors = { ...err.response.data }
+
+            Object.keys(errors).map((key) => {
               let value = errors[key]
-              if (typeof value === 'object') {
-                errors = {...errors, [key]: value[0]}
+              if (typeof value === "object") {
+                errors = { ...errors, [key]: value[0] }
               }
             })
 
@@ -111,125 +115,115 @@ const Register = () => {
       <Head>
         <title>Register</title>
       </Head>
-      <Container component='main' maxWidth='sm'>
+      <Container component="main" maxWidth="sm">
         <CssBaseline />
         <Grid container>
           <Grid item xs={12}>
-            <Box display='flex' alignItems='center'>
+            <Box display="flex" alignItems="center">
+              {status === "idle" ? (
+                <form className={classes.form} noValidate onSubmit={handleSubmit}>
+                  <Typography component="h3" variant="h5" gutterBottom>
+                    Create an account
+                  </Typography>
+                  <Typography component="p" variant="body1" gutterBottom>
+                    {"It's free and only takes a minute"}
+                  </Typography>
 
-              {
-                status === 'idle' ? (
-                  <form className={classes.form} noValidate onSubmit={handleSubmit}>
-                    <Typography component='h3' variant='h5' gutterBottom>
-                      Create an account
-                    </Typography>
-                    <Typography component='p' variant='body1' gutterBottom>
-                      It's free and only takes a minute
-                    </Typography>
+                  <Divider className={classes.divider} />
 
-                    <Divider className={classes.divider} />
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="username"
+                    label="Username"
+                    name="username"
+                    autoComplete="username"
+                    value={formdata.username}
+                    onChange={(e) => handleChange(e.target.name, e.target.value)}
+                    autoFocus
+                    error={Boolean(formErrors.username)}
+                    helperText={formErrors.username}
+                  />
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="email"
+                    label="Email"
+                    name="email"
+                    autoComplete="email"
+                    value={formdata.email}
+                    onChange={(e) => handleChange(e.target.name, e.target.value)}
+                    error={Boolean(formErrors.email)}
+                    helperText={formErrors.email}
+                  />
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="password"
+                    name="password"
+                    label="Password"
+                    type="password"
+                    value={formdata.password}
+                    onChange={(e) => handleChange(e.target.name, e.target.value)}
+                    autoComplete="current-password"
+                    error={Boolean(formErrors.password)}
+                    helperText={formErrors.password}
+                  />
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="password2"
+                    name="password2"
+                    label="Repeat password"
+                    type="password"
+                    value={formdata.password2}
+                    onChange={(e) => handleChange(e.target.name, e.target.value)}
+                    autoComplete="repeat-password"
+                    error={Boolean(formErrors.password)}
+                    helperText={formErrors.password}
+                  />
 
-                    <TextField
-                      variant="outlined"
-                      margin="normal"
-                      required
-                      fullWidth
-                      id="username"
-                      label="Username"
-                      name="username"
-                      autoComplete="username"
-                      value={formdata.username}
-                      onChange={(e) => handleChange(e.target.name, e.target.value)}
-                      autoFocus
-                      error={Boolean(formErrors.username)}
-                      helperText={formErrors.username}
-                    />
-                    <TextField
-                      variant="outlined"
-                      margin="normal"
-                      required
-                      fullWidth
-                      id="email"
-                      label="Email"
-                      name="email"
-                      autoComplete="email"
-                      value={formdata.email}
-                      onChange={(e) => handleChange(e.target.name, e.target.value)}
-                      error={Boolean(formErrors.email)}
-                      helperText={formErrors.email}
-                    />
-                    <TextField
-                      variant="outlined"
-                      margin="normal"
-                      required
-                      fullWidth
-                      id="password"
-                      name='password'
-                      label="Password"
-                      type="password"
-                      value={formdata.password}
-                      onChange={(e) => handleChange(e.target.name, e.target.value)}
-                      autoComplete="current-password"
-                      error={Boolean(formErrors.password)}
-                      helperText={formErrors.password}
-                    />
-                    <TextField
-                      variant="outlined"
-                      margin="normal"
-                      required
-                      fullWidth
-                      id="password2"
-                      name="password2"
-                      label="Repeat password"
-                      type="password"
-                      value={formdata.password2}
-                      onChange={(e) => handleChange(e.target.name, e.target.value)}
-                      autoComplete="repeat-password"
-                      error={Boolean(formErrors.password)}
-                      helperText={formErrors.password}
-                    />
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    className={classes.submit}
+                    disabled={!isValid}
+                  >
+                    Register
+                  </Button>
 
-                    <Button
-                      type="submit"
-                      fullWidth
-                      variant="contained"
-                      color="primary"
-                      className={classes.submit}
-                      disabled={!isValid}
-                    >
-                      Register
-                    </Button>
-
-                    <Box marginX='auto' display='flex' justifyContent='center'>
-                      <Link href="/login">
-                        <ALink variant="body2">
-                          {"Already have an account? Log in"}
-                        </ALink>
-                      </Link>
-                    </Box>
-
-                  </form>
-                ) : null
-              }
-
-              {
-                status === 'loading' ? (
-                  <ProgressLoader />
-                ) : null
-              }
-
-              {
-                status === 'done' ? (
-                  <Box display='flex' flexDirection='column' justifyContent='center'>
-                    <Typography component='h3' variant='h5' gutterBottom>
-                      Successfully created an account for {formdata.username}!
-                    </Typography>
-                    <Typography component='p' variant='body1' gutterBottom>
-                      Please check your inbox for the activation email
-                    </Typography>
+                  <Box marginX="auto" display="flex" justifyContent="center">
+                    <Link href="/login">
+                      <ALink variant="body2">
+                        {"Already have an account? Log in"}
+                      </ALink>
+                    </Link>
                   </Box>
-                ) : null
-              }
+                </form>
+              ) : null}
+
+              {status === "loading" ? <ProgressLoader /> : null}
+
+              {status === "done" ? (
+                <Box display="flex" flexDirection="column" justifyContent="center">
+                  <Typography component="h3" variant="h5" gutterBottom>
+                    Successfully created an account for {formdata.username}!
+                  </Typography>
+                  <Typography component="p" variant="body1" gutterBottom>
+                    Please check your inbox for the activation email
+                  </Typography>
+                </Box>
+              ) : null}
             </Box>
           </Grid>
         </Grid>
