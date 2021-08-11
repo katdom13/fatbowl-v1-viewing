@@ -136,7 +136,7 @@ const Header = props => {
                         <StyledMenuItem link='true' href='/dashboard' onClick={() => setAccountAnchor(null)}>
                           My Account
                         </StyledMenuItem>
-                        <StyledMenuItem link='true' href='/' onClick={() => {
+                        <StyledMenuItem link='true' href='/account/orders' onClick={() => {
                           setAccountAnchor(null)
                         }}>
                           Orders
@@ -255,7 +255,7 @@ const Header = props => {
                             </StyledMenuItem>
                             <StyledMenuItem
                               link
-                              href='/'
+                              href='/account/orders'
                               onClick={handleCloseAll}
                             >
                               Orders

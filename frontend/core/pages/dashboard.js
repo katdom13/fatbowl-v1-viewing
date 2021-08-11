@@ -38,7 +38,7 @@ const Dashboard = () => {
         <Divider className={classes.divider} />
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6} md={4}>
-            <Link href='account/orders'>
+            <Link href='/account/orders'>
               <Paper variant='outlined' className={classes.paper}>
                 <Box margin={1} style={{ height: '100%' }}>
                   <Grid container spacing={2} style={{ height: '100%' }}>

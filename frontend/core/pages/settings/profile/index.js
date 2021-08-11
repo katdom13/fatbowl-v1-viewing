@@ -85,7 +85,7 @@ const Profile = () => {
   useEffect(() => {
     whoami()
       .then(response => {
-        getUser(response, cookies.csrftoken)
+        getUser(response)
           .then(response => {
             setFormdata({
               username: response.username,
@@ -165,9 +165,7 @@ const Profile = () => {
           .then(response => {
             console.log('[DELETED USER]', response)
             setIsDeleted(true)
-            logoutUser()
-              .then(response => logout())
-              .catch(err => console.error('[LOGOUT ERROR]', err && err.response ? err.response : err))
+            logout()
           })
           .catch(err => console.error('[DELETE USER ERROR]', err.response))
       })
@@ -301,19 +299,19 @@ const Profile = () => {
                           error={Boolean(formErrors.password2)}
                           helperText={formErrors.password2}
                         />
-
-                        <Button
-                          type="submit"
-                          fullWidth
-                          variant="contained"
-                          color="primary"
-                          className={classes.submit}
-                          disabled={!isValid}
-                        >
-                          Save changes
-                        </Button>
                       </AccordionDetails>
                     </Accordion>
+
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        disabled={!isValid}
+                      >
+                        Save changes
+                      </Button>
                   </form>
                 </Box>
                 

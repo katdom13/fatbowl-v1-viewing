@@ -60,17 +60,19 @@ class UserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user')
         instance = super().update(instance, validated_data)
+        request = self.context.get('request')
 
-        # Hash password on update
         if 'password' in user_data:
-            # instance.user.password = make_password(user_data['password'])
-            request = self.context.get('request')
+            instance.user.password = make_password(user_data['password'])
 
-            instance.user.set_password(user_data['password'])
-            update_session_auth_hash(request, instance.user)
+        # Email and username
+        instance.user.email = user_data.get('email')
+        instance.user.username = user_data.get('username')
 
         instance.user.save()
         instance.save()
+
+        update_session_auth_hash(request, instance.user)
 
         return instance
 

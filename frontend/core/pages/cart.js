@@ -21,7 +21,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle'
 import CreateIcon from '@material-ui/icons/Create'
 import ClearIcon from '@material-ui/icons/Clear'
 import { useContext, useEffect, useState } from "react"
-import { deleteCartItem, getCartItems, updateCartItem } from "../config/axios"
+import { deleteCartItem, getCart, updateCartItem } from "../config/axios"
 import { useCookies } from 'react-cookie'
 import Head from 'next/head'
 import Image from 'next/image'
@@ -49,7 +49,7 @@ const Cart = () => {
   const {context: {reload}, state} = useContext(AppContext)
 
   useEffect(() => {
-    getCartItems()
+    getCart()
       .then(response => {
         setPublicId(response.public_id)
         setItems(response.items)

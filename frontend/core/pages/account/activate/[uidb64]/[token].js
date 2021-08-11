@@ -25,19 +25,11 @@ const Activate = () => {
     let token = query.token
     activateUser(uidb64, token, cookies.csrftoken)
       .then(response => {
-<<<<<<< HEAD
         setTitle(response.success && response.success)
-=======
-        setTitle(response.info && response.info)
->>>>>>> 93a85b19f062b394aad5ed712ef70136fa7d269f
         setBody('You may now log in')
         setIsSuccess(true)
       })
       .catch(err => {
-<<<<<<< HEAD
-=======
-        console.error('AAAAAAAAAA', err.response)
->>>>>>> 93a85b19f062b394aad5ed712ef70136fa7d269f
         setTitle(err.response && err.response.data && err.response.data.error)
         setBody('This link may now be invalid or expired. Please try again.')
         setIsSuccess(false)

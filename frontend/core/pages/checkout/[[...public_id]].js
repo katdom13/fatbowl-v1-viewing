@@ -25,7 +25,7 @@ import LocalShippingOutlinedIcon from '@material-ui/icons/LocalShippingOutlined'
 import Head from "next/head"
 import Link from 'next/link'
 import { useContext, useEffect, useRef, useState } from "react"
-import { getAddresses, getCart, getCartItems, getDeliveryOptions, payment, updateAddress } from "../../config/axios"
+import { getAddresses, getCart, getDeliveryOptions, payment, updateAddress } from "../../config/axios"
 import Router from 'next/router'
 import { useCookies } from "react-cookie"
 import Alert from '@material-ui/lab/Alert'
@@ -204,7 +204,7 @@ const Checkout = ({options}) => {
                       <Typography variant='body1'>
                         Order successful.
                       </Typography>
-                      <Link href='account/orders'>
+                      <Link href='/account/orders'>
                         <ALink>
                           View all orders.
                         </ALink>
@@ -350,7 +350,7 @@ const Paypal = ({total, setPageState, selectedAddress}) => {
         return payment(data.orderID, selectedAddress, cookies.csrftoken)
         .then(res => {
           setPageState('success'),
-          getCartItems()
+          getCart()
             .then(response => {
               reload({...state, qty: response.total_qty})
             })
