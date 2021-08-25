@@ -179,7 +179,7 @@ class ProductSpecification(models.Model):
     product = models.ForeignKey(
         Product,
         on_delete=models.RESTRICT,
-        related_name='specification',
+        related_name='specifications',
     )
     name = models.CharField(
         verbose_name=_('Name'),
@@ -209,6 +209,18 @@ class ProductSpecificationValue(models.Model):
         verbose_name=_('Value'),
         help_text=_('Product specification value (255 word max)'),
         max_length=255,
+    )
+    additional_price = models.DecimalField(
+        verbose_name=_('Additional price'),
+        help_text=_('Maximum 9999999.99'),
+        error_messages={
+            'name': {
+                'max_length': _('The price must be between 0 and 9999999.99'),
+            },
+        },
+        max_digits=9,
+        decimal_places=2,
+        default=0
     )
 
     class Meta:

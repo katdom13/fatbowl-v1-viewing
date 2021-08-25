@@ -1,5 +1,9 @@
 from core.apps.account.models import CustomUser
-from core.apps.store.models import Product
+from core.apps.store.models import (
+    Product,
+    ProductSpecification,
+    ProductSpecificationValue,
+)
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -110,4 +114,14 @@ class OrderItem(models.Model):
     qty = models.PositiveBigIntegerField(default=1, verbose_name=_('Quantity'))
 
     def __str__(self):
-        return str(self.product.name)
+        return str(self.product.title)
+
+
+class OrderItemSpecification(models.Model):
+    order_item = models.ForeignKey(
+        OrderItem,
+        on_delete=models.CASCADE,
+        related_name='specifications'
+    )
+    specification = models.ForeignKey(ProductSpecification, on_delete=models.CASCADE)
+    value = models.ForeignKey(ProductSpecificationValue, on_delete=models.CASCADE)

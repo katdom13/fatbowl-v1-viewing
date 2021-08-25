@@ -1,15 +1,35 @@
-from core.apps.store.serializers import ProductSerializer
+from core.apps.store.serializers import (
+    ProductSerializer,
+    ProductSpecificationSerializer,
+    ProductSpecificationValueSerializer,
+)
 from rest_framework import serializers
 
-from .models import Order, OrderItem
+from .models import Order, OrderItem, OrderItemSpecification
+
+
+class OrderItemSpecificationSerializer(serializers.ModelSerializer):
+    specification_detail = ProductSpecificationSerializer(source='specification', read_only=True)
+    value_detail = ProductSpecificationValueSerializer(source='value', read_only=True)
+
+    class Meta:
+        model = OrderItemSpecification
+        fields = [
+            'id',
+            'specification',
+            'value',
+            'specification_detail',
+            'value_detail'
+        ]
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
     detail = ProductSerializer(source='product', read_only=True)
+    specifications = OrderItemSpecificationSerializer(many=True, read_only=True)
 
     class Meta:
         model = OrderItem
-        fields = ['id', 'product', 'detail', 'price', 'qty']
+        fields = ['id', 'product', 'detail', 'price', 'qty', 'specifications']
 
 
 class OrderSerializer(serializers.ModelSerializer):

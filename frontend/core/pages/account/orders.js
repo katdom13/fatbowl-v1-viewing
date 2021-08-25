@@ -189,12 +189,35 @@ const Orders = () => {
                           />
                         </Grid>
                         <Grid item xs={12} md={9}>
-                          <Link
-                            href={`/product/${encodeURIComponent(item.detail.slug)}`}
-                            passHref
-                          >
-                            <ALink>{item.detail.title}</ALink>
-                          </Link>
+                          <Box marginBottom={2}>
+                            <Link
+                              href={`/product/${encodeURIComponent(
+                                item.detail.slug
+                              )}`}
+                              passHref
+                            >
+                              <ALink>{`${item.qty}x ${item.detail.title}`}</ALink>
+                            </Link>
+                          </Box>
+
+                          {item.specifications.map((spec) => (
+                            <Box key={spec.id} display="flex" gridGap={10}>
+                              <Typography
+                                variant="body1"
+                                color="textSecondary"
+                                component="p"
+                              >
+                                {spec.specification_detail.name}
+                              </Typography>
+                              <Typography
+                                key={spec.id}
+                                variant="body1"
+                                component="span"
+                              >
+                                {spec.value_detail.value}
+                              </Typography>
+                            </Box>
+                          ))}
                         </Grid>
                       </Grid>
                     )

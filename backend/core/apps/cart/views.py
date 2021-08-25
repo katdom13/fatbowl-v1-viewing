@@ -1,4 +1,4 @@
-from core.apps.cart.models import Cart, CartItem
+from core.apps.cart.models import Cart, CartItem, CartItemSpecification
 from core.apps.cart.permissions import IsOwnerOrAdmin
 from core.apps.cart.serializers import CartItemSerializer, CartSerializer
 from core.apps.store.models import Product
@@ -75,6 +75,8 @@ class CartViewSet(viewsets.ModelViewSet):
 
         product = Product.objects.filter(id=request.data.get('product_id')).first()
         qty = request.data.get('product_qty')
+        specifications = request.data.get('specifications')
+        truth_table = []
 
         if not product:
             return Response({
@@ -86,17 +88,50 @@ class CartViewSet(viewsets.ModelViewSet):
             product_id=product.id
         ).first()
 
-        # If the item exists in the cart, just add the quantity,
+        # If the item exists in the cart AND
+        # has the exact same specifications
+        # just add the quantity
         # otherwise, create the cart item
         if item:
-            item.qty += qty
-            item.save()
+            for spec in specifications:
+                truth_table.append(
+                    CartItemSpecification.objects.filter(
+                        cart_item=item,
+                        specification_id=spec['specification'],
+                        value_id=spec['value']
+                    ).exists()
+                )
+
+            if all(truth_table) and (len(specifications) == len(item.specifications.all())):
+                item.qty += qty
+                item.save()
+            else:
+                item = CartItem.objects.create(
+                    cart=cart,
+                    product=product,
+                    qty=qty
+                )
+
+                for spec in specifications:
+                    CartItemSpecification.objects.create(
+                        cart_item=item,
+                        specification_id=spec['specification'],
+                        value_id=spec['value']
+                    )
         else:
             item = CartItem.objects.create(
                 cart=cart,
                 product=product,
                 qty=qty
             )
+
+            # Include selected product specifications
+            for spec in specifications:
+                CartItemSpecification.objects.create(
+                    cart_item=item,
+                    specification_id=spec['specification'],
+                    value_id=spec['value']
+                )
 
         # Return Cart information
         queryset = self.get_queryset()

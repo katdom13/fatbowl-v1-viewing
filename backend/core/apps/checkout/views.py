@@ -1,4 +1,4 @@
-from core.apps.order.models import Order, OrderItem
+from core.apps.order.models import Order, OrderItem, OrderItemSpecification
 from paypalcheckoutsdk.orders import OrdersGetRequest
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -51,13 +51,20 @@ class Payment(APIView):
         )
 
         # From cart to receipt
-        for item in cart.items.all():
-            OrderItem.objects.create(
+        for cart_item in cart.items.all():
+            order_item = OrderItem.objects.create(
                 order_id=order.pk,
-                product=item.product,
-                price=item.product.regular_price,
-                qty=item.qty
+                product=cart_item.product,
+                price=cart_item.price,
+                qty=cart_item.qty
             )
+
+            for specification in cart_item.specifications.all():
+                OrderItemSpecification.objects.create(
+                    order_item=order_item,
+                    specification=specification.specification,
+                    value=specification.value
+                )
 
         # Delete cart altogether
         cart.delete()

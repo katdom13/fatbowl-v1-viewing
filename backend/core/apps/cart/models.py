@@ -1,7 +1,12 @@
 import uuid
+from decimal import Decimal
 
 from core.apps.account.models import CustomUser
-from core.apps.store.models import Product
+from core.apps.store.models import (
+    Product,
+    ProductSpecification,
+    ProductSpecificationValue,
+)
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -33,7 +38,7 @@ class Cart(models.Model):
     @property
     def total_price(self):
         return '{:.2f}'.format(
-            sum(item.price() for item in self.items.all())
+            sum(float(item.price) for item in self.items.all())
         )
 
 
@@ -46,6 +51,23 @@ class CartItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     qty = models.PositiveBigIntegerField(default=1, verbose_name=_('Quantity'))
 
-    # Get the price of item multiplied with quantity
+    # Get the price of item plus additional price multiplied with quantity
+    @property
     def price(self):
-        return self.product.regular_price * self.qty
+        additional_price = Decimal(0.00)
+
+        for specification in self.specifications.all():
+            additional_price += specification.value.additional_price
+
+        total = (self.product.regular_price + additional_price) * self.qty
+
+        return '{:.2f}'.format(total)
+
+
+class CartItemSpecification(models.Model):
+    """
+    This table contains nested information about a single item
+    """
+    cart_item = models.ForeignKey(CartItem, on_delete=models.CASCADE, related_name='specifications')
+    specification = models.ForeignKey(ProductSpecification, on_delete=models.CASCADE)
+    value = models.ForeignKey(ProductSpecificationValue, on_delete=models.CASCADE)

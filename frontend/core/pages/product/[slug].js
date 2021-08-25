@@ -2,10 +2,10 @@
 import React, { useState, useEffect, useContext } from "react"
 
 import {
+  makeStyles,
   Container,
   Grid,
   Box,
-  makeStyles,
   Typography,
   fade,
   InputLabel,
@@ -19,6 +19,10 @@ import {
   Tabs,
   Tab,
   Link as ALink,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
 } from "@material-ui/core"
 import AddCircleIcon from "@material-ui/icons/AddCircle"
 import RemoveCircleIcon from "@material-ui/icons/RemoveCircle"
@@ -43,6 +47,9 @@ const Product = ({ product }) => {
   const [qty, setQty] = useState(1)
   const [cookies] = useCookies(["csrftoken"])
   const [image, setImage] = useState(0)
+  const [price, setPrice] = useState(product.regular_price)
+  const [specifications, setSpecifications] = useState([])
+
   const {
     context: { reload },
     state,
@@ -58,6 +65,17 @@ const Product = ({ product }) => {
       (image) => image.is_feature === true
     )
     setImage(imageIndex)
+
+    // Setup specifications
+    let initialSpecifications = []
+    product.specifications.map((item) => {
+      initialSpecifications.push({
+        specification: item.id,
+        value: item.values[0].id,
+        price: item.values[0].additional_price,
+      })
+    })
+    setSpecifications(initialSpecifications)
   }, [])
 
   const handleAdd = () => {
@@ -67,6 +85,7 @@ const Product = ({ product }) => {
       let body = {
         product_id: product.id,
         product_qty: qty,
+        specifications,
       }
 
       addCartItem(body, cookies.csrftoken)
@@ -92,6 +111,31 @@ const Product = ({ product }) => {
           console.error("[WISHLIST ERROR]", err && err.response ? err.response : err)
         )
     }
+  }
+
+  const handleChangeSpecification = (specification, value) => {
+    value = parseInt(value)
+    let newSpecifications = [...specifications]
+
+    let index = newSpecifications.findIndex(
+      (spec) => spec.specification == specification
+    )
+
+    newSpecifications[index] = {
+      specification,
+      value: value,
+      price: product.specifications
+        .find((spec) => spec.id === specification)
+        .values.find((item) => item.id === value).additional_price,
+    }
+
+    // Set additional price
+    let additional_price = 0
+    newSpecifications.map((spec) => (additional_price += parseFloat(spec.price)))
+
+    setPrice((parseFloat(product.regular_price) + additional_price).toFixed(2))
+
+    setSpecifications(newSpecifications)
   }
 
   return (
@@ -210,7 +254,7 @@ const Product = ({ product }) => {
               >
                 <Box component="div">
                   <Typography variant="h4" component="p" style={{ fontWeight: 400 }}>
-                    ₱{product.regular_price}
+                    ₱{price}
                   </Typography>
                   <Typography
                     variant="body1"
@@ -264,6 +308,41 @@ const Product = ({ product }) => {
                     }
                   />
                 </FormControl>
+              </Box>
+
+              <Divider variant="middle" component="hr" style={{ margin: "16px" }} />
+
+              <Box display="grid" gridGap={24}>
+                {product.specifications.map((spec, index) => (
+                  <FormControl component="fieldset" key={spec.id}>
+                    <FormLabel component="legend">
+                      <Typography component="div" variant="body1">
+                        {spec.name} {"(Select one)"}
+                      </Typography>
+                    </FormLabel>
+                    <RadioGroup
+                      aria-label={spec.name}
+                      name={spec.name}
+                      value={
+                        specifications[index] !== undefined
+                          ? specifications[index].value
+                          : 0
+                      }
+                      onChange={() =>
+                        handleChangeSpecification(spec.id, event.target.value)
+                      }
+                    >
+                      {spec.values.map((item) => (
+                        <FormControlLabel
+                          key={item.id}
+                          value={item.id}
+                          control={<Radio size="small" />}
+                          label={item.value}
+                        />
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
+                ))}
               </Box>
 
               <Divider variant="middle" component="hr" style={{ margin: "16px" }} />

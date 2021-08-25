@@ -233,7 +233,7 @@ const Cart = () => {
                                       className={classes.title}
                                       gutterBottom
                                     >
-                                      {item.detail.title}
+                                      {`${item.qty}x ${item.detail.title}`}
                                     </ALink>
                                   </Link>
                                 </Box>
@@ -247,20 +247,48 @@ const Cart = () => {
                                   >
                                     <Grid container>
                                       <Grid item xs={12} md={8}>
-                                        <Typography
-                                          variant="body1"
-                                          component="p"
-                                          color="textSecondary"
-                                          gutterBottom
+                                        <Box
+                                          display="flex"
+                                          flexDirection="column"
+                                          marginBottom={2}
                                         >
-                                          {item.detail.description}
-                                        </Typography>
+                                          <Typography
+                                            variant="body1"
+                                            component="p"
+                                            color="textSecondary"
+                                            gutterBottom
+                                          >
+                                            {item.detail.description}
+                                          </Typography>
+                                        </Box>
+                                        {item.specifications.map((spec) => (
+                                          <Box
+                                            key={spec.id}
+                                            display="flex"
+                                            gridGap={10}
+                                          >
+                                            <Typography
+                                              variant="body1"
+                                              color="textSecondary"
+                                              component="p"
+                                            >
+                                              {spec.specification_detail.name}
+                                            </Typography>
+                                            <Typography
+                                              key={spec.id}
+                                              variant="body1"
+                                              component="span"
+                                            >
+                                              {spec.value_detail.value}
+                                            </Typography>
+                                          </Box>
+                                        ))}
                                       </Grid>
                                       <Grid item xs={12} md={4}>
                                         <Box textAlign="end">
                                           <Typography variant="body1" component="p">
                                             <Box component="span" fontWeight="bold">
-                                              ₱{item.detail.regular_price}
+                                              ₱{item.price}
                                             </Box>
                                           </Typography>
                                         </Box>
