@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  fatbowl:
+    build:
+      context: ./backend
+    container_name: fatbowl
+    volumes:
+      - ./backend:/usr/src/fatbowl/backend
+    ports:
+      - "8000:8000"
+    environment:
+      - FROM_DOCKER=1
