@@ -15,7 +15,7 @@ RUN set -ex \
 
 
   
-RUN python3 manage.py collectstatic
+RUN python3 manage.py collectstatic --noinput
 RUN python3 manage.py makemigrations
 RUN python3 manage.py migrate
 
