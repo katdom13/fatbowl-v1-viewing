@@ -168,10 +168,7 @@ SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_HTTPONLY = False
 SESSION_COOKIE_HTTPONLY = False
 
-CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:3001",
-    "http://localhost:3001",
-]
+CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_EXPOSE_HEADERS = [
     "Content-Type",
