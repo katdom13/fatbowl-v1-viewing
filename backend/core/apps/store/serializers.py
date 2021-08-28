@@ -16,14 +16,21 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
+    short_url = serializers.SerializerMethodField()
+
     class Meta:
         model = ProductImage
         fields = [
             'id',
             'image',
+            'short_url',
             'alt_text',
             'is_feature',
         ]
+
+    def get_short_url(self, obj):
+        print(obj.image.__dict__)
+        return obj.image.name
 
 
 class ProductSpecificationValueSerializer(serializers.ModelSerializer):

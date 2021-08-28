@@ -212,7 +212,7 @@ const Product = ({ product }) => {
                     product.product_image[image].image
                   )}
                   <Image
-                    src={product.product_image[image].image}
+                    src={product.product_image[image].short_url}
                     alt={product.product_image[image].alt_text}
                     width={400}
                     height={400}

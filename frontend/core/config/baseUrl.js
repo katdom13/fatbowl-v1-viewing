@@ -1,5 +1,2 @@
-import getConfig from "next/config"
-const { serverRuntimeConfig, publicRuntimeConfig } = getConfig()
-
 export const baseUrl =
-  serverRuntimeConfig.FATBOWL_API_URI || publicRuntimeConfig.FATBOWL_API_URI
+  "http://ec2-13-229-75-63.ap-southeast-1.compute.amazonaws.com:8000/api/v1/"
