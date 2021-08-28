@@ -21,12 +21,10 @@ WORKDIR /usr/src/fatbowl/frontend
 ARG APP_ENV=production
 ARG NODE_ENV=production
 ARG PORT=3000
-ARG NEXT_PUBLIC_DOCKER=1
 
 ENV APP_ENV=${APP_ENV} \
     NODE_ENV=${NODE_ENV} \
     PORT=${PORT} \
-    NEXT_PUBLIC_DOCKER=${NEXT_PUBLIC_DOCKER} \
 # This allows to access Graphql Playground
     APOLLO_PRODUCTION_INTROSPECTION=false
 

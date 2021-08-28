@@ -11,6 +11,8 @@ services:
       - 8000:8000
     environment:
       - FROM_DOCKER=1
+    networks:
+      - fatbowl-network
 
   fatbowl-frontend:
     build:
@@ -24,6 +26,8 @@ services:
       - NEXT_PUBLIC_DOCKER=1
     depends_on:
       - fatbowl
+    networks:
+      - fatbowl-network
 
   nginx:
     image: nginx:latest
@@ -34,3 +38,13 @@ services:
     depends_on:
       - fatbowl
       - fatbowl-frontend
+    networks:
+      - fatbowl-network
+
+networks:
+  fatbowl-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+          gateway: 172.28.0.1

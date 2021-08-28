@@ -2,7 +2,7 @@ module.exports = {
   reactStrictMode: true,
   serverRuntimeConfig: {
     // Will only be available on the server side
-    FATBOWL_API_URI: "http://fatbowl:8000/api/v1",
+    FATBOWL_API_URI: `http://172.28.0.1:8000/api/v1`,
   },
   publicRuntimeConfig: {
     FATBOWL_API_URI: "http://localhost:8000/api/v1",
