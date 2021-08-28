@@ -10,6 +10,7 @@ from core.apps.order.models import Order
 from core.apps.order.serializers import OrderSerializer
 from core.apps.store.models import Product
 from core.apps.store.serializers import ProductSerializer
+from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
@@ -177,7 +178,9 @@ class PasswordResetView(APIView):
                     self.email_template_name,
                     {
                         'user': user,
-                        'base_url': 'http://localhost:3001',
+                        'base_url':
+                            'http://ec2-13-229-75-63.ap-southeast-1.compute.amazonaws.com'
+                            if settings.FROM_DOCKER else 'http://localhost:3001',
                         'path': 'password-reset/{uidb64}/{token}'.format(
                             uidb64=urlsafe_base64_encode(force_bytes(user.pk)),
                             token=default_token_generator.make_token(user)

@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react"
 
 import {
+  alpha,
   Box,
   Button,
   Container,
@@ -10,7 +11,6 @@ import {
   Divider,
   Link as ALink,
   Hidden,
-  fade,
   Menu,
   MenuItem,
 } from "@material-ui/core"
@@ -271,7 +271,7 @@ const useStyles = makeStyles((theme) => ({
   },
   orderDetails: {
     padding: theme.spacing(1),
-    background: fade(theme.palette.primary.main, 0.09),
+    background: alpha(theme.palette.primary.main, 0.09),
     [theme.breakpoints.up("md")]: {
       padding: theme.spacing(2),
     },

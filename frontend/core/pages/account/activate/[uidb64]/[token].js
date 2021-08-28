@@ -36,6 +36,7 @@ const Activate = () => {
         setBody("This link may now be invalid or expired. Please try again.")
         setIsSuccess(false)
       })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

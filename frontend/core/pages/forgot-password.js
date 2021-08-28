@@ -87,7 +87,7 @@ const ForgotPassword = () => {
                   </Button>
 
                   <Box marginX="auto" display="flex" justifyContent="center">
-                    <Link href="/login">
+                    <Link href="/login" passHref>
                       <ALink variant="body2">
                         {"Already have an account? Log in"}
                       </ALink>

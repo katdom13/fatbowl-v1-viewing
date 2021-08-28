@@ -110,7 +110,7 @@ const Addresses = () => {
         <Divider className={classes.divider} />
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6} md={4}>
-            <Link href="/account/address/">
+            <Link href="/account/address/" passHref>
               <Card elevation={0} className={classes.add} style={{ height: "100%" }}>
                 <Grid container style={{ height: "100%" }}>
                   <Grid

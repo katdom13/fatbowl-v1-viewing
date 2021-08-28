@@ -1,4 +1,5 @@
 from core.apps.store.serializers import ProductSerializer
+from django.conf import settings
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
@@ -28,6 +29,9 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
+        url = 'http://ec2-13-229-75-63.ap-southeast-1.compute.amazonaws.com/account/activate/{uidb64}/{token}' \
+            if settings.FROM_DOCKER else 'http://localhost:3001/account/activate/{uidb64}/{token}'
+
         user_data = validated_data.pop('user')
 
         # Hash password on create
@@ -45,7 +49,7 @@ class UserSerializer(serializers.ModelSerializer):
             subject='Activate your Account',
             message=render_to_string('account/registration/account_activation_email.html', {
                 'user': user,
-                'url': 'http://localhost:3001/account/activate/{uidb64}/{token}'.format(
+                'url': url.format(
                     uidb64=urlsafe_base64_encode(force_bytes(user.pk)),
                     token=account_activation_token.make_token(user)
                 )

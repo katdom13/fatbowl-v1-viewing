@@ -2,7 +2,7 @@ FROM python:3
 
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /usr/src/app/backend
+WORKDIR /usr/src/fatbowl/backend
 
 COPY requirements.txt ./
 

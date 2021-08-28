@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useContext, useState } from "react"
 import { useEffect } from "react"
 

@@ -3,12 +3,12 @@ import React from "react"
 import { useContext, useState } from "react"
 
 import {
+  alpha,
   AppBar,
   Toolbar,
   Box,
   Collapse,
   Divider,
-  fade,
   Hidden,
   IconButton,
   InputBase,
@@ -135,7 +135,7 @@ const Header = ({ categories }) => {
                       alignItems="center"
                       justifyContent="center"
                     >
-                      <MeetingRoomOutlinedIcon fontSize="default" />
+                      <MeetingRoomOutlinedIcon fontSize="medium" />
                       Login
                     </Box>
                   </Button>
@@ -154,7 +154,7 @@ const Header = ({ categories }) => {
                         alignItems="center"
                         justifyContent="center"
                       >
-                        <PermIdentityOutlinedIcon fontSize="default" />
+                        <PermIdentityOutlinedIcon fontSize="medium" />
                         Account
                       </Box>
                     </Button>
@@ -211,7 +211,7 @@ const Header = ({ categories }) => {
                           color="secondary"
                           className={classes.cartBadge}
                         >
-                          <ShoppingCartOutlinedIcon fontSize="default" />
+                          <ShoppingCartOutlinedIcon fontSize="medium" />
                         </Badge>
                         Cart
                       </Box>
@@ -523,7 +523,7 @@ const useStyles = makeStyles((theme) => ({
   },
   inputInput: {
     border: "1px solid black",
-    background: fade(theme.palette.common.black, 0.08),
+    background: alpha(theme.palette.common.black, 0.08),
     borderRadius: theme.shape.borderRadius,
     padding: theme.spacing(1, 1, 1, 0),
 
@@ -593,9 +593,9 @@ const useStyles = makeStyles((theme) => ({
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
+    backgroundColor: alpha(theme.palette.common.white, 0.15),
     "&:hover": {
-      backgroundColor: fade(theme.palette.common.white, 0.25),
+      backgroundColor: alpha(theme.palette.common.white, 0.25),
     },
     width: "100%",
     [theme.breakpoints.up("md")]: {

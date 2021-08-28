@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react"
 
 import {
+  alpha,
   Box,
   Container,
   Grid,
@@ -16,7 +17,6 @@ import {
   makeStyles,
   Menu,
   MenuItem,
-  fade,
 } from "@material-ui/core"
 import { Hidden } from "@material-ui/core"
 import { Typography } from "@material-ui/core"
@@ -67,6 +67,7 @@ const Cart = () => {
         reload({ ...state, qty: response.total_qty })
       })
       .catch((err) => console.log("[CART ERROR]", err.response))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleCloseAnchor = () => {
@@ -465,7 +466,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    background: fade(theme.palette.primary.main, 0.09),
+    background: alpha(theme.palette.primary.main, 0.09),
     padding: theme.spacing(2),
     [theme.breakpoints.down("xs")]: {
       padding: theme.spacing(1),

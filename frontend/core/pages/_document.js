@@ -1,16 +1,17 @@
+/* eslint-disable @next/next/no-sync-scripts */
 import React from "react"
 
-import { ServerStyleSheets } from "@material-ui/core/styles"
+import { ServerStyleSheets } from "@material-ui/styles" // works with @material-ui/core/styles, if you prefer to use it.
 import Document, { Html, Head, Main, NextScript } from "next/document"
 
-import theme from "../src/theme"
+import theme from "../src/theme" // Adjust here as well
 
 export default class MyDocument extends Document {
   render() {
     return (
       <Html lang="en">
         <Head>
-          {/* PWA primary color */}
+          {/* Not exactly required, but this is the PWA primary color */}
           <meta name="theme-color" content={theme.palette.primary.main} />
           <script src="https://www.paypal.com/sdk/js?client-id=AYRtjDBRTGfo4R4QmOaWqOLCGv3StMDfSyfJTe9QNIpszRTsC4mNt9n_bPwrSraKMOBCypuhoHjeC3Op&currency=PHP"></script>
         </Head>

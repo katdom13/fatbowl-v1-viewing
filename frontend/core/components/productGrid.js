@@ -32,7 +32,7 @@ const ProductGrid = ({ category, products }) => {
             <Typography variant="body1" gutterBottom>
               There are currently no active products
             </Typography>
-            <Link href="/">
+            <Link href="/" passHref>
               <ALink>Go to homepage</ALink>
             </Link>
           </>
@@ -48,6 +48,7 @@ const ProductGrid = ({ category, products }) => {
                 <Link
                   key={product.id}
                   href={`/product/${encodeURIComponent(product.slug)}`}
+                  passHref
                 >
                   <Grid item xs={12} sm={6} md={3}>
                     <Card elevation={1}>

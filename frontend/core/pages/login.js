@@ -140,7 +140,7 @@ const Login = () => {
             <Grid container>
               <Grid item xs={12}>
                 <Box textAlign="center">
-                  <Link href="/forgot-password">
+                  <Link href="/forgot-password" passHref>
                     <ALink variant="body2" gutterBottom>
                       Forgot password?
                     </ALink>
@@ -149,7 +149,7 @@ const Login = () => {
               </Grid>
               <Grid item xs={12}>
                 <Box textAlign="center">
-                  <Link href="/register">
+                  <Link href="/register" passHref>
                     <ALink variant="body2" gutterBottom>
                       {"Don't have an account? Sign Up"}
                     </ALink>

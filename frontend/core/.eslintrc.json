@@ -3,7 +3,12 @@
     "browser": true,
     "es2021": true
   },
-  "extends": ["eslint:recommended", "plugin:react/recommended", "prettier"],
+  "extends": [
+    "eslint:recommended",
+    "next/core-web-vitals",
+    "plugin:react/recommended",
+    "prettier"
+  ],
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
@@ -15,7 +20,6 @@
   "rules": {
     "linebreak-style": ["error", "unix"],
     "quotes": ["error", "double"],
-    "prettier/prettier": "error",
     "import/order": [
       "error",
       {

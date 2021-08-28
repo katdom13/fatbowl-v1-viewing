@@ -7,7 +7,7 @@ import {
   Grid,
   Box,
   Typography,
-  fade,
+  alpha,
   InputLabel,
   FormControl,
   Button,
@@ -76,6 +76,7 @@ const Product = ({ product }) => {
       })
     })
     setSpecifications(initialSpecifications)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleAdd = () => {
@@ -206,6 +207,10 @@ const Product = ({ product }) => {
                 </Typography>
 
                 <Box display="flex" justifyContent="center" paddingTop={2}>
+                  {console.log(
+                    "AAAAAAAAAAAAAAAAAAAAA",
+                    product.product_image[image].image
+                  )}
                   <Image
                     src={product.product_image[image].image}
                     alt={product.product_image[image].alt_text}
@@ -414,12 +419,12 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
   },
   tableCell: {
-    borderBottom: `1px solid ${fade(theme.palette.common.black, 0.1)}`,
+    borderBottom: `1px solid ${alpha(theme.palette.common.black, 0.1)}`,
   },
   tableContainer: {
     marginTop: theme.spacing(2),
     // border: '1px solid rgba(224, 224, 224, 1)'
-    border: `1px solid ${fade(theme.palette.common.black, 0.1)}`,
+    border: `1px solid ${alpha(theme.palette.common.black, 0.1)}`,
     overflowX: "hidden",
   },
   title: {

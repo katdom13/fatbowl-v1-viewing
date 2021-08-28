@@ -104,6 +104,7 @@ const Profile = () => {
   useEffect(() => {
     let _isValid = handleFormValidation()
     setIsValid(_isValid)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formdata])
 
   const handleSubmit = (e) => {

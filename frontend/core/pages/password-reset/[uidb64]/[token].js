@@ -92,6 +92,7 @@ const PasswordReset = () => {
   useEffect(() => {
     let _isValid = handleFormValidation()
     setIsValid(_isValid)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formdata])
 
   return (
@@ -172,7 +173,7 @@ const PasswordReset = () => {
                           </Button>
 
                           <Box marginX="auto" display="flex" justifyContent="center">
-                            <Link href="/login">
+                            <Link href="/login" passHref>
                               <ALink variant="body2">
                                 {"Already have an account? Log in"}
                               </ALink>

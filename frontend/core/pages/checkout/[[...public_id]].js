@@ -220,7 +220,7 @@ const Checkout = ({ options }) => {
                 <Grid item xs={12}>
                   <Box display="flex" gridGap={4} alignItems="center">
                     <Typography variant="body1">Order successful.</Typography>
-                    <Link href="/account/orders">
+                    <Link href="/account/orders" passHref>
                       <ALink>View all orders.</ALink>
                     </Link>
                   </Box>
@@ -385,6 +385,7 @@ const Paypal = ({ total, setPageState, selectedAddress }) => {
         },
       })
       .render(paypal.current)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

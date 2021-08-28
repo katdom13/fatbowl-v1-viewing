@@ -73,6 +73,7 @@ const Register = () => {
   useEffect(() => {
     let _isValid = handleFormValidation()
     setIsValid(_isValid)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formdata])
 
   const handleSubmit = (e) => {
@@ -203,7 +204,7 @@ const Register = () => {
                   </Button>
 
                   <Box marginX="auto" display="flex" justifyContent="center">
-                    <Link href="/login">
+                    <Link href="/login" passHref>
                       <ALink variant="body2">
                         {"Already have an account? Log in"}
                       </ALink>

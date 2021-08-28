@@ -1,18 +1,22 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
 import "../styles/globals.css"
-import React, { useEffect, useMemo, useReducer } from "react"
+import React, { useEffect, useMemo, useReducer, useState } from "react"
 
 import { ThemeProvider } from "@material-ui/core"
+import axios from "axios"
 import Router from "next/router"
 import { CookiesProvider } from "react-cookie"
 import { useCookies } from "react-cookie"
 
 import DefaultLayout from "../components/layout"
 import { getCartItemQty, whoami } from "../config/axios"
+import { baseUrl } from "../config/baseUrl"
 import AppContext from "../contexts/AppContext"
 import theme from "../src/theme"
 
 function MyApp({ Component, pageProps }) {
+  const [isLoading, setIsLoading] = useState(true)
   const [cookies] = useCookies(["sessionid"])
 
   const [state, dispatch] = useReducer(
@@ -46,6 +50,7 @@ function MyApp({ Component, pageProps }) {
     }
   )
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const context = useMemo(() => ({
     login: async (data) =>
       dispatch({
@@ -74,6 +79,7 @@ function MyApp({ Component, pageProps }) {
 
     // initialize states
     initializeAppData()
+    setIsLoading(false)
   }, [])
 
   useEffect(() => {
@@ -89,6 +95,18 @@ function MyApp({ Component, pageProps }) {
   }, [state.next])
 
   const initializeAppData = () => {
+    console.log("BASEURL", baseUrl)
+    console.log("FROM_DOCKER", process.env.FROM_DOCKER)
+    axios
+      .get(baseUrl + "store/categories/")
+      .then((response) => console.log("Categories:", response.data))
+      .catch((err) =>
+        console.error(
+          "[CATEGORIES ERROR]",
+          err && err.response ? err.response.data : err
+        )
+      )
+
     whoami()
       .then(() => {
         getCartItemQty()
@@ -109,7 +127,9 @@ function MyApp({ Component, pageProps }) {
       })
   }
 
-  return (
+  return isLoading ? (
+    <></>
+  ) : (
     <>
       {/* <CssBaseline /> */}
       <ThemeProvider theme={theme}>
