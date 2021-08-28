@@ -1,5 +1,8 @@
 module.exports = {
   reactStrictMode: true,
+  publicRuntimeConfig: {
+    NEXT_PUBLIC_DOCKER: process.env.NEXT_PUBLIC_DOCKER,
+  },
   images: {
     // loader: "imgix",
     // path: "https://ec2-13-229-75-63.ap-southeast-1.compute.amazonaws.com",

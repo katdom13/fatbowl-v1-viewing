@@ -5,6 +5,7 @@ import React, { useEffect, useMemo, useReducer, useState } from "react"
 
 import { ThemeProvider } from "@material-ui/core"
 import axios from "axios"
+// import getConfig from "next/config"
 import Router from "next/router"
 import { CookiesProvider } from "react-cookie"
 import { useCookies } from "react-cookie"
@@ -16,6 +17,7 @@ import AppContext from "../contexts/AppContext"
 import theme from "../src/theme"
 
 function MyApp({ Component, pageProps }) {
+  // const { publicRuntimeConfig } = getConfig()
   const [isLoading, setIsLoading] = useState(true)
   const [cookies] = useCookies(["sessionid"])
 
@@ -95,8 +97,10 @@ function MyApp({ Component, pageProps }) {
   }, [state.next])
 
   const initializeAppData = () => {
+    console.log("FROM_DOCKER")
     console.log("BASEURL", baseUrl)
-    console.log("FROM_DOCKER", process.env.FROM_DOCKER)
+    console.log(process.env.NEXT_PUBLIC_FROM_DOCKER)
+    // console.log("FROM_DOCKER", publicRuntimeConfig.NEXT_PUBLIC_DOCKER)
     axios
       .get(baseUrl + "store/categories/")
       .then((response) => console.log("Categories:", response.data))

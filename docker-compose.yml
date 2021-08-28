@@ -21,7 +21,7 @@ services:
     ports:
       - 3000:3000
     environment:
-      - FROM_DOCKER=1
+      - NEXT_PUBLIC_DOCKER=1
     depends_on:
       - fatbowl
 
