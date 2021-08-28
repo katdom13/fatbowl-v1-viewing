@@ -1,7 +1,11 @@
 module.exports = {
   reactStrictMode: true,
+  serverRuntimeConfig: {
+    // Will only be available on the server side
+    FATBOWL_API_URI: "http://fatbowl:8000/api/v1",
+  },
   publicRuntimeConfig: {
-    NEXT_PUBLIC_DOCKER: process.env.NEXT_PUBLIC_DOCKER,
+    FATBOWL_API_URI: "http://localhost:8000/api/v1",
   },
   images: {
     // loader: "imgix",

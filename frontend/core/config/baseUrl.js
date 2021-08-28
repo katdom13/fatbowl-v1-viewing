@@ -1,1 +1,5 @@
-export const baseUrl = `http://13.229.75.63:8000/api/v1/`
+import getConfig from "next/config"
+const { serverRuntimeConfig, publicRuntimeConfig } = getConfig()
+
+export const baseUrl =
+  serverRuntimeConfig.FATBOWL_API_URI || publicRuntimeConfig.FATBOWL_API_URI
