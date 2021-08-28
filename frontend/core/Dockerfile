@@ -5,7 +5,7 @@ FROM node:14-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /usr/src/fatbowl/frontend
 COPY package.json yarn.lock ./
-RUN --mount=type=cache,id=yarn,sharing=locked,target=/usr/local/share/.cache/yarn yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile
 
 # Rebuild the source code only when needed
 FROM node:14-alpine AS builder
