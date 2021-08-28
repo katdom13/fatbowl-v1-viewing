@@ -176,7 +176,7 @@ const Product = ({ product }) => {
                       className={classes.image}
                       disableRipple
                       style={{
-                        background: `url(${product_image.image})`,
+                        background: `url(https://fatbowl.imgix.net/${product_image.short_url})`,
                         position: "relative",
                         backgroundSize: "contain",
                         backgroundPosition: "center",
@@ -207,10 +207,6 @@ const Product = ({ product }) => {
                 </Typography>
 
                 <Box display="flex" justifyContent="center" paddingTop={2}>
-                  {console.log(
-                    "AAAAAAAAAAAAAAAAAAAAA",
-                    product.product_image[image].image
-                  )}
                   <Image
                     src={product.product_image[image].short_url}
                     alt={product.product_image[image].alt_text}
@@ -236,7 +232,7 @@ const Product = ({ product }) => {
                       key={product_image.id}
                       className={classes.image}
                       style={{
-                        background: `url(${product_image.image})`,
+                        background: `url(https://fatbowl.imgix.net/${product_image.short_url})`,
                         position: "relative",
                         backgroundSize: "cover",
                         minWidth: "unset",

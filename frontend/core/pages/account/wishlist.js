@@ -101,7 +101,7 @@ const Wishlist = () => {
                       <Grid container spacing={2}>
                         <Grid item xs={12} md={3}>
                           <Image
-                            src={product_image.image}
+                            src={product_image.short_url}
                             alt={product_image.alt_text}
                             width={400}
                             height={400}
