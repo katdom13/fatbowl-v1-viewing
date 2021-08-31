@@ -145,26 +145,13 @@ const Footer = () => {
 
             <List className={classes.list}>
               <ListItem className={classes.listItem}>
-                <Link href="/">
-                  <a className={classes.link}>Team</a>
+                <Link href="/about/fatbowl">
+                  <a className={classes.link}>About us</a>
                 </Link>
               </ListItem>
-
               <ListItem className={classes.listItem}>
-                <Link href="/">
-                  <a className={classes.link}>Locations</a>
-                </Link>
-              </ListItem>
-
-              <ListItem className={classes.listItem}>
-                <Link href="/">
-                  <a className={classes.link}>Privacy</a>
-                </Link>
-              </ListItem>
-
-              <ListItem className={classes.listItem}>
-                <Link href="/">
-                  <a className={classes.link}>Terms</a>
+                <Link href="/about/creator">
+                  <a className={classes.link}>About the creator</a>
                 </Link>
               </ListItem>
             </List>

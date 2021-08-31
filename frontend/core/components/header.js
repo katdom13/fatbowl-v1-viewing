@@ -42,10 +42,12 @@ const Header = ({ categories }) => {
   const classes = useStyles()
 
   const [categoryAnchor, setCategoryAnchor] = useState(null)
+  const [aboutAnchor, setAboutAnchor] = useState(null)
   const [accountAnchor, setAccountAnchor] = useState(null)
   const [isOpenMenu, setIsOpenMenu] = useState(false)
 
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
+  const [isAboutOpen, setIsAboutOpen] = useState(false)
   const [isAccountOpen, setIsAccountOpen] = useState(false)
 
   const {
@@ -114,6 +116,38 @@ const Header = ({ categories }) => {
                           {category.name}
                         </StyledMenuItem>
                       ))}
+                  </StyledMenu>
+                </List>
+              </Hidden>
+
+              <Hidden smDown>
+                <List className={classes.menuList}>
+                  <MenuListItem
+                    onClick={(event) => setAboutAnchor(event.currentTarget)}
+                  >
+                    About
+                  </MenuListItem>
+
+                  <StyledMenu
+                    anchorEl={aboutAnchor}
+                    keepMounted
+                    open={Boolean(aboutAnchor)}
+                    onClose={() => setAboutAnchor(null)}
+                  >
+                    <StyledMenuItem
+                      link="true"
+                      href={"/about/fatbowl"}
+                      onClick={() => setAboutAnchor(null)}
+                    >
+                      About us
+                    </StyledMenuItem>
+                    <StyledMenuItem
+                      link="true"
+                      href={"/about/creator"}
+                      onClick={() => setAboutAnchor(null)}
+                    >
+                      About the creator
+                    </StyledMenuItem>
                   </StyledMenu>
                 </List>
               </Hidden>
@@ -261,6 +295,33 @@ const Header = ({ categories }) => {
                             {category.name}
                           </StyledMenuItem>
                         ))}
+                    </MenuList>
+                  </CategoryMenuPaper>
+                </Collapse>
+                <StyledDivider variant="middle" />
+
+                <MenuListItem onClick={() => setIsAboutOpen(!isAboutOpen)}>
+                  About
+                </MenuListItem>
+                <StyledDivider variant="middle" />
+
+                <Collapse in={isAboutOpen} timeout="auto" unmountOnExit>
+                  <CategoryMenuPaper>
+                    <MenuList className={classes.menuList}>
+                      <StyledMenuItem
+                        link
+                        href={"/about/fatbowl"}
+                        onClick={handleCloseAll}
+                      >
+                        About us
+                      </StyledMenuItem>
+                      <StyledMenuItem
+                        link
+                        href={"/about/creator"}
+                        onClick={handleCloseAll}
+                      >
+                        About fatbowl
+                      </StyledMenuItem>
                     </MenuList>
                   </CategoryMenuPaper>
                 </Collapse>
