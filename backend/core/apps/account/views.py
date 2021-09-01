@@ -1,4 +1,3 @@
-import environ
 from core.apps.account.models import CustomUser
 from core.apps.account.permissions import (
     IsAccountOwnerOrAdmin,
@@ -32,9 +31,6 @@ from rest_framework.views import APIView
 
 from .models import Address
 from .tokens import account_activation_token
-
-env = environ.Env()
-environ.Env.read_env()
 
 
 class CSRFView(APIView):
@@ -173,7 +169,7 @@ class PasswordResetView(APIView):
         email = request.data.get('email')
         user = User.objects.filter(email=email).first()
 
-        base_url = env('FRONTEND_BASEURL') if settings.FROM_DOCKER else 'http://localhost:3000/'
+        base_url = settings.env('FRONTEND_BASEURL') if settings.FROM_DOCKER else 'http://localhost:3000/'
 
         if user:
             user.email_user(

@@ -1,4 +1,3 @@
-import environ
 from core.apps.store.serializers import ProductSerializer
 from django.conf import settings
 from django.contrib.auth import update_session_auth_hash
@@ -11,9 +10,6 @@ from rest_framework import serializers
 
 from .models import Address, CustomUser
 from .tokens import account_activation_token
-
-env = environ.Env()
-environ.Env.read_env()
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -34,7 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
 
-        url = env('FRONTEND_BASEURL') if settings.FROM_DOCKER else 'http://localhost:3000/'
+        url = settings.env('FRONTEND_BASEURL') if settings.FROM_DOCKER else 'http://localhost:3000/'
         url += 'account/activate/{uidb64}/{token}'
 
         user_data = validated_data.pop('user')
