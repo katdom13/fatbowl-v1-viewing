@@ -4,15 +4,12 @@ import "../styles/globals.css"
 import React, { useEffect, useMemo, useReducer, useState } from "react"
 
 import { ThemeProvider } from "@material-ui/core"
-import axios from "axios"
-// import getConfig from "next/config"
 import Router from "next/router"
 import { CookiesProvider } from "react-cookie"
 import { useCookies } from "react-cookie"
 
 import DefaultLayout from "../components/layout"
 import { getCartItemQty, whoami } from "../config/axios"
-import { baseUrl } from "../config/baseUrl"
 import AppContext from "../contexts/AppContext"
 import theme from "../src/theme"
 
@@ -97,20 +94,6 @@ function MyApp({ Component, pageProps }) {
   }, [state.next])
 
   const initializeAppData = () => {
-    console.log("FROM_DOCKER")
-    console.log("BASEURL", baseUrl)
-    console.log(process.env.NEXT_PUBLIC_FROM_DOCKER)
-    // console.log("FROM_DOCKER", publicRuntimeConfig.NEXT_PUBLIC_DOCKER)
-    axios
-      .get(baseUrl + "store/categories/")
-      .then((response) => console.log("Categories:", response.data))
-      .catch((err) =>
-        console.error(
-          "[CATEGORIES ERROR]",
-          err && err.response ? err.response.data : err
-        )
-      )
-
     whoami()
       .then(() => {
         getCartItemQty()
