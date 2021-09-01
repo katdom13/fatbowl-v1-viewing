@@ -14,7 +14,6 @@ RUN set -ex \
   && pip install --no-cache-dir -r requirements.txt
 
 
-  
 RUN python3 manage.py collectstatic --noinput
 RUN python3 manage.py makemigrations
 RUN python3 manage.py migrate

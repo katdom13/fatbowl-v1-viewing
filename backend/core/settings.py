@@ -216,22 +216,32 @@ FATOWL_CLIENT_SECRET = env('FATOWL_CLIENT_SECRET')
 LOGOUT_ON_PASSWORD_CHANGE = False
 
 # STORAGES
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
+
+# AWS Settings
 AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+AWS_DEFAULT_ACL = None
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-AWS_LOCATION = 'static'
-
 AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
-AWS_DEFAULT_ACL = 'public-read'
 
-STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/' \
+# S3 static settings
+STATIC_LOCATION = 'static'
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/' \
     if FROM_DOCKER else '/static/'
-
-# Django Static Files Directory
+STATICFILES_STORAGE = 'core.storage_backends.StaticStorage'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
-# Media files (Images, Videos)
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media/"
+# S3 public media settings
+PUBLIC_MEDIA_LOCATION = 'media'
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/' \
+    if FROM_DOCKER else '/media/'
+DEFAULT_FILE_STORAGE = 'core.storage_backends.PublicMediaStorage'
+
+# S3 private media settings
+PRIVATE_MEDIA_LOCATION = 'private'
+PRIVATE_FILE_STORAGE = 'core.storage_backends.PrivateMediaStorage'
+
+if not FROM_DOCKER:
+    # STATIC_ROOT = BASE_DIR / "static/"
+    MEDIA_ROOT = BASE_DIR / "media/"

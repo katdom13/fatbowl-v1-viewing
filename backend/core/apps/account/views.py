@@ -1,3 +1,4 @@
+import environ
 from core.apps.account.models import CustomUser
 from core.apps.account.permissions import (
     IsAccountOwnerOrAdmin,
@@ -31,6 +32,9 @@ from rest_framework.views import APIView
 
 from .models import Address
 from .tokens import account_activation_token
+
+env = environ.Env()
+environ.Env.read_env()
 
 
 class CSRFView(APIView):
@@ -169,6 +173,8 @@ class PasswordResetView(APIView):
         email = request.data.get('email')
         user = User.objects.filter(email=email).first()
 
+        base_url = env('FRONTEND_BASEURL') if settings.FROM_DOCKER else 'http://localhost:3000/'
+
         if user:
             user.email_user(
                 subject='FatOwl - Password reset request for {username}'.format(
@@ -178,9 +184,7 @@ class PasswordResetView(APIView):
                     self.email_template_name,
                     {
                         'user': user,
-                        'base_url':
-                            'http://ec2-13-229-75-63.ap-southeast-1.compute.amazonaws.com'
-                            if settings.FROM_DOCKER else 'http://localhost:3001',
+                        'base_url': base_url,
                         'path': 'password-reset/{uidb64}/{token}'.format(
                             uidb64=urlsafe_base64_encode(force_bytes(user.pk)),
                             token=default_token_generator.make_token(user)
