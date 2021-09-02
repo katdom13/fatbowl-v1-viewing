@@ -152,8 +152,8 @@ REST_FRAMEWORK = {
 # CORS
 
 #  Allow to send csrf and session cookie in external request
-CSRF_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SAMESITE = "Lax"
 
 # Block client-side javascript from accessing csrf and session cookie if True
 CSRF_COOKIE_HTTPONLY = False
