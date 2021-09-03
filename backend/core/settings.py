@@ -171,7 +171,7 @@ CORS_EXPOSE_HEADERS = [
 # If True, cookies will be allowed to be included in cross-site HTTP requests.
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = ['experiments.d2uhclizqduwdg.amplifyapp.com']
+CSRF_TRUSTED_ORIGINS = ['development.fatbowl.net']
 
 # JWT
 SIMPLE_JWT = {
