@@ -29,6 +29,7 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import Address
 from .tokens import account_activation_token
@@ -39,7 +40,7 @@ class CSRFView(APIView):
 
     def get(self, request, format=None):
         response = Response({
-            'success': 'CSRF Token set'
+            'success': 'CSRF token set'
         })
         response['X-CSRFToken'] = get_token(request)
         return response
@@ -78,7 +79,21 @@ class LoginView(APIView):
             }, status=404)
 
         login(request, user)
-        return Response({'success': 'Login successful'})
+
+        response = Response({'success': 'Login successful'})
+        response['X-CSRFToken'] = get_token(request)
+        print(get_token(request))
+        return response
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        # print('===============', get_token(request))
+        super().post(request, *args, **kwargs)
+
+        response = Response({'success': 'Login successful'})
+        response['X-CSRFToken'] = get_token(request)
+        return response
 
 
 class LogoutView(APIView):
