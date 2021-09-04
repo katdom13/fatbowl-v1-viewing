@@ -70,7 +70,7 @@ const Login = () => {
       .then((res) => {
         cookies.set("access_token", res.data.access)
         cookies.set("refresh_token", res.data.refresh)
-        console.log("AAAAAAAAA", res.headers)
+        cookies.set("csrftoken", res.headers["x-csrftoken"])
         instance.defaults.headers["Authorization"] =
           "Bearer " + cookies.get("access_token")
 

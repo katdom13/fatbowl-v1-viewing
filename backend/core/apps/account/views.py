@@ -88,10 +88,7 @@ class LoginView(APIView):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
-        # print('===============', get_token(request))
-        super().post(request, *args, **kwargs)
-
-        response = Response({'success': 'Login successful'})
+        response = super().post(request, *args, **kwargs)
         response['X-CSRFToken'] = get_token(request)
         return response
 
