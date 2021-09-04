@@ -31,8 +31,8 @@ import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
 import Router from "next/router"
-import { useCookies } from "react-cookie"
 
+import customCookies from "../../components/customCookies"
 import {
   addCartItem,
   getProduct,
@@ -45,7 +45,7 @@ const Product = ({ product }) => {
   const classes = useStyles()
 
   const [qty, setQty] = useState(1)
-  const [cookies] = useCookies(["csrftoken"])
+  const cookies = customCookies
   const [image, setImage] = useState(0)
   const [price, setPrice] = useState(product.regular_price)
   const [specifications, setSpecifications] = useState([])
@@ -89,7 +89,7 @@ const Product = ({ product }) => {
         specifications,
       }
 
-      addCartItem(body, cookies.csrftoken)
+      addCartItem(body, cookies.get("csrftoken"))
         .then((response) => {
           reload({ ...state, qty: response.total_qty })
         })
@@ -106,7 +106,7 @@ const Product = ({ product }) => {
     if (state.loggedIn === false) {
       reload({ ...state, next: Router.asPath })
     } else {
-      updateWishlist(product.id, cookies.csrftoken)
+      updateWishlist(product.id, cookies.get("csrftoken"))
         .then((res) => setAlert({ severity: "info", message: res.success }))
         .catch((err) =>
           console.error("[WISHLIST ERROR]", err && err.response ? err.response : err)

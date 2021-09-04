@@ -106,7 +106,10 @@ const invoke = async (url, method = "get", data = {}, csrf = "") => {
 // Promises
 
 const getCsrf = async () => {
-  return invoke("account/csrf/")
+  return instance
+    .get("account/csrf")
+    .then((response) => Promise.resolve(response))
+    .catch((error) => Promise.reject(error))
 }
 
 const whoami = async () => {
@@ -117,11 +120,10 @@ const whoami = async () => {
 const loginUser = async (username, password, csrf = "") => {
   const data = { username, password }
 
-  if (csrf) {
-    return invoke("account/login/", "post", data, csrf)
-  } else {
-    return invoke("account/token/", "post", data)
-  }
+  return instance
+    .post("account/token/", data)
+    .then((response) => Promise.resolve(response))
+    .catch((error) => Promise.reject(error))
 }
 
 const logoutUser = async (refreshToken) => {

@@ -16,14 +16,14 @@ import { Alert } from "@material-ui/lab"
 import Head from "next/head"
 import Link from "next/link"
 import Router from "next/router"
-import { useCookies } from "react-cookie"
 
+import customCookies from "../../../components/customCookies"
 import ProgressLoader from "../../../components/progressLoader"
 import { passwordReset } from "../../../config/axios"
 
 const PasswordReset = () => {
   const classes = useStyles()
-  const [cookies] = useCookies(["csrftoken"])
+  const cookies = customCookies
 
   const initialFormdata = Object.freeze({
     password: "",
@@ -76,7 +76,7 @@ const PasswordReset = () => {
       let uidb64 = query.uidb64
       let token = query.token
 
-      passwordReset(uidb64, token, formdata.password, cookies.csrftoken)
+      passwordReset(uidb64, token, formdata.password, cookies.get("csrftoken"))
         .then(() => setStatus("done"))
         .catch((err) => {
           console.log("[PASSWORD RESET ERROR]:", err.response ? err.response : err)

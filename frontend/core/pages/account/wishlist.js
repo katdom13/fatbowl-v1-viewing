@@ -15,14 +15,14 @@ import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
 import Router from "next/router"
-import { useCookies } from "react-cookie"
 
+import customCookies from "../../components/customCookies"
 import { getWishlist, updateWishlist } from "../../config/axios"
 import AppContext from "../../contexts/AppContext"
 
 const Wishlist = () => {
   const classes = useStyles()
-  const [cookies] = useCookies(["csrftoken"])
+  const cookies = customCookies
   const {
     context: { reload },
     state,
@@ -47,7 +47,7 @@ const Wishlist = () => {
     if (state.loggedIn === false) {
       reload({ ...state, next: Router.asPath })
     } else {
-      updateWishlist(id, cookies.csrftoken)
+      updateWishlist(id, cookies.get("csrftoken"))
         .then(() => {
           setWishlist(wishlist.filter((item) => item.id !== id))
         })

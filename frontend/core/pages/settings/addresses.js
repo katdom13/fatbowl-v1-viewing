@@ -16,13 +16,13 @@ import AddIcon from "@material-ui/icons/Add"
 import Head from "next/head"
 import Link from "next/link"
 import Router from "next/router"
-import { useCookies } from "react-cookie"
 
+import customCookies from "../../components/customCookies"
 import { deleteAddress, getAddresses, updateAddress } from "../../config/axios"
 
 const Addresses = () => {
   const classes = useStyles()
-  const [cookies] = useCookies(["csrftoken"])
+  const cookies = customCookies
 
   const [addresses, setAddresses] = useState([])
 
@@ -38,7 +38,7 @@ const Addresses = () => {
   }, [])
 
   const handleDelete = (public_id) => {
-    deleteAddress(public_id, cookies.csrftoken)
+    deleteAddress(public_id, cookies.get("csrftoken"))
       .then(() => console.log("Address deleted"))
       .catch((err) =>
         console.error(
@@ -58,7 +58,7 @@ const Addresses = () => {
     let old = addresses.find((address) => address.is_default === true)
 
     if (old) {
-      updateAddress(old.public_id, { is_default: false }, cookies.csrftoken)
+      updateAddress(old.public_id, { is_default: false }, cookies.get("csrftoken"))
         .then((res) => res)
         .catch((err) =>
           console.error(
@@ -68,7 +68,7 @@ const Addresses = () => {
         )
     }
 
-    updateAddress(public_id, { is_default: true }, cookies.csrftoken)
+    updateAddress(public_id, { is_default: true }, cookies.get("csrftoken"))
       .then(() => {
         getAddresses()
           .then((res) => setAddresses(res))

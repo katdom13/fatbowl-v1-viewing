@@ -11,21 +11,21 @@ import {
 import Head from "next/head"
 import Link from "next/link"
 import Router from "next/router"
-import { useCookies } from "react-cookie"
 
+import customCookies from "../../../../components/customCookies"
 import { activateUser } from "../../../../config/axios"
 
 const Activate = () => {
   const [title, setTitle] = useState("")
   const [body, setBody] = useState("")
-  const [cookies] = useCookies(["csrftoken"])
+  const cookies = customCookies
   const [isSuccess, setIsSuccess] = useState(false)
 
   useEffect(() => {
     let query = Router.query
     let uidb64 = query.uidb64
     let token = query.token
-    activateUser(uidb64, token, cookies.csrftoken)
+    activateUser(uidb64, token, cookies.get("csrftoken"))
       .then((response) => {
         setTitle(response.success && response.success)
         setBody("You may now log in")

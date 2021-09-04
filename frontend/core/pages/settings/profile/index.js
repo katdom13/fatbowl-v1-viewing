@@ -17,8 +17,8 @@ import MuiAccordionSummary from "@material-ui/core/AccordionSummary"
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 import { Alert } from "@material-ui/lab"
 import Router from "next/router"
-import { useCookies } from "react-cookie"
 
+import customCookies from "../../../components/customCookies"
 import withAuthentication from "../../../components/withAuthentication"
 import {
   getUser,
@@ -26,12 +26,13 @@ import {
   updateUser,
   logoutUser,
   deleteUser,
+  instance,
 } from "../../../config/axios"
 import AppContext from "../../../contexts/AppContext"
 
 const Profile = () => {
   const classes = useStyles()
-  const [cookies] = useCookies(["csrftoken"])
+  const cookies = customCookies
   const initialFormdata = Object.freeze({
     username: "",
     email: "",
@@ -119,12 +120,16 @@ const Profile = () => {
             old_password: formdata.password,
             new_password: formdata.password2,
           }
-          updateUser(response, data, cookies.csrftoken)
+          updateUser(response, data, cookies.get("csrftoken"))
             .then((response) => {
               if (Boolean(data.old_password) && Boolean(data.new_password)) {
-                logoutUser()
+                logoutUser(cookies.get("refresh_token"))
                   .then(() => {
                     logout()
+                    cookies.remove("access_token")
+                    cookies.remove("refresh_token")
+                    cookies.remove("csrftoken")
+                    instance.defaults.headers["Authorization"] = null
                     Router.push("/login?password-change=success", "/login")
                   })
                   .catch((err) => {
@@ -165,7 +170,7 @@ const Profile = () => {
     e.preventDefault()
     whoami()
       .then((response) => {
-        deleteUser(response, cookies.csrftoken)
+        deleteUser(response, cookies.get("csrftoken"))
           .then((response) => {
             console.log("[DELETED USER]", response)
             setIsDeleted(true)

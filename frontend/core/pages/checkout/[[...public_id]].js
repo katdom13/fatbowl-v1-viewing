@@ -21,8 +21,8 @@ import Alert from "@material-ui/lab/Alert"
 import Head from "next/head"
 import Link from "next/link"
 import Router from "next/router"
-import { useCookies } from "react-cookie"
 
+import customCookies from "../../components/customCookies"
 import {
   getAddresses,
   getCart,
@@ -34,7 +34,7 @@ import AppContext from "../../contexts/AppContext"
 
 const Checkout = ({ options }) => {
   const classes = useStyles()
-  const [cookies] = useCookies(["csrftoken"])
+  const cookies = customCookies
 
   const [header, setHeader] = useState("Delivery options")
   const [subheader, setSubheader] = useState("Select a delivery option")
@@ -127,7 +127,7 @@ const Checkout = ({ options }) => {
     let old = addresses.find((address) => address.is_default === true)
 
     if (old) {
-      updateAddress(old.public_id, { is_default: false }, cookies.csrftoken)
+      updateAddress(old.public_id, { is_default: false }, cookies.get("csrftoken"))
         .then((res) => res)
         .catch((err) =>
           console.error(
@@ -137,7 +137,7 @@ const Checkout = ({ options }) => {
         )
     }
 
-    updateAddress(public_id, { is_default: true }, cookies.csrftoken)
+    updateAddress(public_id, { is_default: true }, cookies.get("csrftoken"))
       .then(() => {
         getAddresses()
           .then((res) => {
@@ -345,7 +345,7 @@ const DeliveryOptions = ({
 
 const Paypal = ({ total, setPageState, selectedAddress }) => {
   const paypal = useRef()
-  const [cookies] = useCookies(["csrftoken"])
+  const cookies = customCookies
 
   const {
     context: { reload },
@@ -368,7 +368,7 @@ const Paypal = ({ total, setPageState, selectedAddress }) => {
           })
         },
         onApprove: async (data) => {
-          return payment(data.orderID, selectedAddress, cookies.csrftoken)
+          return payment(data.orderID, selectedAddress, cookies.get("csrftoken"))
             .then(() => {
               setPageState("success"),
                 getCart()

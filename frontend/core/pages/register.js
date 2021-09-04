@@ -14,14 +14,14 @@ import {
 } from "@material-ui/core"
 import Head from "next/head"
 import Link from "next/link"
-import { useCookies } from "react-cookie"
 
+import customCookies from "../components/customCookies"
 import ProgressLoader from "../components/progressLoader"
 import { register } from "../config/axios"
 
 const Register = () => {
   const classes = useStyles()
-  const [cookies] = useCookies(["csrftoken"])
+  const cookies = customCookies
 
   const initialFormdata = Object.freeze({
     username: "",
@@ -87,7 +87,7 @@ const Register = () => {
           email: formdata.email,
           password: formdata.password,
         },
-        cookies.csrftoken
+        cookies.get("csrftoken")
       )
         .then(() => setStatus("done"))
         .catch((err) => {

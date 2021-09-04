@@ -70,6 +70,7 @@ const Header = ({ categories }) => {
           logout()
           cookies.remove("access_token")
           cookies.remove("refresh_token")
+          cookies.remove("csrftoken")
           instance.defaults.headers["Authorization"] = null
           Router.push("/login", undefined, { shallow: true })
         })

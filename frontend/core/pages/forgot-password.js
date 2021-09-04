@@ -14,14 +14,14 @@ import {
 } from "@material-ui/core"
 import Head from "next/head"
 import Link from "next/link"
-import { useCookies } from "react-cookie"
 
+import customCookies from "../components/customCookies"
 import ProgressLoader from "../components/progressLoader"
 import { forgotPassword } from "../config/axios"
 
 const ForgotPassword = () => {
   const classes = useStyles()
-  const [cookies] = useCookies(["csrftoken"])
+  const cookies = customCookies
 
   const [email, setEmail] = useState("")
   const [error, setError] = useState("")
@@ -31,7 +31,7 @@ const ForgotPassword = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
     setStatus("loading")
-    forgotPassword(email, cookies.csrftoken)
+    forgotPassword(email, cookies.get("csrftoken"))
       .then(() => {
         setStatus("done")
       })

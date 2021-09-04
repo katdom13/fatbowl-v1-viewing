@@ -29,8 +29,8 @@ import RemoveCircleIcon from "@material-ui/icons/RemoveCircle"
 import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
-import { useCookies } from "react-cookie"
 
+import customCookies from "../components/customCookies"
 import withAuthentication from "../components/withAuthentication"
 import { deleteCartItem, getCart, updateCartItem } from "../config/axios"
 import AppContext from "../contexts/AppContext"
@@ -39,7 +39,7 @@ const Cart = () => {
   const classes = useStyles()
   const [anchor, setAnchor] = useState(null)
 
-  const [cookies] = useCookies(["csrftoken"])
+  const cookies = customCookies
 
   const [publicId, setPublicId] = useState("")
   const [items, setItems] = useState([])
@@ -75,7 +75,7 @@ const Cart = () => {
   }
 
   const handleDelete = (id) => {
-    deleteCartItem(id, cookies.csrftoken)
+    deleteCartItem(id, cookies.get("csrftoken"))
       .then((response) => {
         setPublicId(response.public_id)
         setItems(response.items)
@@ -97,7 +97,7 @@ const Cart = () => {
         qty: qty,
       }
 
-      updateCartItem(id, body, cookies.csrftoken)
+      updateCartItem(id, body, cookies.get("csrftoken"))
         .then((response) => {
           setPublicId(response.public_id)
           setItems(response.items)

@@ -18,9 +18,8 @@ import Head from "next/head"
 import Link from "next/link"
 import Router from "next/router"
 
-// import { loginUser, getCsrf, getCartItemQty } from "../config/axios"
 import customCookies from "../components/customCookies"
-import { loginUser, getCartItemQty, instance } from "../config/axios"
+import { loginUser, getCsrf, getCartItemQty, instance } from "../config/axios"
 import { getUrlQueryParams } from "../config/utils"
 import AppContext from "../contexts/AppContext"
 
@@ -28,7 +27,7 @@ const Login = () => {
   const classes = useStyles()
   const cookies = customCookies
 
-  // const [csrfToken, setCsrfToken] = useState("")
+  const [csrfToken, setCsrfToken] = useState("")
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [alert, setAlert] = useState({
@@ -43,12 +42,15 @@ const Login = () => {
     let isRegistered = Boolean(Router.query.register)
     let isPasswordChanged = Boolean(Router.query["password-change"])
 
-    // getCsrf()
-    //   .then((response) => {
-    //     setCsrfToken(response)
-    //     console.log("[CSRF]", response)
-    //   })
-    //   .catch((err) => console.error("[GET CSRF ERROR]", err.response))
+    getCsrf()
+      .then((response) => {
+        console.log("[CSRF]", response.data, response.headers)
+        setCsrfToken(response.data.csrftoken)
+        cookies.set("csrftoken", response.headers["x-csrftoken"])
+      })
+      .catch((err) =>
+        console.error("[GET CSRF ERROR]", err && err.response ? err.response : err)
+      )
 
     if (isRegistered) {
       setAlert({
@@ -63,10 +65,11 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    loginUser(username, password)
+    loginUser(username, password, csrfToken)
       .then((res) => {
-        cookies.set("access_token", res.access)
-        cookies.set("refresh_token", res.refresh)
+        cookies.set("access_token", res.data.access)
+        cookies.set("refresh_token", res.data.refresh)
+        console.log("AAAAAAAAA", res.headers)
         instance.defaults.headers["Authorization"] =
           "Bearer " + cookies.get("access_token")
 

@@ -11,13 +11,13 @@ import {
 } from "@material-ui/core"
 import Head from "next/head"
 import Router from "next/router"
-import { useCookies } from "react-cookie"
 
+import customCookies from "../../../components/customCookies"
 import { createAddress, getAddress, updateAddress } from "../../../config/axios"
 
 const Address = () => {
   const classes = useStyles()
-  const [cookies] = useCookies(["csrftoken"])
+  const cookies = customCookies
 
   const initialFormdata = Object.freeze({
     phone_number: "",
@@ -72,7 +72,7 @@ const Address = () => {
     let isEdit = Boolean(publicId)
 
     !isEdit
-      ? createAddress(formdata, cookies.csrftoken)
+      ? createAddress(formdata, cookies.get("csrftoken"))
           .then(() => Router.back())
           .catch((err) => {
             if (err && err.response) {
@@ -86,7 +86,7 @@ const Address = () => {
               err && err.response ? err.response.data : err
             )
           })
-      : updateAddress(publicId, formdata, cookies.csrftoken)
+      : updateAddress(publicId, formdata, cookies.get("csrftoken"))
           .then(() => Router.back())
           .catch((err) => {
             if (err && err.response) {
