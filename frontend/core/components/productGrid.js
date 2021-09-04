@@ -54,6 +54,7 @@ const ProductGrid = ({ category, products }) => {
                     <Card elevation={1}>
                       <ProductImage
                         image={`https://fatbowl.imgix.net/${product_image.short_url}`}
+                        // image={`${product_image.image}`}
                         alt={product_image.alt_text}
                       />
                       <CardContent>

@@ -20,6 +20,7 @@ import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
 
+import withAuthentication from "../../components/withAuthentication"
 import { getOrders } from "../../config/axios"
 import { getDateTime } from "../../config/utils"
 
@@ -182,7 +183,7 @@ const Orders = () => {
                       <Grid container spacing={2} key={item.id}>
                         <Grid item xs={12} md={3} className={classes.img}>
                           <Image
-                            src={`${product_image.image}`}
+                            src={`${product_image.short_url}`}
                             alt={product_image.alt_text}
                             width={300}
                             height={300}
@@ -278,4 +279,4 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default Orders
+export default withAuthentication(Orders)

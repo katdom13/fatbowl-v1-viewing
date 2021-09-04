@@ -35,11 +35,13 @@ import ShoppingCartOutlinedIcon from "@material-ui/icons/ShoppingCartOutlined"
 import Link from "next/link"
 import Router from "next/router"
 
-import { logoutUser } from "../config/axios"
+import { instance, logoutUser } from "../config/axios"
 import AppContext from "../contexts/AppContext"
+import customCookies from "./customCookies"
 
 const Header = ({ categories }) => {
   const classes = useStyles()
+  const cookies = customCookies
 
   const [categoryAnchor, setCategoryAnchor] = useState(null)
   const [aboutAnchor, setAboutAnchor] = useState(null)
@@ -63,9 +65,12 @@ const Header = ({ categories }) => {
 
   const handleUser = () => {
     if (state.loggedIn) {
-      logoutUser()
+      logoutUser(cookies.get("refresh_token"))
         .then(() => {
           logout()
+          cookies.remove("access_token")
+          cookies.remove("refresh_token")
+          instance.defaults.headers["Authorization"] = null
           Router.push("/login", undefined, { shallow: true })
         })
         .catch((err) => console.error("[LOGOUT ERROR]", err.response))

@@ -19,7 +19,7 @@ from django.middleware.csrf import get_token
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from rest_framework import generics, viewsets
+from rest_framework import generics, status, viewsets
 from rest_framework.permissions import (
     AllowAny,
     IsAdminUser,
@@ -28,6 +28,7 @@ from rest_framework.permissions import (
 )
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import Address
 from .tokens import account_activation_token
@@ -86,6 +87,15 @@ class LogoutView(APIView):
     def get(self, request,  format=None):
         logout(request)
         return Response({'success': 'Logout successful'})
+
+    def post(self, request, format=None):
+        try:
+            refresh_token = request.data.get('refresh_token')
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class WhoAmIView(APIView):
@@ -169,7 +179,8 @@ class PasswordResetView(APIView):
         email = request.data.get('email')
         user = User.objects.filter(email=email).first()
 
-        base_url = settings.env('FRONTEND_BASEURL') if settings.FROM_DOCKER else 'http://localhost:3000/'
+        base_url = settings.env('FRONTEND_BASEURL') \
+            if settings.FROM_DOCKER else 'http://localhost:3000/'
 
         if user:
             user.email_user(

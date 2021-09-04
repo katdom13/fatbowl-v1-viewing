@@ -6,8 +6,8 @@ import React, { useEffect, useMemo, useReducer, useState } from "react"
 import { ThemeProvider } from "@material-ui/core"
 import Router from "next/router"
 import { CookiesProvider } from "react-cookie"
-import { useCookies } from "react-cookie"
 
+import customCookies from "../components/customCookies"
 import DefaultLayout from "../components/layout"
 import { getCartItemQty, whoami } from "../config/axios"
 import AppContext from "../contexts/AppContext"
@@ -16,7 +16,7 @@ import theme from "../src/theme"
 function MyApp({ Component, pageProps }) {
   // const { publicRuntimeConfig } = getConfig()
   const [isLoading, setIsLoading] = useState(true)
-  const [cookies] = useCookies(["sessionid"])
+  const cookies = customCookies
 
   const [state, dispatch] = useReducer(
     (prevState, action) => {
@@ -43,7 +43,7 @@ function MyApp({ Component, pageProps }) {
       }
     },
     {
-      loggedIn: Boolean(cookies.sessionid),
+      loggedIn: Boolean(cookies.get("access_token")),
       totalItemQty: 0,
       next: "",
     }

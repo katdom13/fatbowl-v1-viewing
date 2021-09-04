@@ -212,6 +212,7 @@ const Cart = () => {
                         <Grid item xs={12} md={5} lg={4} className={classes.img}>
                           <Image
                             src={`${product_image.short_url}`}
+                            // src={`${product_image.image}`}
                             alt={product_image.alt_text}
                             width={300}
                             height={300}

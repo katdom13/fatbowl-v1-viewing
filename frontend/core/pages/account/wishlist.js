@@ -102,6 +102,7 @@ const Wishlist = () => {
                         <Grid item xs={12} md={3}>
                           <Image
                             src={product_image.short_url}
+                            // src={product_image.image}
                             alt={product_image.alt_text}
                             width={400}
                             height={400}

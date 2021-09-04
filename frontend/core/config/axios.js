@@ -1,16 +1,93 @@
 import axios from "axios"
+import Router from "next/router"
 
+import customCookies from "../components/customCookies"
 import { baseUrl } from "./baseUrl"
+
+const cookies = customCookies
 
 const instance = axios.create({
   baseURL: baseUrl,
   timeout: 12000,
   withCredentials: true,
   headers: {
+    Authorization: cookies.get("access_token")
+      ? "Bearer " + cookies.get("access_token")
+      : null,
     "Content-Type": "application/json",
     accept: "application/json",
   },
 })
+
+instance.interceptors.response.use(
+  (response) => {
+    return response
+  },
+  async function (error) {
+    const originalRequest = error.config
+
+    if (typeof error.response === "undefined") {
+      alert(
+        "A server/network error occurred. " +
+          "Looks like CORS might be the problem. " +
+          "Sorry about this - we will get it fixed shortly."
+      )
+      return Promise.reject(error)
+    }
+
+    if (
+      error.response.status === 401 &&
+      originalRequest.url === baseUrl + "account/token/refresh/"
+    ) {
+      Router.push("/login")
+      return Promise.reject(error)
+    }
+
+    if (
+      error.response.data.code === "token_not_valid" &&
+      error.response.status === 401 &&
+      error.response.statusText === "Unauthorized"
+    ) {
+      const refreshToken = cookies.get("refresh_token")
+
+      if (refreshToken) {
+        const tokenParts = JSON.parse(atob(refreshToken.split(".")[1]))
+
+        // exp date in token is expressed in seconds, while now() returns milliseconds:
+        const now = Math.ceil(Date.now() / 1000)
+        console.log(tokenParts.exp)
+
+        if (tokenParts.exp > now) {
+          return instance
+            .post("account/token/refresh/", { refresh: refreshToken })
+            .then((response) => {
+              cookies.set("access_token", response.data.access)
+              cookies.set("refresh_token", response.data.refresh)
+
+              instance.defaults.headers["Authorization"] =
+                "Bearer " + response.data.access
+              originalRequest.headers["Authorization"] =
+                "Bearer " + response.data.access
+
+              return instance(originalRequest)
+            })
+            .catch((err) => {
+              console.log(err)
+            })
+        } else {
+          console.log("Refresh token is expired", tokenParts.exp, now)
+          Router.push("/login")
+        }
+      } else {
+        console.log("Refresh token not available.")
+        Router.push("/login")
+      }
+    }
+
+    // specific error handling done elsewhere
+    return Promise.reject(error)
+  }
+)
 
 const invoke = async (url, method = "get", data = {}, csrf = "") => {
   return instance({
@@ -37,13 +114,19 @@ const whoami = async () => {
   return data.username
 }
 
-const loginUser = async (username, password, csrf) => {
+const loginUser = async (username, password, csrf = "") => {
   const data = { username, password }
-  return invoke("account/login/", "post", data, csrf)
+
+  if (csrf) {
+    return invoke("account/login/", "post", data, csrf)
+  } else {
+    return invoke("account/token/", "post", data)
+  }
 }
 
-const logoutUser = async () => {
-  return invoke("account/logout/")
+const logoutUser = async (refreshToken) => {
+  const data = { refresh_token: refreshToken }
+  return invoke("account/logout/", "post", data)
 }
 
 const getCategories = async () => {
@@ -172,6 +255,7 @@ const getOrders = async () => {
 }
 
 export {
+  instance,
   whoami,
   loginUser,
   logoutUser,

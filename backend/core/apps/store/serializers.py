@@ -29,7 +29,6 @@ class ProductImageSerializer(serializers.ModelSerializer):
         ]
 
     def get_short_url(self, obj):
-        print(obj.image.__dict__)
         return obj.image.name
 
 
