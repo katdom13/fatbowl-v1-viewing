@@ -1,3 +1,5 @@
+import os
+
 from core.apps.account.models import CustomUser
 from core.apps.account.permissions import (
     IsAccountOwnerOrAdmin,
@@ -191,7 +193,7 @@ class PasswordResetView(APIView):
         email = request.data.get('email')
         user = User.objects.filter(email=email).first()
 
-        base_url = settings.env('FRONTEND_BASEURL') \
+        base_url = os.environ.get('FRONTEND_BASEURL') \
             if settings.FROM_DOCKER else 'http://localhost:3000/'
 
         if user:
