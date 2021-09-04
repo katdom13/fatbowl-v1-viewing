@@ -5,7 +5,7 @@ if ! [ -x "$(command -v docker-compose)" ]; then
   exit 1
 fi
 
-domains=(v1.api.staging.fatbowl.net www.v1.api.staging.fatbowl.net)
+domains=(v1.api.development.fatbowl.net www.v1.api.development.fatbowl.net)
 rsa_key_size=4096
 data_path="./data/certbot"
 email="katdom13@gmail.com" # Adding a valid address is strongly recommended
