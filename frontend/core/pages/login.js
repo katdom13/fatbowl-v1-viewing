@@ -60,6 +60,7 @@ const Login = () => {
     } else if (isPasswordChanged) {
       setAlert({ severity: "success", message: "Password changed. Please log in." })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleSubmit = (e) => {
