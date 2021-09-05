@@ -1,7 +1,6 @@
 import React from "react"
 
-import { Box, Typography } from "@material-ui/core"
-import Image from "next/image"
+import { Avatar, Box, Typography } from "@material-ui/core"
 
 const ProgressLoader = () => {
   return (
@@ -12,7 +11,14 @@ const ProgressLoader = () => {
       justifyContent="center"
       width="100%"
     >
-      <Image src="/loading.gif" alt="loading" width={200} height={200} />
+      <Avatar
+        src="/loading.gif"
+        alt="loading"
+        style={{
+          width: "200px",
+          height: "200px",
+        }}
+      />
       <Typography variant="body1" gutterBottom style={{ fontWeight: "bold" }}>
         Loading...
       </Typography>
