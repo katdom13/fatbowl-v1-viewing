@@ -1,6 +1,7 @@
 import os
 
 from core.apps.store.serializers import ProductSerializer
+from django.conf import settings
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
@@ -31,7 +32,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
 
-        url = os.environ.get('FRONTEND_BASEURL') if settings.FROM_DOCKER else 'http://localhost:3000/'
+        url = os.environ.get('FRONTEND_BASEURL') \
+            if settings.FROM_DOCKER else 'http://localhost:3000/'
         url += 'account/activate/{uidb64}/{token}'
 
         user_data = validated_data.pop('user')
