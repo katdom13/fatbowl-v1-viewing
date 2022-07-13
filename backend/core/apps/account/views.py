@@ -19,7 +19,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.middleware.csrf import get_token
 from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes, force_text
+from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from rest_framework import generics, status, viewsets
 from rest_framework.permissions import (
@@ -41,10 +41,8 @@ class CSRFView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, format=None):
-        response = Response({
-            'success': 'CSRF token set'
-        })
-        response['X-CSRFToken'] = get_token(request)
+        response = Response({"success": "CSRF token set"})
+        response["X-CSRFToken"] = get_token(request)
         return response
 
 
@@ -52,13 +50,11 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, format=None):
-        username = request.data.get('username')
-        password = request.data.get('password')
+        username = request.data.get("username")
+        password = request.data.get("password")
 
         if not username or not password:
-            return Response({
-                'error': 'Username or password are needed'
-            }, status=400)
+            return Response({"error": "Username or password are needed"}, status=400)
 
         user = User.objects.filter(username=username).first()
 
@@ -67,23 +63,22 @@ class LoginView(APIView):
                 user = authenticate(username=username, password=password)
 
                 if not user:
-                    return Response({
-                        'error': 'Invalid credentials'
-                    }, status=401)
+                    return Response({"error": "Invalid credentials"}, status=401)
             else:
-                return Response({
-                    'error': 'The account is inactive. Please activate your account, \
-                        or email the support team.'
-                }, status=400)
+                return Response(
+                    {
+                        "error": "The account is inactive. Please activate your account, \
+                        or email the support team."
+                    },
+                    status=400,
+                )
         else:
-            return Response({
-                'error': 'The account does not exist'
-            }, status=404)
+            return Response({"error": "The account does not exist"}, status=404)
 
         login(request, user)
 
-        response = Response({'success': 'Login successful'})
-        response['X-CSRFToken'] = get_token(request)
+        response = Response({"success": "Login successful"})
+        response["X-CSRFToken"] = get_token(request)
         print(get_token(request))
         return response
 
@@ -91,20 +86,20 @@ class LoginView(APIView):
 class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
-        response['X-CSRFToken'] = get_token(request)
+        response["X-CSRFToken"] = get_token(request)
         return response
 
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request,  format=None):
+    def get(self, request, format=None):
         logout(request)
-        return Response({'success': 'Logout successful'})
+        return Response({"success": "Logout successful"})
 
     def post(self, request, format=None):
         try:
-            refresh_token = request.data.get('refresh_token')
+            refresh_token = request.data.get("refresh_token")
             token = RefreshToken(refresh_token)
             token.blacklist()
             return Response(status=status.HTTP_205_RESET_CONTENT)
@@ -116,24 +111,26 @@ class WhoAmIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        return Response({'username': request.user.username})
+        return Response({"username": request.user.username})
 
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
-    lookup_field = 'user__username'
+    lookup_field = "user__username"
 
     def get_queryset(self):
         return CustomUser.objects.filter(user__is_active=True).all()
 
     def get_permissions(self):
-        if self.action == 'list':
+        if self.action == "list":
             permission_classes = [IsAdminUser]
-        elif self.action == 'retrieve' \
-            or self.action == 'update' \
-                or self.action == 'destroy':
+        elif (
+            self.action == "retrieve"
+            or self.action == "update"
+            or self.action == "destroy"
+        ):
             permission_classes = [IsAccountOwnerOrAdmin]
-        elif self.action == 'create':
+        elif self.action == "create":
             permission_classes = [AllowAny]
         else:
             permission_classes = [IsAuthenticatedOrReadOnly]
@@ -147,16 +144,14 @@ class UserViewSet(viewsets.ModelViewSet):
         data = {key: value for key, value in request.data.items() if value}
 
         # Handle changing of password
-        if data.get('old_password') and data.get('new_password'):
-            old = data.pop('old_password')
-            new = data.pop('new_password')
+        if data.get("old_password") and data.get("new_password"):
+            old = data.pop("old_password")
+            new = data.pop("new_password")
 
             if instance.user.check_password(old):
-                data['password'] = new
+                data["password"] = new
             else:
-                return Response({
-                    'password': 'Invalid password'
-                }, status=403)
+                return Response({"password": "Invalid password"}, status=403)
 
         serializer = self.get_serializer(instance, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -169,83 +164,81 @@ class UserActivationView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, uidb64, token, format=None):
-        uid = force_text(urlsafe_base64_decode(uidb64))
+        uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.filter(pk=uid).first()
 
         if user and account_activation_token.check_token(user, token):
             user.is_active = True
             user.save()
-            return Response({
-                'success': 'User account activated'
-            })
+            return Response({"success": "User account activated"})
         else:
-            return Response({
-                'error': 'User account activation failed. Please contact the support team'
-            }, status=400)
+            return Response(
+                {
+                    "error": "User account activation failed. Please contact the support team"
+                },
+                status=400,
+            )
 
 
 class PasswordResetView(APIView):
     permission_classes = [AllowAny]
 
-    email_template_name = 'account/user/password_reset_email.html'
+    email_template_name = "account/user/password_reset_email.html"
 
     def post(self, request, format=None):
-        email = request.data.get('email')
+        email = request.data.get("email")
         user = User.objects.filter(email=email).first()
 
-        base_url = os.environ.get('FRONTEND_BASEURL') \
-            if settings.FROM_DOCKER else 'http://localhost:3000/'
+        base_url = (
+            os.environ.get("FRONTEND_BASEURL")
+            if settings.FROM_DOCKER
+            else "http://localhost:3000/"
+        )
 
         if user:
             user.email_user(
-                subject='FatOwl - Password reset request for {username}'.format(
-                        username=user.username
+                subject="FatOwl - Password reset request for {username}".format(
+                    username=user.username
                 ),
                 message=render_to_string(
                     self.email_template_name,
                     {
-                        'user': user,
-                        'base_url': base_url,
-                        'path': 'password-reset/{uidb64}/{token}'.format(
+                        "user": user,
+                        "base_url": base_url,
+                        "path": "password-reset/{uidb64}/{token}".format(
                             uidb64=urlsafe_base64_encode(force_bytes(user.pk)),
-                            token=default_token_generator.make_token(user)
-                        )
-                    }
-                )
+                            token=default_token_generator.make_token(user),
+                        ),
+                    },
+                ),
             )
-            return Response({
-                'success': 'Password reset email sent'
-            })
+            return Response({"success": "Password reset email sent"})
         else:
-            return Response({
-                'error': 'There is no user with that email'
-            }, status=404)
+            return Response({"error": "There is no user with that email"}, status=404)
 
 
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, uidb64, token, format=None):
-        password = request.data.get('password')
+        password = request.data.get("password")
 
-        uid = force_text(urlsafe_base64_decode(uidb64))
+        uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.filter(pk=uid).first()
 
         if user and default_token_generator.check_token(user, token):
             user.password = make_password(password)
             user.save()
-            return Response({
-                'success': 'Password reset'
-            })
+            return Response({"success": "Password reset"})
         else:
-            return Response({
-                'error': 'Password reset failed. Please try again'
-            }, status=400)
+            return Response(
+                {"error": "Password reset failed. Please try again"}, status=400
+            )
 
 
 class AddressViewSet(viewsets.ModelViewSet):
     serializer_class = AddressSerializer
-    lookup_field = 'public_id'
+    lookup_field = "public_id"
     permission_classes = [IsAddressOwnerOrAdmin]
 
     def get_queryset(self):
@@ -256,7 +249,7 @@ class AddressViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         data = request.data
-        data['user'] = request.user.customuser.id
+        data["user"] = request.user.customuser.id
 
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
@@ -267,7 +260,7 @@ class AddressViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         data = request.data
-        data['user'] = request.user.customuser.id
+        data["user"] = request.user.customuser.id
 
         # Enable partial updates
         serializer = self.get_serializer(instance, data=data, partial=True)
@@ -281,6 +274,7 @@ class WishListView(generics.ListAPIView):
     """
     Public wishlist view for the current logged in user
     """
+
     permission_classes = [AllowAny]
     serializer_class = ProductSerializer
 
@@ -305,20 +299,16 @@ class WishListDetailView(generics.RetrieveUpdateDestroyAPIView):
             product = self.get_object(product_id)
             if product.users_wishlist.filter(user_id=request.user.id).exists():
                 product.users_wishlist.remove(request.user.customuser)
-                return Response({
-                    'success':
-                        f'{product.title} has been removed from your wishlist',
-                })
+                return Response(
+                    {
+                        "success": f"{product.title} has been removed from your wishlist",
+                    }
+                )
             else:
                 product.users_wishlist.add(request.user.customuser)
-                return Response({
-                    'success':
-                        f'Added {product.title} to your wishlist'
-                })
-        except(Product.DoesNotExist):
-            return Response({
-                'error': 'Product does not exist'
-            }, status=404)
+                return Response({"success": f"Added {product.title} to your wishlist"})
+        except (Product.DoesNotExist):
+            return Response({"error": "Product does not exist"}, status=404)
 
 
 class OrderListView(generics.ListAPIView):
